@@ -1,12 +1,12 @@
-# 🍽️ Sistema Gran Sabor
+# 🍽️ Sistema Restaurante Popular
 
-Sistema web de cardápio digital e gestão de pedidos desenvolvido para otimizar o atendimento e a administração do restaurante Gran Sabor.
+Sistema web de cardápio digital, gestão de fichas e estoque desenvolvido para otimizar o fluxo e paginação do cardápio do restaurante popular de Quixadá.
 
 ---
 
 ## 🚀 Sobre o Projeto
 
-O **Sistema Gran Sabor** permite que os clientes do restaurante acessem o cardápio de forma digital e realizem pedidos diretamente pela interface web. O sistema conta também com um painel para a gestão de produtos, categorias e acompanhamento dos pedidos em tempo real.
+O **Sistema Restaurante Popular** permite que os clientes do restaurante acessem o cardápio de forma digital e visualize os itens disponíveis nas refeições pela interface web. O sistema conta também com um painel para a gestão de produtos, cardápio e estoque em tempo real.
 
 ---
 
