@@ -33,7 +33,7 @@ O **Sistema Restaurante Popular** permite que os clientes do restaurante acessem
 Siga os passos abaixo no seu terminal para rodar o projeto localmente em sua máquina:
 
 1. Clonar o repositório:
-   git clone https://github.com/Os-Batutinhas-de-C-C/Sistema-Gran-Sabor.git
+   git clone https://github.com/Os-Batutinhas-de-C-C/Sistema-Restaurante-Popular.git
    
    cd frontend
 3. Instalar as dependências do projeto:
