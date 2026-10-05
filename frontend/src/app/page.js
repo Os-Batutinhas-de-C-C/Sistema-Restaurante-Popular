@@ -12,27 +12,57 @@ export default function PaginaInicial() {
     <main style={{ 
       display: 'flex', 
       flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
+      alignItems: 'center',
       height: '100vh',
-      textAlign: 'center',
       fontFamily: 'sans-serif'
     }}>
       
-      <h1>Bem-vindo ao Gran Sabor! 🍽️</h1>
-      <p style={{ marginBottom: '30px' }}>
-        O melhor restaurante da cidade. Faça seu pedido de forma rápida e digital.
-      </p>
-
-      {/* 2. NAVEGAÇÃO COM O NEXT.JS */}
-      {/* Em vez de usar a tag <a> normal do HTML, usamos o <Link> do Next.js. 
-          Isso faz a troca de tela ser instantânea, sem piscar o navegador! */}
-      <Link href="/exemplo" passHref>
-        <Button variant="contained" size="large" color="primary">
-          Acessar a Tela de Exemplo
-        </Button>
-      </Link>
-
+      <div id='navBar' style={{
+        height: '10vh',
+        width: '100vw',
+        display: 'flex',
+        justifyContent: 'center'
+      }}>
+        <div className='container' style={{
+          width:'90vw',
+          alignContent: 'center'
+        }}> <div id='link' style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          gap: '0.75rem',
+        }}>
+          <div id='symbol' style={{
+            height: '3rem',
+            width: '3rem',
+            backgroundColor: '#1D4ED8',
+            borderRadius: '0.8rem',
+            border: '1px solid #FED7AACC'
+          }}>
+          </div>
+          <div className='container' style={{
+            display: 'flex',
+            flexDirection: 'column',
+            width: '14vw'
+          }}>
+            <div className='container'>
+              <b style={{
+              fontSize: 'large'
+            }}> Restaurante Popular </b>
+            </div>
+            <div className='container' >
+              <p style={{
+              fontSize: 'small'
+            }}> Prefeitura Municipal de Quixadá </p>
+            </div>
+          </div>
+        </div>
+          <div id='Navigation'>
+            
+          </div>
+        </div>
+      </div>
+    
     </main>
   );
 }
