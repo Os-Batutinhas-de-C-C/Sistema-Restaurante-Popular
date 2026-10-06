@@ -1,4 +1,6 @@
-import NavBar from "@/components/navBar";
+import NavBar from "@/components/mainPage/navBar";
+import Main from "@/components/mainPage/main"
+import Fotter from "@/components/mainPage/fotter"
 
 export default function PaginaInicial() {
   
@@ -13,6 +15,10 @@ export default function PaginaInicial() {
 
       <NavBar></NavBar>
 
+      <Main> </Main>
+
+      <Fotter></Fotter>
+      
     </main>
   );
 }
