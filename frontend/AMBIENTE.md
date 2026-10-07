@@ -2,16 +2,16 @@
 
 O foco deste conteúdo é no ambiente usado, no Terminal e configurações do VSCode para desenvolvimento com JavaScript. Vamos trabalhar nos pilares:
 
--   Ambiente estruturado
--   Terminal bem configurado
--   Visual Studio Code com extensões
+- Ambiente estruturado
+- Terminal bem configurado
+- Visual Studio Code com extensões
 
 Siga os passos abaixo para criar um ambiente de desenvolvimento ideal. Aproveite para customizar suas próprias preferências. Nesta configuração vamos utilizar:
 
--   CodeSpace: como ambiente de desenvolvimento
--   VSCode: como editor de código
--   Dev Container: para configurar o container docker no CodeSpace
--   Docker: ferramenta de contenerização
+- CodeSpace: como ambiente de desenvolvimento
+- VSCode: como editor de código
+- Dev Container: para configurar o container docker no CodeSpace
+- Docker: ferramenta de contenerização
 
 ## Passo 0 - Criar um app React com Next.js
 
@@ -55,13 +55,13 @@ No Github, no seu repositório criado, abra com Codespace. Navegue no VSCode par
 
 No CodeSpace, pressione "Ctrl+Shift+P" para exibir a "Paleta de Comandos" e comece a digitar "Dev Containers: Add Dev Container Configuration Files". Sega as instruções para criar uma nova configuração.
 
--   Selecione para opção "Node.js".
+- Selecione para opção "Node.js".
 
 As sugestões de features são:
 
--   Common Utilities (que vamos usar para instalar o terminal Zsh)
--   Zsh Plugins (para instalar plugins do OhMyZsh, como o zsh-autosu)
--   GitHub CLI: para lidar com fluos do GitHub
+- Common Utilities (que vamos usar para instalar o terminal Zsh)
+- Zsh Plugins (para instalar plugins do OhMyZsh, como o zsh-autosu)
+- GitHub CLI: para lidar com fluos do GitHub
 
 Ao finalizar o processo você passa a ver dois novos arquivos: devcontainer.json e Dockerfile. No CodeSpace, pressione "Ctrl+Shift+P" para exibir a "Paleta de Comandos" e comece a digitar "codespaces: rebuild container" para ver o resultado das alterações.
 
@@ -78,7 +78,6 @@ features": {
         "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
             "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions"
         },
-
 ```
 
 Configure o Zsh como terminal padrão, adicionando o seguinte trecho no arquivo devcontainer.json:
@@ -170,9 +169,9 @@ features": {
 
 Vamos adicionar agora ferramentas de análise de código: o [SonarLint](https://www.sonarsource.com/products/sonarlint/), para validação de erros e problemas de segurança, e o [Prettier](https://prettier.io/), para padronização da formatação do código. Outra ferramenta bastante utilizada é o [ESlint](https://eslint.org/), voltada para análise estática de código js/ts. Como sua configuração envolve mais arquivos e regras personalizadas, sugiro consultar tutoriais específicos de instalação caso tenha interesse em utilizá-lo. Há uma sutil diferença entre essas três ferramentas:
 
--   _Prettier_ foca exclusivamente na **formatação** automática (espaçamento, quebras de linha, aspas, etc.).
--   _ESLint_ trata de **estilo** e boas práticas de código, podendo incluir ou não regras de formatação.
--   _SonarLint_ vai além, com foco em **qualidade de código**, detectando bugs, vulnerabilidades, code smells e outras más práticas de desenvolvimento.
+- _Prettier_ foca exclusivamente na **formatação** automática (espaçamento, quebras de linha, aspas, etc.).
+- _ESLint_ trata de **estilo** e boas práticas de código, podendo incluir ou não regras de formatação.
+- _SonarLint_ vai além, com foco em **qualidade de código**, detectando bugs, vulnerabilidades, code smells e outras más práticas de desenvolvimento.
 
 Adicione os trechos abaixo e suas configurações em settings. As configurações formatOnSave e wordWrap são do próprio VSCode, servem respectivamente para realizar a formatação ao salvar um arquivo e para pular linha, evitando a rolagem horizontal no código.
 
@@ -217,9 +216,9 @@ Dev Containers são ambientes de desenvolvimento prontos e reprodutíveis config
 
 **Benefícios:**
 
--   Reduz problemas de "na minha máquina funciona".
--   Permite configuração padronizada do ambiente com Node, TypeScript, linters, etc.
--   Integração nativa com o VS Code e GitHub CodeSpaces.
+- Reduz problemas de "na minha máquina funciona".
+- Permite configuração padronizada do ambiente com Node, TypeScript, linters, etc.
+- Integração nativa com o VS Code e GitHub CodeSpaces.
 
 ## JSON
 
@@ -262,10 +261,10 @@ Um exemplo com uma lista de objetos:
 
 Zsh é um interpretador de comandos (shell) para sistemas Unix/Linux, compatível com o Bash, mas com **funcionalidades mais avançadas**, como:
 
--   **Autocompletar inteligente** com sugestões e correções automáticas.
--   **Suporte a plugins e temas** via frameworks como [Oh My Zsh](https://ohmyz.sh/).
--   **Histórico compartilhado entre abas/terminais**.
--   **Prompt personalizável** com informações de Git, status de comando anterior, entre outros.
+- **Autocompletar inteligente** com sugestões e correções automáticas.
+- **Suporte a plugins e temas** via frameworks como [Oh My Zsh](https://ohmyz.sh/).
+- **Histórico compartilhado entre abas/terminais**.
+- **Prompt personalizável** com informações de Git, status de comando anterior, entre outros.
 
 Zsh é especialmente útil para desenvolvedores, pois acelera a produtividade no terminal com recursos como:
 
@@ -283,10 +282,10 @@ Oh My Zsh é uma estrutura open source para personalizar o shell Zsh, amplamente
 
 Com WSL, pode ser instalado no Ubuntu do Windows Terminal. Oferece temas, plugins e atalhos para melhorar a produtividade e a aparência do terminal. Fácil de instalar, é popular entre desenvolvedores por sua flexibilidade e vasta comunidade. Suas funcionalidades são:
 
--   Autocompletar e correção de comandos
--   Temas e cores
--   Gerência avançada do histórico de comandos
--   Variedade enorme de plugins, comunidade ativa.
+- Autocompletar e correção de comandos
+- Temas e cores
+- Gerência avançada do histórico de comandos
+- Variedade enorme de plugins, comunidade ativa.
 
 ### 🔌 Plugins e complementos:
 
@@ -308,7 +307,6 @@ gh repo create                  # Cria um novo repositório no GitHub
 gh repo clone usuario/repositorio # Clona um repositório
 gh pr create                    # Cria um pull request
 gh issue list                   # Lista issues do repositório
-
 ```
 
 ## ⚙️ Node.js
@@ -319,10 +317,10 @@ Criado com foco em desempenho e escalabilidade, o Node.js é especialmente útil
 
 ### 🚀 Principais características
 
--   **Event-driven** e **non-blocking**: usa um modelo assíncrono baseado em eventos, o que o torna altamente eficiente.
--   **Leve e rápido**: ideal para aplicações escaláveis.
--   **NPM**: possui o maior ecossistema de bibliotecas open source do mundo.
--   **Cross-platform**: funciona em Windows, Linux e macOS.
+- **Event-driven** e **non-blocking**: usa um modelo assíncrono baseado em eventos, o que o torna altamente eficiente.
+- **Leve e rápido**: ideal para aplicações escaláveis.
+- **NPM**: possui o maior ecossistema de bibliotecas open source do mundo.
+- **Cross-platform**: funciona em Windows, Linux e macOS.
 
 ### ▶️ Principais comandos
 
@@ -360,9 +358,9 @@ npm update                    # Atualiza pacotes
 
 ### 📁 Estrutura após instalação
 
--   package.json: define as dependências e scripts do projeto.
--   package-lock.json: registra a árvore de dependências exata.
--   node_modules/: pasta onde os pacotes instalados ficam armazenados. Essa pasta não precisa ser versionada ou estar no repositório online. Além de possuir um tamanho enorme, com o package.json é possível reconstruí-la em qualquer máquina.
+- package.json: define as dependências e scripts do projeto.
+- package-lock.json: registra a árvore de dependências exata.
+- node_modules/: pasta onde os pacotes instalados ficam armazenados. Essa pasta não precisa ser versionada ou estar no repositório online. Além de possuir um tamanho enorme, com o package.json é possível reconstruí-la em qualquer máquina.
 
 ### 💡 Dica
 
@@ -398,17 +396,17 @@ O **React** é classificado como **biblioteca** porque ele **foca exclusivamente
 
 #### Características de biblioteca:
 
--   Você **escolhe** como lidar com rotas, requisições HTTP, gerenciamento de estado, etc.
--   Ele é **flexível e modular**, podendo ser combinado com outras bibliotecas como Redux, React Router, Axios, entre outras.
--   **Você controla o fluxo da aplicação** — ou seja, o React é chamado por você, não o contrário.
+- Você **escolhe** como lidar com rotas, requisições HTTP, gerenciamento de estado, etc.
+- Ele é **flexível e modular**, podendo ser combinado com outras bibliotecas como Redux, React Router, Axios, entre outras.
+- **Você controla o fluxo da aplicação** — ou seja, o React é chamado por você, não o contrário.
 
 #### Já um framework...
 
 ...como **Next.js**, **Angular** ou **Vue com Nuxt**, tende a:
 
--   Fornecer uma **estrutura completa** com roteamento, compilação, autenticação, etc.
--   **Controlar o fluxo da aplicação**, chamando o seu código em pontos específicos (inversão de controle).
--   Ter uma abordagem mais **rígida**, com padrões definidos para estrutura e funcionamento.
+- Fornecer uma **estrutura completa** com roteamento, compilação, autenticação, etc.
+- **Controlar o fluxo da aplicação**, chamando o seu código em pontos específicos (inversão de controle).
+- Ter uma abordagem mais **rígida**, com padrões definidos para estrutura e funcionamento.
 
 ## 🌐 Next.js
 
@@ -416,16 +414,16 @@ O Next.js é um framework baseado em React para desenvolvimento web moderno. Ele
 
 ...como **Next.js**, **Angular** ou **Vue com Nuxt**, tende a:
 
--   Fornecer uma **estrutura completa** com roteamento, compilação, autenticação, etc.
--   **Controlar o fluxo da aplicação**, chamando o seu código em pontos específicos (inversão de controle).
--   Ter uma abordagem mais **opinionada**, com padrões definidos para estrutura e funcionamento.
+- Fornecer uma **estrutura completa** com roteamento, compilação, autenticação, etc.
+- **Controlar o fluxo da aplicação**, chamando o seu código em pontos específicos (inversão de controle).
+- Ter uma abordagem mais **opinionada**, com padrões definidos para estrutura e funcionamento.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with
 
 Para aprender mais sobre Next.js, veja:
 
--   [Next.js Documentation](https://nextjs.org/docs) - funcionalidades Next.js e API.
--   [Learn Next.js](https://nextjs.org/learn) - um tutorial interativo Next.js.
+- [Next.js Documentation](https://nextjs.org/docs) - funcionalidades Next.js e API.
+- [Learn Next.js](https://nextjs.org/learn) - um tutorial interativo Next.js.
 
 ## ⚙️ Power Toys
 
@@ -433,10 +431,10 @@ Para aprender mais sobre Next.js, veja:
 
 Algumas ferramentas do PowerToys:
 
--   Seletor de Cores: Um seletor de cores universal que exibe os valores RGB e HEX de qualquer ponto da tela. `win + Shift + c`
--   Localizar Meu Mouse: Criar um foco no mouse `Ctrl Ctrl`
--   Espiada: Extensões no Explorador de Arquivos: `Ctrl + space`
--   Miniaturas de arquivos: permite visualizar arquivos como svg e md no Explorador de arquivos.
--   Extrator de Texto: Extrai texto de imagens ou outras fontes visuais usando OCR. `win + Shift + t`
--   PowerToys Run: Um lançador rápido de aplicativos e comandos, semelhante ao Spotlight no macOS. `alt + space`
--   Colar avançado: permite colocar o conteúdo da área de transferência em qualquer formato necessário. `win + Shift + v`
+- Seletor de Cores: Um seletor de cores universal que exibe os valores RGB e HEX de qualquer ponto da tela. `win + Shift + c`
+- Localizar Meu Mouse: Criar um foco no mouse `Ctrl Ctrl`
+- Espiada: Extensões no Explorador de Arquivos: `Ctrl + space`
+- Miniaturas de arquivos: permite visualizar arquivos como svg e md no Explorador de arquivos.
+- Extrator de Texto: Extrai texto de imagens ou outras fontes visuais usando OCR. `win + Shift + t`
+- PowerToys Run: Um lançador rápido de aplicativos e comandos, semelhante ao Spotlight no macOS. `alt + space`
+- Colar avançado: permite colocar o conteúdo da área de transferência em qualquer formato necessário. `win + Shift + v`

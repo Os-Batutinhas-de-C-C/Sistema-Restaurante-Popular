@@ -1,0 +1,28 @@
+#footer{
+    height: 25vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    background-color: #0F172A;
+    margin-top: auto;
+}
+
+#container{
+    display: flex;
+    height: 10vh;
+    width: 90vw;
+    color: #64748B;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 1rem;
+}
+
+#horizontalBorder{
+    display: flex;
+    flex-direction: row;
+    gap: 5rem;
+}
+
+#tittle{
+    width: 28vw;
+}

@@ -1,3 +1,5 @@
+/* {Em caso de retiada dos hidden, avise antes, pode causar quebra em alguma parte do código} */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
