@@ -1,86 +1,163 @@
-#navBar{
-    height: 10vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    box-shadow: #E2E8F0E5 0 2px;    
+#navBar {
+  background-color: white;
+  color: #0F172A;
+  border-bottom: 1px solid #E2E8F0;
 }
 
-.container{
-    display: flex;
-    width:90vw;
-    align-items: center;
-    gap: 10rem;
+.container {
+  display: flex;
+  justify-content: center;
 }
 
-.containerNames{
-    display: flex;
-    align-content: center;
-    flex-direction: column;
+.toolbar {
+  width: 100%;
+  max-width: 1100px;
+  justify-content: space-between;
+  gap: 2rem;
+  min-height: 5rem;
 }
 
-#brand{
+/* marca */
+#brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#symbol {
+  height: 3.2rem;
+  width: 3.2rem;
+  flex-shrink: 0;
+  background-color: #1D4ED8;
+  border-radius: 12px;
+  border: 1px solid #FED7AACC;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#symbol svg {
+  color: white;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.brandText strong {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0F172A;
+}
+
+.brandText span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748B;
+  max-width: 14rem;
+}
+
+#navigation {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background-color: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  border-radius: 0.8rem;
+  padding: 0.7rem 1.4rem;
+}
+
+#navigation a {
+  font-size: 0.85rem;
+  color: #334155;
+  text-decoration: none;
+}
+
+#navigation a:hover {
+  color: #1D4ED8;
+}
+
+#statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+#status {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background-color: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+  border-radius: 999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+#status .dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background-color: #059669;
+}
+
+#status.fechado {
+    background-color: #FEF2F2;
+    color: #991B1B;
+    border-color: #FECACA;
+}
+
+#status.fechado .dot {
+    background-color: #DC2626;
+}
+
+#entrar {
+  background-color: #EF6C00;
+  color: white;
+  border-radius: 12px;
+  padding: 0.5rem 1.2rem;
+  text-transform: none;
+  font-weight: 600;
+  box-shadow: 0 4px 10px #ff7d1255;
+}
+
+#entrar:hover {
+  background-color: #D45F00;
+}
+
+@media (max-width: 900px) {
+  .toolbar {
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-wrap: wrap;
+    height: auto;
+    padding: 0.75rem 0;
     gap: 0.75rem;
-}
+  }
 
-#symbol{
-    height: 3rem;
-    width: 3rem;
-    background-color: #1D4ED8;
-    border-radius: 0.8rem;
-    border: 1px solid #FED7AACC;
+  #brand        { order: 1; width: 100%; }
+  #statusBadge  { order: 2; width: 100%; justify-content: flex-end; }
+  .brandText span {
+    max-width: none;
+  }
+  #navigation   {
+    order: 3;
     display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    width: 100%;
+    overflow-x: auto;
+    gap: 1.2rem;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
 
-strong {
-    font-size: large;
-}
-
-p {
-    font-size: small;
-    text-transform: none;
-}
-
-#navigation{
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    background-color: #F1F5F9;
-    border: 1px solid #E2E8F0;
-    border-radius: 0.8rem;
-    height: 3rem;
-    width: 25rem;
-    gap: 1rem;
-    padding: 1.4rem;
-}
-
-#statusBadge{
-    display: flex;
-    flex-direction: row;
-    align-items: center;   
-    gap: 2rem;
-}
-
-#entrar{
-    background-color: #EF6C00;
-    border-radius: 12px;
-    color: white; 
-    box-shadow: #ff7d1283 2px 2px 2px;
-}
-
-#status{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: #ECFDF5;
-    color: #065F46;
-    border-radius: 15px;
-    border: 1px solid #A7F3D0;
-    width: 5rem;
-    height: 2rem;
+  #navigation a { flex-shrink: 0; }
+   #navigation::-webkit-scrollbar {
+    display: none;        
+  }
 }

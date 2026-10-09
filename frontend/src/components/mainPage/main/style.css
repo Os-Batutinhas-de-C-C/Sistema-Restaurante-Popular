@@ -1,0 +1,244 @@
+#mainContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.boxes {
+    display: flex;
+    width: 92%;
+    border-radius: 1rem;
+    min-height: 12rem;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
+                rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.boxBorder {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    padding: 1rem;
+    flex-direction: column;
+}
+
+#indicadores {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem 1rem;
+}
+
+.holders {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.tittle {
+    font-size: x-small;
+    color: #94A3B8;
+    padding-bottom: 8%;
+}
+
+.subText {
+    font-size: 0.6rem;
+    color: black;
+    font-weight: 600;
+}
+
+.mainText {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.mainSub {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94A3B8;
+}
+
+.progress {
+    height: 6px;
+    border-radius: 999px;
+    background: #BFDBFE;
+    margin: 0.75rem 0 0.4rem;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: #1D4ED8;
+    border-radius: 999px;
+}
+
+#progressText {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.paddingTextBlack {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.paddingTextLight {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: #94A3B8;
+}
+
+#tittleWarning {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .25rem .75rem;
+}
+
+.tag {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    font-size: small;
+}
+
+.dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 50%;
+    background-color: #1D4ED8;
+}
+
+.divider {
+    border: none;
+    border-top: 1px solid #E2E8F0;
+    margin: 0.75rem 0;
+}
+
+.orientacaoHolders {
+    display: flex;
+    flex-direction: row;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    width: 100%;
+    min-height: 6rem;
+    padding: max(1.5%, 0.75rem);
+    margin-top: 3%;
+}
+
+.symbol {
+    height: 2.5rem;
+    width: 2.5rem;
+    flex-shrink: 0;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#regrasSymbol {
+    background-color: #D1FAE5;
+    border: 1px solid #0596689c;
+}
+
+#regrasSymbol svg {
+    color: #047857;
+}
+
+#filaSymbol {
+    background-color: #d1e7fa;
+    border: 1px solid #1d4fd891;
+}
+
+#filaSymbol svg {
+    color: #1D4ED8;
+}
+
+#cadastroSymbol {
+    background-color: #faecd1;
+    border: 1px solid #ea5a0c81;
+}
+
+#cadastroSymbol svg {
+    color: #EA580C;
+}
+
+.orientacaoText {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    flex-direction: column;
+    padding: max(1.5%, 0.5rem);
+    gap: 0.6rem;
+}
+
+.detalhe {
+    display: none;
+}
+
+.aberto .detalhe {
+    display: block;
+}
+
+.orientacaoTittle {
+    border: 1px solid #94a3b88f;
+    font-size: x-small;
+    color: #2c3036;
+    padding: 3%;
+}
+
+.arrow {
+    margin-left: auto;
+}
+
+.arrow svg {
+    transition: transform .3s ease;
+}
+
+.aberto .arrow svg {
+    transform: rotate(180deg);
+}
+
+.badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    background: #F1F5F9;
+    color: #475569;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+}
+
+@media (min-width: 600px) {
+    #indicadores {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    #acesso {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (min-width: 768px) {
+    .boxes { width: 80%; }
+    .boxBorder { padding: 1.5rem; }
+}
+
+@media (min-width: 900px) {
+    #indicadores {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    #acesso {
+        grid-column: auto;
+    }
+}
+
+@media (min-width: 1200px) {
+    .boxes { width: 60%; }
+}

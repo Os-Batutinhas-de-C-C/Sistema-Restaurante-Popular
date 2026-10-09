@@ -1,0 +1,147 @@
+.loc {
+    width: 100%;
+}
+
+.locCard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #e3e7ee;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+.locHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.locTitulo {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #101828;
+}
+
+.locDot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #1d5fd1;
+}
+
+.locSede {
+    font-size: 10px;
+    color: #6b7589;
+}
+
+.locDivider {
+    width: 100%;
+    height: 1px;
+    margin: 2px 0 4px;
+    border: none;
+    background: #e8ebf1;
+}
+
+/* ---------- Linhas de informação ---------- */
+.locLinha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: #f8f9fc;
+    border: 1px solid #edf0f5;
+    border-radius: 10px;
+}
+
+.locLinha p {
+    margin: 0;
+}
+
+.locForte {
+    font-size: 11px;
+    font-weight: 700;
+    color: #101828;
+}
+
+.locFraco {
+    font-size: 10px;
+    color: #5b6578;
+}
+
+.locFraco strong {
+    font-weight: 700;
+    color: #101828;
+}
+
+.locIcone {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+}
+
+.locIcone.azul    { background: #dbe7fb; color: #1d5fd1; }
+.locIcone.laranja { background: #fdebd9; color: #e8590c; }
+.locIcone.verde   { background: #d8f3e3; color: #16a34a; }
+
+/* ---------- Botões ---------- */
+.locBotoes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.locBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-decoration: none;
+    border-radius: 9px;
+    transition: filter .2s ease, transform .1s ease;
+}
+
+.locBtn:hover  { filter: brightness(.96); }
+.locBtn:active { transform: scale(.98); }
+
+.locBtn.primario {
+    color: #fff;
+    background: #ea580c;
+    box-shadow: 0 2px 6px rgba(234, 88, 12, .3);
+}
+
+.locBtn.secundario {
+    color: #334155;
+    background: #f1f4f9;
+    border: 1px solid #e3e7ee;
+}
+
+/* ---------- Rodapé ---------- */
+.locRodape {
+    margin: 4px 0 0;
+    padding-top: 10px;
+    text-align: center;
+    font-size: 9px;
+    color: #8a93a6;
+    border-top: 1px solid #edf0f5;
+}
+
+@media (max-width: 420px) {
+    .locBotoes {
+        grid-template-columns: 1fr;
+    }
+}

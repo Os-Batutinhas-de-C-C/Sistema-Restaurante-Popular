@@ -15,7 +15,7 @@ export default function PaginaInicial() {
 
       <NavBar></NavBar>
 
-      <Main> </Main>
+      <Main></Main>
 
       <Fotter></Fotter>
       

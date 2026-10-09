@@ -1,0 +1,107 @@
+#mainContainer {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+}
+
+.newsBoxes {
+  display: flex;
+  width: 60%;
+  min-height: 8rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06),
+              0 0 0 1px rgba(15, 23, 42, 0.05);
+}
+
+.newsBoxBorder {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.25rem 1.5rem;
+}
+
+.tag {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #334155;
+}
+
+.dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background-color: #1D4ED8;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #E2E8F0;
+  margin: 0.75rem 0;
+}
+
+.slide {
+  flex: 1;
+  min-height: 4.5rem;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: #0F172A;
+}
+
+.article {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #475569;
+  min-height: 5lh;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.indicators { display: flex; gap: 0.35rem; }
+
+.pill {
+  width: 0.4rem;
+  height: 0.4rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: #CBD5E1;
+  cursor: pointer;
+  transition: width 0.2s, background 0.2s;
+}
+.pill.active { width: 1.5rem; background: #1D4ED8; }
+
+.arrows { display: flex; gap: 0.5rem; }
+
+.arrow {
+  width: 1.75rem;
+  height: 1.75rem;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 0.5rem;
+  background: #EEF2F7;
+  color: #475569;
+  cursor: pointer;
+}
+.arrow:hover { background: #E2E8F0; }
