@@ -118,7 +118,7 @@
     background-color: #DC2626;
 }
 
-#entrar {
+#voltar {
   background-color: #EF6C00;
   color: white;
   border-radius: 12px;
@@ -128,7 +128,7 @@
   box-shadow: 0 4px 10px #ff7d1255;
 }
 
-#entrar:hover {
+#voltar:hover {
   background-color: #D45F00;
 }
 
