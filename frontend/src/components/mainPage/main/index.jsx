@@ -18,9 +18,7 @@ export default function Main() {
     return (
     <div id="mainContainer">
         <section id="Noticias" className="boxes">
-            <div className="boxBorder">
-                <NewsCArd />
-            </div>
+            <NewsCArd />
         </section>
 
         <section className="boxes">
@@ -87,16 +85,13 @@ export default function Main() {
 
             </div>
         </section>
+
         <section id="cardapio" className="boxes">
-            <div className="boxBorder">
-                <Cardapio />
-            </div>
+            <Cardapio />
         </section>
 
         <section id="localizacao" className="boxes">
-            <div className="boxBorder">
-                <Localizacao />
-            </div>
+            <Localizacao />   
         </section>
     </div>
     );

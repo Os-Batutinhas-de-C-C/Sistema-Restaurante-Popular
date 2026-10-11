@@ -10,7 +10,7 @@
 
 .newsBoxes {
   display: flex;
-  width: 60%;
+  width: 100%;
   min-height: 8rem;
   border-radius: 1rem;
   background: #fff;
