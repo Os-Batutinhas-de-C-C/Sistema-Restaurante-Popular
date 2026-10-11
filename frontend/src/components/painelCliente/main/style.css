@@ -1,0 +1,116 @@
+.contato {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.contatoCard {
+    width: 55rem;
+    padding: 1.75rem 2rem;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 1rem;
+}
+
+.contatoTitulo {
+    margin: 0 0 0.25rem;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #0F172A;
+}
+
+.contatoSub {
+    margin: 0 0 1.5rem;
+    font-size: 0.8rem;
+    color: #64748B;
+}
+
+.contatoCampo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-bottom: 1.1rem;
+}
+
+.contatoCampo label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.contatoCampo input,
+.contatoCampo textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.75rem 0.9rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: #0F172A;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.5rem;
+    transition: border-color .15s, box-shadow .15s;
+}
+
+.contatoCampo textarea {
+    min-height: 9rem;
+    resize: none;
+}
+
+.contatoCampo input::placeholder,
+.contatoCampo textarea::placeholder {
+    color: #94A3B8;
+}
+
+.contatoCampo input:focus,
+.contatoCampo textarea:focus {
+    outline: none;
+    border-color: #1976D2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, .15);
+}
+
+.contatoCampo [aria-invalid="true"] {
+    border-color: #DC2626;
+}
+
+.contatoErro {
+    font-size: 0.75rem;
+    color: #B91C1C;
+}
+
+.contatoAcoes {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.contatoStatus {
+    margin: 0.75rem 0 0;
+    min-height: 1.2em;  
+    font-size: 0.8rem;
+    text-align: right;
+}
+.contatoStatus.ok   { color: #047857; }
+.contatoStatus.erro { color: #B91C1C; }
+
+@media (max-width: 600px) {
+    .contato { padding: 1rem 0; }
+
+    .contatoCard {
+        width: 94%;
+        padding: 1.25rem 1rem;
+    }
+
+    .contatoAcoes .MuiButton-root {
+        width: 100%;          
+    }
+
+    .contatoStatus { text-align: left; }
+}
+
+@media (max-width: 600px) {
+    .brandText strong { font-size: 1.1rem; }
+    #symbol { height: 2.6rem; width: 2.6rem; }
+}
