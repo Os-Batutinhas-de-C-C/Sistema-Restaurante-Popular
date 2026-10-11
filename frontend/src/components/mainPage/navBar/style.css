@@ -1,111 +1,111 @@
 #navBar {
-  background-color: white;
-  color: #0F172A;
-  border-bottom: 1px solid #E2E8F0;
+	position: fixed;
+    background-color: white;
+    color: #0F172A;
+    border-bottom: 1px solid #E2E8F0;
 }
 
 .container {
-  display: flex;
-  justify-content: center;
+	display: flex;
+	justify-content: center;
 }
 
 .toolbar {
-  width: 100%;
-  max-width: 1100px;
-  justify-content: space-between;
-  gap: 2rem;
-  min-height: 5rem;
+	width: 100%;
+	max-width: 1100px;
+	justify-content: space-between;
+	gap: 2rem;
+ 	min-height: 5rem;		
 }
 
-/* marca */
 #brand {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
 }
 
 #symbol {
-  height: 3.2rem;
-  width: 3.2rem;
-  flex-shrink: 0;
-  background-color: #1D4ED8;
-  border-radius: 12px;
-  border: 1px solid #FED7AACC;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	height: 3.2rem;
+	width: 3.2rem;
+	flex-shrink: 0;
+	background-color: #1D4ED8;
+	border-radius: 12px;
+	border: 1px solid #FED7AACC;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 #symbol svg {
-  color: white;
+ 	color: white;
 }
 
 .brandText {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
+	display: flex;
+	flex-direction: column;
+	line-height: 1.2;
 }
 
 .brandText strong {
-  font-size: 1.4rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0F172A;
+	font-size: 1.4rem;
+	font-weight: 800;
+	letter-spacing: -0.02em;
+	color: #0F172A;
 }
 
 .brandText span {
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #64748B;
-  max-width: 14rem;
+	font-size: 0.7rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: #64748B;
+	max-width: 14rem;
 }
 
 #navigation {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  background-color: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  border-radius: 0.8rem;
-  padding: 0.7rem 1.4rem;
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+	background-color: #F1F5F9;
+	border: 1px solid #E2E8F0;
+	border-radius: 0.8rem;
+	padding: 0.7rem 1.4rem;
 }
 
 #navigation a {
-  font-size: 0.85rem;
-  color: #334155;
-  text-decoration: none;
+	font-size: 0.85rem;
+	color: #334155;
+	text-decoration: none;
 }
 
 #navigation a:hover {
-  color: #1D4ED8;
+	color: #1D4ED8;
 }
 
 #statusBadge {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
 }
 
 #status {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background-color: #ECFDF5;
-  color: #065F46;
-  border: 1px solid #A7F3D0;
-  border-radius: 999px;
-  padding: 0.25rem 0.7rem;
-  font-size: 0.8rem;
-  font-weight: 600;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	background-color: #ECFDF5;
+	color: #065F46;
+	border: 1px solid #A7F3D0;
+	border-radius: 999px;
+	padding: 0.25rem 0.7rem;
+	font-size: 0.8rem;
+	font-weight: 600;
 }
 
 #status .dot {
-  width: 0.45rem;
-  height: 0.45rem;
-  border-radius: 50%;
-  background-color: #059669;
+	width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 50%;
+	background-color: #059669;
 }
 
 #status.fechado {
@@ -119,17 +119,17 @@
 }
 
 #entrar {
-  background-color: #EF6C00;
-  color: white;
-  border-radius: 12px;
-  padding: 0.5rem 1.2rem;
-  text-transform: none;
-  font-weight: 600;
-  box-shadow: 0 4px 10px #ff7d1255;
+	background-color: #EF6C00;
+	color: white;
+	border-radius: 12px;
+	padding: 0.5rem 1.2rem;
+	text-transform: none;
+	font-weight: 600;
+	box-shadow: 0 4px 10px #ff7d1255;
 }
 
 #entrar:hover {
-  background-color: #D45F00;
+ 	background-color: #D45F00;
 }
 
 @media (max-width: 900px) {
@@ -151,7 +151,7 @@
     display: flex;
     width: 100%;
     overflow-x: auto;
-    gap: 1.2rem;
+    gap: 0.5rem;
     white-space: nowrap;
     scrollbar-width: none;
   }
@@ -159,5 +159,17 @@
   #navigation a { flex-shrink: 0; }
    #navigation::-webkit-scrollbar {
     display: none;        
+  }
+}
+
+@media (max-width: 700px) {
+	#navigation   {
+    order: 3;
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    gap: 0.3rem;
+    white-space: nowrap;
+    scrollbar-width: none;
   }
 }
