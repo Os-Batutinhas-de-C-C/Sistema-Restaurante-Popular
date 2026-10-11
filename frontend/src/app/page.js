@@ -8,20 +8,14 @@ import Fotter from "@/components/mainPage/fotter"
 export default function PaginaInicial() {
   
 	return (
-		<main style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center',
-      height: '100vh',
-      fontFamily: 'sans-serif'
-    }}>
-
-      <NavBar></NavBar>
-
-      <Main></Main>
-
-      <Fotter></Fotter>
-      
-    </main>
+		<>
+		<NavBar></NavBar>
+		<div className={styles.page}>
+			<main className={styles.main}>
+				<Main></Main>
+      		</main>
+  		</div>
+		<Fotter></Fotter>
+		</>
 	);
 }
