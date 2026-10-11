@@ -32,7 +32,7 @@
     align-items: center;
     gap: 6px;
     margin: 0 0 3px;
-    font-size: 11px;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: .02em;
     color: #1a2233;
@@ -230,7 +230,7 @@
 
     .cardapioTag {
         gap: 10px;
-        font-size: 17px;
+        font-size: 1rem;
         font-weight: 800;
     }
     .cardapioDot { width: 12px; height: 12px; }
