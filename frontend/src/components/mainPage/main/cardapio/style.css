@@ -15,12 +15,17 @@
 }
 
 .cardapioHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+    row-gap: 3px;
+    align-items: start;
     margin-bottom: 12px;
 }
+
+.cardapioTag   { grid-column: 1; grid-row: 1; }
+.cardapioBadge { grid-column: 2; grid-row: 1; }
+.cardapioSub   { grid-column: 1; grid-row: 2; }
 
 .cardapioTag {
     display: flex;
@@ -34,10 +39,11 @@
 }
 
 .cardapioDot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #1d5fd1;
+    width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 50%;
+	background-color: #1D4ED8;
+    flex-shrink: 0;
 }
 
 .cardapioSub {
@@ -205,4 +211,58 @@
     background: #fff;
     border: 1px solid #d5dae4;
     border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+    .cardapioCard { padding: 16px; }
+
+    .cardapioHeader {
+        grid-template-columns: 1fr;
+        row-gap: 10px;
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #edf0f5;
+    }
+    .cardapioTag, .cardapioBadge, .cardapioSub {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .cardapioTag {
+        gap: 10px;
+        font-size: 17px;
+        font-weight: 800;
+    }
+    .cardapioDot { width: 12px; height: 12px; }
+
+    .cardapioBadge {
+        justify-self: start;
+        gap: 6px;
+        padding: 5px 12px;
+        font-size: 14px;
+        border-radius: 999px;
+    }
+    .cardapioBadge svg { font-size: 17px !important; }  /* sobrescreve o sx do MUI */
+
+    .cardapioSub {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .cardapioDias {
+        gap: 6px;
+        padding: 6px;
+        border-radius: 16px;
+    }
+    .cardapioDia {
+        gap: 4px;
+        padding: 10px 0;
+        border-radius: 12px;
+    }
+    .diaSigla { font-size: 12px; }
+    .diaNum   { font-size: 18px; }
+    .cardapioDia.ativo {
+        border-radius: 14px;
+        box-shadow: 0 6px 14px rgba(29, 95, 209, .35);
+    }
 }

@@ -9,12 +9,12 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./style.css";
 
 const noticias = [
-  // {
-  //   titulo: "Novo cardápio balanceado com ingredientes da agricultura familiar do Sertão Central",
-  //   texto: "Hortaliças frescas, polpas de frutas e feijão de corda fornecidos diretamente por pequenos produtores rurais cadastrados no município.",
-  // },
-  // { titulo: "Título da segunda notícia", texto: "Texto da segunda notícia." },
-  // { titulo: "Título da terceira notícia", texto: "Texto da terceira notícia." },
+  {
+    titulo: "Novo cardápio balanceado com ingredientes da agricultura familiar do Sertão Central",
+    texto: "Hortaliças frescas, polpas de frutas e feijão de corda fornecidos diretamente por pequenos produtores rurais cadastrados no município.",
+  },
+  { titulo: "Título da segunda notícia", texto: "Texto da segunda notícia." },
+  { titulo: "Título da terceira notícia", texto: "Texto da terceira notícia." },
 ];
 
 export default function NewsCard({ id }) {

@@ -10,7 +10,6 @@
 
 .boxes {
     display: flex;
-    width: 92%;
     border-radius: 1rem;
     min-height: 12rem;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
@@ -39,25 +38,25 @@
 }
 
 .tittle {
-    font-size: x-small;
+    font-size: 0.8rem;
     color: #94A3B8;
     padding-bottom: 8%;
 }
 
 .subText {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
     color: black;
     font-weight: 600;
 }
 
 .mainText {
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #0F172A;
 }
 
 .mainSub {
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 700;
     color: #94A3B8;
 }
@@ -83,13 +82,13 @@
 }
 
 .paddingTextBlack {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #334155;
 }
 
 .paddingTextLight {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
     font-weight: 700;
     color: #94A3B8;
 }
@@ -107,7 +106,7 @@
     align-items: center;
     gap: 0.5rem;
     font-weight: 500;
-    font-size: small;
+    font-size: 0.8rem;
 }
 
 .dot {
@@ -176,8 +175,8 @@
     flex: 1;
     min-width: 0;
     flex-direction: column;
-    padding: max(1.5%, 0.5rem);
-    gap: 0.6rem;
+    padding-left: 1rem;
+    gap: 0.4rem;
 }
 
 .detalhe {
@@ -186,13 +185,6 @@
 
 .aberto .detalhe {
     display: block;
-}
-
-.orientacaoTittle {
-    border: 1px solid #94a3b88f;
-    font-size: x-small;
-    color: #2c3036;
-    padding: 3%;
 }
 
 .arrow {
@@ -240,9 +232,5 @@
 }
 
 @media (min-width: 1200px) {
-    .boxes { width: 60%; }
-}
-
-#noticias{
-    width: 5rem;
+    .boxes { width: 80%; }
 }

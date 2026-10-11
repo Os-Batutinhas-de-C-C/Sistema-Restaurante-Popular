@@ -33,7 +33,7 @@ export default function Main() {
                     </div>
                 </div>
                 <div id="atendimento" className="holders">
-                    <p className="tittle"> Atendimento </p>
+                    <p className="tittle"> ATENDIMENTO </p>
                     <p className="subText"> Horários de Refeições </p>
                     <p className="mainText"> 11h00 <span className="mainSub"> às </span> 13h30 </p>
                     <span className="paddingTextLight"> Início da entrega de fichas às <span className="paddingTextBlack"> 10h30 </span> na bilheteria central. </span> 

@@ -14,7 +14,6 @@ const DIAS = [
     { sigla: "SEX", num: 25, nome: "Sexta-feira" },
 ];
 
-// Só a quarta veio do print; os outros dias são placeholder, troca pelos dados reais.
 const MENU = {
     21: { kcal: 920, itens: [
         { label: "Prato proteico", nome: "Frango Grelhado", tag: "Opção Proteica" },
@@ -77,13 +76,11 @@ export default function Cardapio() {
         <section className="cardapio">
             <div className="cardapioCard">
                 <div className="cardapioHeader">
-                    <div>
-                        <p className="cardapioTag"><span className="cardapioDot" /> CARDÁPIO DA SEMANA</p>
-                        <p className="cardapioSub">Refeição balanceada elaborada e supervisionada por equipe nutricional técnica</p>
-                    </div>
+                    <p className="cardapioTag"><span className="cardapioDot" /> CARDÁPIO DA SEMANA</p>
                     <span className="cardapioBadge">
                         <EventNoteOutlinedIcon sx={{ fontSize: 12 }} /> Semana Atual
                     </span>
+                    <p className="cardapioSub">Refeição balanceada elaborada e supervisionada por equipe nutricional técnica</p>
                 </div>
 
                 <div className="cardapioDias" role="tablist">

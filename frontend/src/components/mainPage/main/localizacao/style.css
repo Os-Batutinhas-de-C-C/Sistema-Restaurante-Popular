@@ -30,10 +30,11 @@
 }
 
 .locDot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #1d5fd1;
+     width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 50%;
+	background-color: #1D4ED8;
+    flex-shrink: 0;
 }
 
 .locSede {
@@ -49,7 +50,6 @@
     background: #e8ebf1;
 }
 
-/* ---------- Linhas de informação ---------- */
 .locLinha {
     display: flex;
     align-items: center;
@@ -93,7 +93,6 @@
 .locIcone.laranja { background: #fdebd9; color: #e8590c; }
 .locIcone.verde   { background: #d8f3e3; color: #16a34a; }
 
-/* ---------- Botões ---------- */
 .locBotoes {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -130,7 +129,6 @@
     border: 1px solid #e3e7ee;
 }
 
-/* ---------- Rodapé ---------- */
 .locRodape {
     margin: 4px 0 0;
     padding-top: 10px;
