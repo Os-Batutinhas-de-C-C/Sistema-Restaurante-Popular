@@ -1,7 +1,7 @@
 "use client";
 
 import "./style.css";
-import NewsCArd from "./newsCard";
+import NewsCard from "./newsCard";
 import OrientacaoItem from "./orientacaoItem";
 import Cardapio from "./cardapio";
 import Localizacao from "./localizacao";
@@ -17,9 +17,7 @@ var total = 300
 export default function Main() {
     return (
     <div id="mainContainer">
-        <section id="Noticias" className="boxes">
-            <NewsCArd />
-        </section>
+        <NewsCard id={"Noticias"}/>
 
         <section className="boxes">
             <div className="boxBorder" id="indicadores">

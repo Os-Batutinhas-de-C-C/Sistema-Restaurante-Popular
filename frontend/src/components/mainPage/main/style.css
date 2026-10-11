@@ -242,3 +242,7 @@
 @media (min-width: 1200px) {
     .boxes { width: 60%; }
 }
+
+#noticias{
+    width: 5rem;
+}

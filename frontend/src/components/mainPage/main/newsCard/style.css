@@ -1,19 +1,9 @@
-#mainContainer {
-  font-family: "Plus Jakarta Sans", sans-serif;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  padding: 1.5rem 0;
-}
-
 .newsBoxes {
   display: flex;
   width: 100%;
-  min-height: 8rem;
+  min-height: 16rem;
   border-radius: 1rem;
-  background: #fff;
+  background: #ffff;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06),
               0 0 0 1px rgba(15, 23, 42, 0.05);
 }
@@ -49,9 +39,29 @@
   margin: 0.75rem 0;
 }
 
-.slide {
+.slides {
   flex: 1;
-  min-height: 4.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.slide {
+  grid-area: 1 / 1;         
+  visibility: hidden;  
+  opacity: 0;
+  transition: opacity .25s ease, visibility .25s;
+}
+
+.slide.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+.article {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #475569;
 }
 
 .title {
@@ -63,12 +73,12 @@
   color: #0F172A;
 }
 
-.article {
-  margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: #475569;
-  min-height: 5lh;
+.title, .article {
+  overflow-wrap:anywhere;
+}
+
+.slides, .slide, .newsBoxBorder {
+  min-width: 0; 
 }
 
 .controls {

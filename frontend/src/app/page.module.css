@@ -12,6 +12,8 @@
     justify-items: center;
     min-height: 100svh;
     font-family: var(--font-geist-sans);  
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: stretch; 
 }
 
 @media (prefers-color-scheme: dark) {
@@ -30,6 +32,8 @@
     flex-direction: column;
     gap: 32px;
     grid-row-start: 2;
+    width: 100%;
+    min-width: 0;
 }
 
 /* Enable hover only on non-touch devices */
