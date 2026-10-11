@@ -78,7 +78,7 @@ export default function Cardapio() {
                 <div className="cardapioHeader">
                     <p className="cardapioTag"><span className="cardapioDot" /> CARDÁPIO DA SEMANA</p>
                     <span className="cardapioBadge">
-                        <EventNoteOutlinedIcon sx={{ fontSize: 12 }} /> Semana Atual
+                        <EventNoteOutlinedIcon sx={{ fontSize: 16 }} /> Semana Atual
                     </span>
                     <p className="cardapioSub">Refeição balanceada elaborada e supervisionada por equipe nutricional técnica</p>
                 </div>
@@ -119,7 +119,7 @@ export default function Cardapio() {
 
                 <div className="painelRodape">
                     <span className="rodapeAviso">
-                        <InfoOutlinedIcon sx={{ fontSize: 13 }} />
+                        <InfoOutlinedIcon sx={{ fontSize: '0.9 rem'}} />
                         Cardápio sujeito a alterações conforme disponibilidade de insumos.
                     </span>
                     <span className="rodapeKcal">Estimativa: ~ {kcal} kcal</span>
