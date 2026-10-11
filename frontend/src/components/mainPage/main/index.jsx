@@ -17,8 +17,9 @@ var total = 300
 export default function Main() {
     return (
     <div id="mainContainer">
-        <NewsCard id={"Noticias"}/>
-
+        <section id="noticias" className="boxes">
+            <NewsCard/>
+        </section>
         <section className="boxes">
             <div className="boxBorder" id="indicadores">
                 <div id="fichas" className="holders"> 

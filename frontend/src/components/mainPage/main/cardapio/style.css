@@ -101,15 +101,15 @@
 }
 
 .diaSigla {
-    font-size: 8px;
+    font-size: 0.8rem;
     font-weight: 600;
     letter-spacing: .04em;
     opacity: .8;
 }
 
 .diaNum {
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 1.2rem;
+    font-weight: 800;
 }
 
 .cardapioPainel {
@@ -128,7 +128,7 @@
 
 .painelTag {
     margin: 0 0 2px;
-    font-size: 9px;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: .03em;
     color: #1d5fd1;
@@ -136,7 +136,7 @@
 
 .painelTitulo {
     margin: 0;
-    font-size: 15px;
+    font-size: 1.5rem;
     font-weight: 700;
     color: #101828;
 }
@@ -157,7 +157,7 @@
 
 .itemLabel {
     margin: 0 0 2px;
-    font-size: 8px;
+    font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: .03em;
     text-transform: uppercase;
@@ -166,7 +166,7 @@
 
 .itemNome {
     margin: 0;
-    font-size: 11px;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #101828;
 }
@@ -174,8 +174,8 @@
 .itemTag {
     flex-shrink: 0;
     padding: 3px 8px;
-    font-size: 8px;
-    font-weight: 600;
+    font-size: 1rem;
+    font-weight: 400;
     color: #fff;
     background: #1d5fd1;
     border-radius: 999px;
@@ -194,7 +194,7 @@
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 8px;
+    font-size: 1rem;
     color: #6b7589;
 }
 
@@ -205,7 +205,7 @@
 .rodapeKcal {
     flex-shrink: 0;
     padding: 3px 8px;
-    font-size: 8px;
+    font-size: 1rem;
     font-weight: 600;
     color: #1a2233;
     background: #fff;
