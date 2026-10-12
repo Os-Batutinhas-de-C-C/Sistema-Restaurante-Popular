@@ -1,0 +1,74 @@
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%) !important;
+}
+
+.metrics {
+    display: flex;
+    flex-direction: row;
+}
+
+.metric {
+    min-width: 0;
+    flex: 1;
+    padding: 16px;
+}
+
+.secondaryMetric {
+    border-left: 3px solid #f1f5f9;
+}
+
+.label {
+    color: #0f172a;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.6px !important;
+    line-height: 16px !important;
+}
+
+.value {
+    color: #334155;
+    font-size: 30px !important;
+    font-weight: 700 !important;
+}
+
+.suffix {
+    color: #94a3b8;
+    font-weight: 700 !important;
+}
+
+.details {
+    margin-top: 20px;
+}
+
+.blueText {
+    color: #1d4ed8;
+    font-weight: 700 !important;
+}
+
+.grayText {
+    color: #334155;
+    font-weight: 600 !important;
+}
+
+.progress {
+    height: 4px !important;
+    border-radius: 0 !important;
+    background-color: #e2e8f0 !important;
+}
+
+.progress :global(.MuiLinearProgress-bar) {
+    background-color: #0288d1;
+}
+
+@media (max-width: 599px) {
+    .metrics {
+        flex-direction: column;
+    }
+
+    .secondaryMetric {
+        border-top: 3px solid #f1f5f9;
+        border-left: 0;
+    }
+}
