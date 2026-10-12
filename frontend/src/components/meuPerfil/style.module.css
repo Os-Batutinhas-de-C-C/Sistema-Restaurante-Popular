@@ -1,0 +1,108 @@
+.main {
+  display: flex;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 818px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.header .title {
+  margin: 0;
+  color: #191c1e;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.23px;
+  line-height: 38px;
+}
+
+.header .subtitle {
+  margin: 0;
+  color: #3d445a;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.grid .card {
+  height: 100%;
+  padding: 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form .sectionTitle {
+  margin: 0;
+  color: #191c1e;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.1px;
+  line-height: 28px;
+}
+
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.field :global(.MuiOutlinedInput-root) {
+  height: 44px;
+  border-radius: 4px;
+}
+
+.field :global(.MuiOutlinedInput-input) {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.field :global(.MuiInputLabel-root) {
+  font-size: 12px;
+}
+
+.fieldDisabled :global(.MuiInputLabel-root.Mui-disabled) {
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.fieldDisabled :global(.MuiOutlinedInput-input.Mui-disabled) {
+  -webkit-text-fill-color: rgba(0, 0, 0, 0.38);
+}
+
+.actions {
+  padding-top: 8px;
+}
+
+.actions .button {
+  min-height: 36px;
+  padding: 8px 22px;
+  font-size: 13px;
+}
