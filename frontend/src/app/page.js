@@ -1,13 +1,13 @@
-import Image from "next/image";
+"use client";
+
 import styles from "./page.module.css";
+import MeuPerfil from "@/components/meuPerfil/meuPerfil";
 
 export default function Home() {
     return (
         <div className={styles.page}>
             <main className={styles.main}>
-                <p>
-                    Altere o arquivo <code>src/app/page.js</code>.
-                </p>
+                <MeuPerfil></MeuPerfil>
             </main>
         </div>
     );
