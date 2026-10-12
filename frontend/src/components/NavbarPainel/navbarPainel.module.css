@@ -1,0 +1,69 @@
+.appBar {
+    position: fixed !important;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1100;
+    width: 100%;
+    background-color: #1565c0 !important;
+    box-shadow: 0 2px 4px -1px rgb(0 0 0 / 20%), 0 4px 5px rgb(0 0 0 / 14%),
+        0 1px 10px rgb(0 0 0 / 12%) !important;
+}
+
+.toolbar {
+    min-height: 64px !important;
+    width: 100%;
+    box-sizing: border-box;
+    padding-inline: 8px !important;
+}
+
+.menuButton {
+    padding: 12px !important;
+    color: #fff !important;
+}
+
+.menuIcon {
+    width: 35px;
+    height: 35px;
+}
+
+.restaurantIcon {
+    width: 21px;
+    height: 24px;
+    margin-left: 4px;
+    margin-right: 8px;
+    color: #fff;
+}
+
+.title {
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 2rem;
+    letter-spacing: 0.15px;
+}
+
+.spacer {
+    flex-grow: 1;
+}
+
+.avatar {
+    width: 40px !important;
+    height: 40px !important;
+    background-color: #673ab7 !important;
+}
+
+.profileButton {
+    border-radius: 50% !important;
+}
+
+.personIcon {
+    width: 24px;
+    height: 24px;
+}
+
+@media (min-width: 600px) {
+    .toolbar {
+        padding-inline: 16px !important;
+    }
+}

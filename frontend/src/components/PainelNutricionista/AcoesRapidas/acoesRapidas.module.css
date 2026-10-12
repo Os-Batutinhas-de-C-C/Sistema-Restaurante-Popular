@@ -1,0 +1,74 @@
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%), 0 1px 1px rgb(0 0 0 / 4%) !important;
+}
+
+.content {
+    padding: 24px !important;
+}
+
+.title {
+    padding-bottom: 16px;
+    border-bottom: 3px solid #f1f5f9;
+    color: #0f172a;
+    font-size: 1.125rem !important;
+    font-weight: 700 !important;
+}
+
+.actions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 16px;
+    width: 100%;
+    padding-top: 24px;
+}
+
+.button {
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 64px !important;
+    padding: 10px 12px !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.3 !important;
+    text-transform: none !important;
+    justify-content: center !important;
+    text-align: center !important;
+    white-space: normal !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.button :global(.MuiButton-startIcon) {
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.button svg {
+    width: 18px;
+    height: 18px;
+}
+
+.buttonIcon {
+    width: 18px !important;
+    height: 18px !important;
+    display: block !important;
+    flex-shrink: 0;
+}
+
+@media (max-width: 599px) {
+    .actions {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .button {
+        min-height: 52px !important;
+        width: 100%;
+    }
+}
