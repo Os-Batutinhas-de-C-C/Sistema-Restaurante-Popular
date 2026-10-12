@@ -1,0 +1,268 @@
+.cardapio {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    font-family: inherit;
+}
+
+.cardapioCard {
+    background: #fff;
+    border: 1px solid #e3e7ee;
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+.cardapioHeader {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    column-gap: 10px;
+    row-gap: 3px;
+    align-items: start;
+    margin-bottom: 12px;
+}
+
+.cardapioTag   { grid-column: 1; grid-row: 1; }
+.cardapioBadge { grid-column: 2; grid-row: 1; }
+.cardapioSub   { grid-column: 1; grid-row: 2; }
+
+.cardapioTag {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 3px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    color: #1a2233;
+}
+
+.cardapioDot {
+    width: 0.45rem;
+	height: 0.45rem;
+	border-radius: 50%;
+	background-color: #1D4ED8;
+    flex-shrink: 0;
+}
+
+.cardapioSub {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    color: #6b7589;
+}
+
+.cardapioBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+    padding: 3px 7px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1d5fd1;
+    background: #eef3fc;
+    border: 1px solid #c9d9f5;
+    border-radius: 5px;
+}
+
+.cardapioDias {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    background: #f4f6fa;
+    border: 1px solid #e3e7ee;
+    border-radius: 8px;
+}
+
+.cardapioDia {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 0;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #5b6578;
+    cursor: pointer;
+    transition: background .2s ease, color .2s ease;
+}
+
+.cardapioDia:hover:not(.ativo) {
+    background: #e9edf5;
+}
+
+.cardapioDia.ativo {
+    background: #1d5fd1;
+    color: #fff;
+}
+
+.diaSigla {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    opacity: .8;
+}
+
+.diaNum {
+    font-size: 1.2rem;
+    font-weight: 800;
+}
+
+.cardapioPainel {
+    background: #fff;
+    border: 1px solid #e3e7ee;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .06);
+}
+
+.painelTopo {
+    padding: 12px 14px;
+    background: #f1f4f9;
+    border-bottom: 1px solid #e3e7ee;
+}
+
+.painelTag {
+    margin: 0 0 2px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    color: #1d5fd1;
+}
+
+.painelTitulo {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #101828;
+}
+
+.painelLista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.painelItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    border-bottom: 1px solid #edf0f5;
+}
+
+.itemLabel {
+    margin: 0 0 2px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #1d5fd1;
+}
+
+.itemNome {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #101828;
+}
+
+.itemTag {
+    flex-shrink: 0;
+    padding: 3px 8px;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #fff;
+    background: #1d5fd1;
+    border-radius: 999px;
+}
+
+.painelRodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f8f9fc;
+}
+
+.rodapeAviso {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1rem;
+    color: #6b7589;
+}
+
+.rodapeAviso svg {
+    color: #1d5fd1;
+}
+
+.rodapeKcal {
+    flex-shrink: 0;
+    padding: 3px 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1a2233;
+    background: #fff;
+    border: 1px solid #d5dae4;
+    border-radius: 5px;
+}
+
+@media (max-width: 600px) {
+    .cardapioCard { padding: 16px; }
+
+    .cardapioHeader {
+        grid-template-columns: 1fr;
+        row-gap: 10px;
+        padding-bottom: 14px;
+        margin-bottom: 14px;
+        border-bottom: 1px solid #edf0f5;
+    }
+    .cardapioTag, .cardapioBadge, .cardapioSub {
+        grid-column: 1;
+        grid-row: auto;
+    }
+
+    .cardapioTag {
+        gap: 10px;
+        font-size: 1rem;
+        font-weight: 800;
+    }
+    .cardapioDot { width: 12px; height: 12px; }
+
+    .cardapioBadge {
+        justify-self: start;
+        gap: 6px;
+        padding: 5px 12px;
+        font-size: 14px;
+        border-radius: 999px;
+    }
+    .cardapioBadge svg { font-size: 17px !important; }  /* sobrescreve o sx do MUI */
+
+    .cardapioSub {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .cardapioDias {
+        gap: 6px;
+        padding: 6px;
+        border-radius: 16px;
+    }
+    .cardapioDia {
+        gap: 4px;
+        padding: 10px 0;
+        border-radius: 12px;
+    }
+    .diaSigla { font-size: 12px; }
+    .diaNum   { font-size: 18px; }
+    .cardapioDia.ativo {
+        border-radius: 14px;
+        box-shadow: 0 6px 14px rgba(29, 95, 209, .35);
+    }
+}
