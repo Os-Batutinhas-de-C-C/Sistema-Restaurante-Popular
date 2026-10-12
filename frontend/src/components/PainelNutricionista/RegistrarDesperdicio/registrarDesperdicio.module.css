@@ -1,0 +1,91 @@
+.paper {
+    width: 100%;
+    max-width: 500px;
+    overflow: hidden;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 4px -1px rgb(0 0 0 / 20%), 0 4px 5px rgb(0 0 0 / 14%),
+        0 1px 10px rgb(0 0 0 / 12%) !important;
+}
+
+.title {
+    padding: 24px 24px 4px !important;
+}
+
+.heading {
+    color: rgb(0 0 0 / 87%);
+    font-size: 1.25rem !important;
+    font-weight: 500 !important;
+    line-height: 2rem !important;
+    letter-spacing: 0.15px !important;
+}
+
+.description {
+    color: rgb(0 0 0 / 87%);
+    line-height: 20.02px !important;
+    letter-spacing: 0.17px !important;
+}
+
+.content {
+    padding: 20px 24px 24px !important;
+}
+
+.dayData {
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #f7f9fb;
+}
+
+.dayTitle {
+    color: rgb(0 0 0 / 87%);
+    line-height: 21.98px !important;
+    letter-spacing: 0.1px !important;
+}
+
+.dayValue {
+    margin-top: 2px;
+    color: rgb(0 0 0 / 87%);
+    line-height: 24px !important;
+    letter-spacing: 0.15px !important;
+}
+
+.field :global(.MuiInputBase-root) {
+    border-radius: 4px;
+}
+
+.field :global(.MuiFormHelperText-root) {
+    margin: 3px 14px 0;
+    color: rgb(0 0 0 / 60%);
+    font-size: 0.75rem;
+    line-height: 1.245rem;
+    letter-spacing: 0.4px;
+}
+
+.actions {
+    gap: 8px;
+    padding: 16px 24px !important;
+    border-top: 1px solid #e2e8f0;
+}
+
+.cancel {
+    min-width: 0 !important;
+    padding: 6px 8px !important;
+    color: #1976d2 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.5rem !important;
+    letter-spacing: 0.4px !important;
+}
+
+.submit {
+    padding: 6px 16px !important;
+    border-radius: 4px !important;
+    background-color: #4a0d67 !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    line-height: 1.5rem !important;
+    letter-spacing: 0.4px !important;
+}
+
+.submit:hover {
+    background-color: #4a0d67 !important;
+}
