@@ -1,0 +1,194 @@
+.main {
+  box-sizing: border-box;
+  min-height: 741px;
+  padding: 28px 16px 32px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  max-width: 904px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 808px;
+  min-height: 62px;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.titleGroup .title {
+  margin: 0;
+  color: #191c1e;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.75px;
+  line-height: 38px;
+}
+
+.titleGroup .date {
+  margin: 0;
+  color: #3d445a;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.header .refreshButton {
+  min-width: 0;
+  margin-top: 4px;
+  padding: 6px 12px;
+  border-color: #cbd5e1;
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+  text-transform: none;
+}
+
+.header .refreshButton :global(.MuiButton-startIcon) {
+  margin-right: 4px;
+}
+
+.refreshButton .refreshIcon {
+  font-size: 11px !important;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+}
+
+.row .card {
+  width: 100%;
+  border-color: #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.card .cardContent {
+  padding: 20px;
+}
+
+.card .cardContent:last-child {
+  padding-bottom: 20px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardBody .label {
+  margin: 0;
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.07px;
+  line-height: 16px;
+}
+
+.valueRow {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.valueRow .value {
+  color: #0f172a;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.23px;
+  line-height: 36px;
+}
+
+.valueRow .total {
+  color: #94a3b8;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
+.progressBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 12px;
+}
+
+.progressLabels {
+  display: flex;
+  justify-content: space-between;
+}
+
+.progressLabels .capacity {
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.progressLabels .remaining {
+  color: #334155;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+}
+
+.progressBlock .progress {
+  height: 4px;
+  border-radius: 0;
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+.progressBlock .progress :global(.MuiLinearProgress-bar) {
+  background-color: #1976d2;
+}
+
+.row .actionBox {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 148px;
+  padding: 20px;
+}
+
+.actionBox .addButton {
+  height: 109px;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.46px;
+  line-height: 22px;
+}
+
+.addButton .addIcon {
+  font-size: 22px !important;
+}
+
+@media (min-width: 900px) {
+  .row {
+    flex-direction: row;
+  }
+
+  .row .card,
+  .row .actionBox {
+    width: 452px;
+  }
+}
