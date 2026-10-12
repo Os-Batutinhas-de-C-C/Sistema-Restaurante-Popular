@@ -1,14 +1,19 @@
-import Image from "next/image";
+"use client";
+
 import styles from "./page.module.css";
 
-export default function Home() {
-    return (
-        <div className={styles.page}>
-            <main className={styles.main}>
-                <p>
-                    Altere o arquivo <code>src/app/page.js</code>.
-                </p>
-            </main>
-        </div>
-    );
+import NavBar from "@/components/painelCliente/navBar";
+import Main from "@/components/painelCliente/main";
+
+export default function PaginaInicial() {
+	return (
+		<>
+		<NavBar></NavBar>
+		<div className={styles.page}>
+			<main className={styles.main}>
+				<Main></Main>
+      		</main>
+  		</div>
+		</>
+	);
 }
