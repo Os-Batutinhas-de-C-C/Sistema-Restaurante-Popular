@@ -21,15 +21,15 @@
 
 .label {
     color: #0f172a;
-    font-size: 12px !important;
+    font-size: 0.75rem !important;
     font-weight: 900 !important;
     letter-spacing: 0.6px !important;
-    line-height: 16px !important;
+    line-height: 1rem !important;
 }
 
 .value {
     color: #334155;
-    font-size: 30px !important;
+    font-size: 1.875rem !important;
     font-weight: 700 !important;
 }
 

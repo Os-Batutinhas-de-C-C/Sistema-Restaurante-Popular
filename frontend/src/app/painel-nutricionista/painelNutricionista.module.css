@@ -23,9 +23,9 @@
 
 .title {
     color: #191c1e;
-    font-size: 30px !important;
+    font-size: 1.875rem !important;
     font-weight: 600 !important;
-    line-height: 38px !important;
+    line-height: 2.375rem !important;
 }
 
 .date {
@@ -71,6 +71,6 @@
     }
 
     .title {
-        font-size: 26px !important;
+        font-size: 1.625rem !important;
     }
 }

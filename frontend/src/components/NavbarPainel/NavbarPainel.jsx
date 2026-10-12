@@ -161,7 +161,7 @@ export default function NavbarNutricionista({ onProfileClick }) {
                         <ListItemText
                             primary={label}
                             primaryTypographyProps={{
-                                fontSize: 16,
+                                fontSize: "1rem",
                                 fontWeight: 400,
                                 lineHeight: 1.2,
                             }}
