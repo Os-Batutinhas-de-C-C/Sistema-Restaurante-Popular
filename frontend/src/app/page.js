@@ -2,12 +2,10 @@
 
 import styles from "./page.module.css";
 
-import NavBar from "@/components/mainPage/navBar";
-import Main from "@/components/mainPage/main"
-import Fotter from "@/components/mainPage/fotter"
+import NavBar from "@/components/painelCliente/navBar";
+import Main from "@/components/painelCliente/main";
 
 export default function PaginaInicial() {
-  
 	return (
 		<>
 		<NavBar></NavBar>
@@ -16,7 +14,6 @@ export default function PaginaInicial() {
 				<Main></Main>
       		</main>
   		</div>
-		<Fotter></Fotter>
 		</>
 	);
 }
