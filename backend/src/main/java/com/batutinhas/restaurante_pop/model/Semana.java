@@ -13,4 +13,24 @@ public class Semana {
     public Semana() {
 
     }
+
+    public long getIdSemana() {
+        return idSemana;
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public double getDesperdicio() {
+        return desperdicio;
+    }
+
+    public int getFichasVendidas() {
+        return fichasVendidas;
+    }
+
+    public ArrayList<Refeicao> getCardapio() {
+        return cardapio;
+    }
 }

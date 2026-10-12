@@ -10,4 +10,16 @@ public class Mensagem {
     public Mensagem() {
         
     }
+
+    public long getIdMensagem() {
+        return idMensagem;
+    }
+
+    public String getTexto() {
+        return texto;
+    }
+
+    public LocalDateTime getDataHora() {
+        return dataHora;
+    }
 }

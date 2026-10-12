@@ -6,4 +6,8 @@ public class Noticia extends Mensagem{
     public Noticia() {
         
     }
+
+    public int getDuracao() {
+        return duracao;
+    }
 }

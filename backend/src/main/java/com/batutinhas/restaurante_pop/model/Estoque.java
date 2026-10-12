@@ -8,4 +8,8 @@ public class Estoque {
     public Estoque() {
 
     }
+
+    public ArrayList<Insumo> getEstoque() {
+        return estoque;
+    }
 }

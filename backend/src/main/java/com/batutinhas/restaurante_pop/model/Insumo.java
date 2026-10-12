@@ -15,4 +15,36 @@ public class Insumo {
     public Insumo() {
         
     }
+
+    public long getIdMaterial() {
+        return idMaterial;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public double getQuantidade() {
+        return quantidade;
+    }
+
+    public String getUnidade() {
+        return unidade;
+    }
+
+    public String getLote() {
+        return lote;
+    }
+
+    public LocalDate getDataRecebimento() {
+        return dataRecebimento;
+    }
+
+    public LocalDate getDataValidade() {
+        return dataValidade;
+    }
+
+    public String getObservacoes() {
+        return observacoes;
+    }
 }
