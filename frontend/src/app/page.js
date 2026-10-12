@@ -3,12 +3,18 @@
 import styles from "./page.module.css";
 import MeuPerfil from "@/components/meuPerfil/meuPerfil";
 
-export default function Home() {
-    return (
-        <div className={styles.page}>
-            <main className={styles.main}>
-                <MeuPerfil></MeuPerfil>
-            </main>
-        </div>
-    );
+import NavBar from "@/components/painelCliente/navBar";
+import Main from "@/components/painelCliente/main";
+
+export default function PaginaInicial() {
+	return (
+		<>
+		<NavBar></NavBar>
+		<div className={styles.page}>
+			<main className={styles.main}>
+				<Main></Main>
+      		</main>
+  		</div>
+		</>
+	);
 }
