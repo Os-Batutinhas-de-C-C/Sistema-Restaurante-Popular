@@ -1,0 +1,100 @@
+.card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%) !important;
+}
+
+.content {
+    padding: 32px !important;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.title {
+    color: #0f172a;
+    font-weight: 700 !important;
+}
+
+.editButton {
+    background-color: #0288d1 !important;
+    text-transform: none !important;
+}
+
+.editButton:hover {
+    background-color: #0288d1 !important;
+}
+
+.editButton svg {
+    width: 18px;
+    height: 18px;
+}
+
+.editIcon {
+    width: 18px;
+    height: 18px;
+}
+
+.items {
+    padding-top: 20px;
+}
+
+.itemGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.item {
+    width: calc(50% - 6px);
+    padding: 16px;
+    background-color: #f8fafc;
+    border: 1px solid rgb(226 232 240 / 80%);
+    border-radius: 8px;
+}
+
+.category {
+    font-size: 0.6875rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.55px !important;
+}
+
+.meal {
+    color: #0f172a;
+    font-weight: 700 !important;
+}
+
+.calories {
+    padding: 14px;
+    background-color: #f8fafc;
+    border: 1px solid #e6ecf2;
+    border-radius: 8px;
+}
+
+.caloriesLabel,
+.caloriesValue {
+    font-weight: 700 !important;
+}
+
+.caloriesLabel {
+    color: #1976d2;
+}
+
+.caloriesValue {
+    color: #0f172a;
+}
+
+@media (max-width: 599px) {
+    .content {
+        padding: 16px !important;
+    }
+
+    .item {
+        width: 100%;
+    }
+}
