@@ -7,20 +7,12 @@ import "@fontsource/plus-jakarta-sans/700.css";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./style.css";
-
-const noticias = [
-  {
-    titulo: "Novo cardápio balanceado com ingredientes da agricultura familiar do Sertão Central",
-    texto: "Hortaliças frescas, polpas de frutas e feijão de corda fornecidos diretamente por pequenos produtores rurais cadastrados no município.",
-  },
-  { titulo: "Título da segunda notícia", texto: "Texto da segunda notícia." },
-  { titulo: "Título da terceira notícia", texto: "Texto da terceira notícia." },
-];
+import { NOTICIAS } from "./noticiasMock";
 
 export default function NewsCard({ id }) {
   const [i, setI] = useState(0);
-  const total = noticias.length;
-  if (total == 0) return null;
+  const total = NOTICIAS.length;
+  if (total === 0) return null;
 
   const prev = () => setI((i - 1 + total) % total);
   const next = () => setI((i + 1) % total);
@@ -31,7 +23,7 @@ export default function NewsCard({ id }) {
         <span className="tag"><span className="dot" />Notícias</span>
         <hr className="divider" />
         <div className="slides">
-          {noticias.map((n, k) => (
+          {NOTICIAS.map((n, k) => (
             <div key={k} className={`slide ${k === i ? "active" : ""}`}>
               <p className="title">{n.titulo}</p>
               <p className="article">{n.texto}</p>
@@ -43,7 +35,7 @@ export default function NewsCard({ id }) {
 
         <div className="controls">
           <div className="indicators">
-            {noticias.map((_, k) => (
+            {NOTICIAS.map((_, k) => (
               <button
                 key={k}
                 className={`pill ${k === i ? "active" : ""}`}

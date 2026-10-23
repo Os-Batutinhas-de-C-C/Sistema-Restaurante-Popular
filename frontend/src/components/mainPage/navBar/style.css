@@ -3,6 +3,7 @@
     background-color: white;
     color: #0F172A;
     border-bottom: 1px solid #E2E8F0;
+	z-index: 3;
 }
 
 .container {
