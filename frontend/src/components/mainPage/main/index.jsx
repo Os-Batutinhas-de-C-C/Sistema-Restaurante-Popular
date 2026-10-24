@@ -3,7 +3,7 @@
     import "./style.css";
     import NewsCard from "./newsCard";
     import OrientacaoItem from "./orientacaoItem";
-    import { ORIENTACOES } from "./orientacaoItem/orientacaoMock";
+    import { ORIENTACOES } from "./orientacaoItem/orientacao";
     import Cardapio from "./cardapio";
     import Localizacao from "./localizacao";
 
