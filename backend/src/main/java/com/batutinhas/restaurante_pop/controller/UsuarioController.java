@@ -3,9 +3,10 @@ package com.batutinhas.restaurante_pop.controller;
 import org.springframework.web.bind.annotation.*;
 import com.batutinhas.restaurante_pop.model.*;
 
-import java.util.ArrayList;
+
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
+
 
 @RestController 
 @RequestMapping("/api/usuarios")
@@ -14,17 +15,19 @@ import java.util.concurrent.atomic.AtomicLong;
         "http://127.0.0.1:5173"
 })
 public class UsuarioController {
-    private final List<Usuario> usuarios = new ArrayList<>();
-    private final AtomicLong geraId = new AtomicLong(3);
+    private final UsuarioRepository usuarioRepository;
 
-    public UsuarioController() {
-        usuarios.add(new Usuario(1L, "Maria", "nutri@email.com", 'n'));
-        usuarios.add(new Usuario(2L, "Mario", "nutri@email", 'n'));
-        usuarios.add(new Usuario(3L, "Joao", "caixa@email.com", 'c'));
+    public UsuarioController(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
     @GetMapping 
     public List<Usuario> getUsuarios() {
-        return usuarios;
+        return usuarioRepository.findAll();
+    }
+
+    @PostMapping 
+    public Usuario createUsuario(@RequestBody Usuario usuario) {
+        return usuarioRepository.save(usuario);
     }
 }

@@ -1,24 +1,29 @@
 package com.batutinhas.restaurante_pop.model;
 
+import jakarta.persistence.*;
+
+
+@Entity
+@Table(name = "usuarios")
 public class Usuario {
-    private long idUsuario;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id_usuario;
+
+    @Column
     private String nome;
+
+    @Column
     private String emailRecuperacao;
+
+    @Column
     private char tipo;
-    private CredencialAutenticacao senha;
 
-    public Usuario() {
-    }
-
-    public Usuario(long id, String nome, String email, char tipo) {
-        this.idUsuario = id;
-        this.nome = nome;
-        this.emailRecuperacao = email;
-        this.tipo = tipo;
-    }
+    @Column
+    private String senha;
 
     public long getIdUsuario() {
-        return idUsuario;
+        return id_usuario;
     }
 
     public String getNome() {

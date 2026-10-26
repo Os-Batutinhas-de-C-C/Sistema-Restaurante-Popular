@@ -1,25 +1,36 @@
 package com.batutinhas.restaurante_pop.model;
 
 import java.util.ArrayList;
+import jakarta.persistence.*;
 
+
+@Entity 
+@Table(name = "refeicoes")
 public class Refeicao {
-    private long idRefeicao;
-    private String proteina;
-    private String guarnicao;
-    private String acompanhamento1;
-    private String acompanhamento2;
-    private String suco;
-    private String sobremesa;
-    private String opcaoProteica;
-    private double calorias;
-    private static ArrayList<Refeicao> Refeicoes;
-    
-    public Refeicao() {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id_refeicao;
 
-    }
+    @Column 
+    private String proteina;
+    @Column
+    private String guarnicao;
+    @Column
+    private String acompanhamento1;
+    @Column
+    private String acompanhamento2;
+    @Column
+    private String suco;
+    @Column
+    private String sobremesa;
+    @Column
+    private String opcao_proteica;
+    @Column
+    private double calorias;
+    
 
     public long getIdRefeicao() {
-        return idRefeicao;
+        return id_refeicao;
     }
 
     public String getProteina() {
@@ -47,7 +58,7 @@ public class Refeicao {
     }
 
     public String getOpcaoProteica() {
-        return opcaoProteica;
+        return opcao_proteica;
     }
 
     public double getCalorias() {
