@@ -59,14 +59,12 @@ export default function ResumoMetricas({ dadosDashboard }) {
                 >
                     {/* A barra e os textos auxiliares usam o mesmo percentual. */}
                     <Stack spacing={0.75} className={styles.details}>
-                        <Stack direction="row" justifyContent="space-between">
                             <Typography variant="caption" className={styles.blueText}>
                                 {Math.round(progresso)}% da capacidade diária
                             </Typography>
                             <Typography variant="caption" className={styles.grayText}>
                                 Restam {Math.max(fichasTotais - fichasConsumidas, 0)}
                             </Typography>
-                        </Stack>
                         <LinearProgress
                             variant="determinate"
                             value={progresso}

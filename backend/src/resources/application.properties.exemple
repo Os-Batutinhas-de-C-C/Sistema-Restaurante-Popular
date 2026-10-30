@@ -1,0 +1,9 @@
+spring.application.name=restaurante_pop
+spring.datasource.url==
+spring.datasource.username=
+spring.datasource.password=
+spring.dataspirce.driver-class-name=org.postgresql.Driver
+
+spring.jpa.hibernate.ddl-auto=create-drop
+spring.jpa.show-sql=true
+spring.jpa.hibernate.format_sql=true

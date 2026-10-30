@@ -26,7 +26,7 @@ const menuItems = [
     { label: "Relatórios", icon: "/icons/li_file-chart-line.svg" },
     { label: "Mensagens", icon: "/icons/li_message-square.svg" },
     { label: "Notícias", icon: "/icons/li_newspaper.svg" },
-    { label: "Sair", icon: "/icons/li_log-out.svg" },
+    { label: "Sair", icon: "/icons/li_log-out.svg", href: "/mainPage" },
 ];
 
 /**
@@ -102,6 +102,7 @@ export default function NavbarNutricionista({ onProfileClick }) {
                         aria-label="Abrir perfil do usuário"
                         onClick={onProfileClick}
                         className={styles.profileButton}
+                        href='/meuPerfil'
                     >
                         <Avatar className={styles.avatar}>
                             <Box
