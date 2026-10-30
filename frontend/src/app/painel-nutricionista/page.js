@@ -2,10 +2,10 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import RegistrarDesperdicio from "../../components/PainelNutricionista/RegistrarDesperdicio/RegistrarDesperdicio";
+import RegistrarDesperdicio from "../../components/painelNutricionista/RegistrarDesperdicio/RegistrarDesperdicio";
 import DashboardNutricionista, {
     mockDadosDashboard,
-} from "../../components/PainelNutricionista/DashboardNutricionista/DashboardNutricionista";
+} from "../../components/painelNutricionista/DashboardNutricionista/DashboardNutricionista";
 
 /**
  * Página container do painel.

@@ -21,7 +21,7 @@ import styles from "./navbarPainel.module.css";
 // fidelidade visual da referência.
 const menuItems = [
     { label: "Início", icon: "/icons/li_house.svg", href: "/painel-nutricionista" },
-    { label: "Cardápio", icon: "/icons/li_utensils.svg" },
+    { label: "Cardápio", icon: "/icons/li_utensils.svg",  href: "/painel-nutricionista-cardapio" },
     { label: "Estoque", icon: "/icons/li_file-pen.svg" },
     { label: "Relatórios", icon: "/icons/li_file-chart-line.svg" },
     { label: "Mensagens", icon: "/icons/li_message-square.svg" },
