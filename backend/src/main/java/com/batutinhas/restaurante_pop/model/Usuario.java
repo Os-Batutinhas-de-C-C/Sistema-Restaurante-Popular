@@ -43,8 +43,8 @@ public class Usuario {
         return tipo;
     }
 
-    public void getCredencialAutenticacao(CredencialAutenticacao credencialAutenticacao) {
-        this.credencialAutenticacao = credencialAutenticacao;
+    public CredencialAutenticacao getCredencialAutenticacao() {
+        return credencialAutenticacao;
     }
 
     public void setCredencialAutenticacao(CredencialAutenticacao credencialAutenticacao) {
