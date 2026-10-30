@@ -13,6 +13,9 @@ public class Mensagem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id_mensagem;
+    
+    @Column
+    private String assunto;
 
     @Column
     private String texto;
@@ -62,5 +65,13 @@ public class Mensagem {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public String getAssunto() {
+        return assunto;
+    }
+
+    public void setAssunto(String assunto) {
+        this.assunto = assunto;
     }
 }
