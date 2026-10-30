@@ -1,0 +1,111 @@
+.card {
+    min-width: 0;
+    padding: 16px 20px 8px;
+    border-color: #e1e7ef !important;
+    border-radius: 8px !important;
+    background: #fff;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.title {
+    flex: 0 0 auto;
+    color: #191c1e;
+    font-weight: 600 !important;
+}
+
+.list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.empty {
+    padding: 20px 0;
+    color: #667085;
+    font-size: .875rem !important;
+    text-align: center;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 8px 0;
+    border-bottom: 1px solid #edf0f4;
+}
+
+.dayName {
+    color: #252a31;
+    font-size: .8125rem !important;
+    font-weight: 600 !important;
+}
+
+.dayDate {
+    color: #667085;
+    font-size: .6875rem !important;
+}
+
+.summary {
+    overflow: hidden;
+    color: #344054;
+    font-size: .75rem !important;
+    font-weight: 600 !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pending {
+    font-weight: 400 !important;
+}
+
+.actions {
+    gap: 8px;
+}
+
+.actionButton {
+    width: 44px;
+    height: 44px;
+    color: #fff !important;
+    background: #039be5 !important;
+    box-shadow: 0 2px 5px #0003;
+}
+
+.actionButton:hover {
+    background: #0288d1 !important;
+}
+
+@media (max-width: 700px) {
+    .card {
+        padding: 16px 12px 8px;
+    }
+
+    .header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .row {
+        grid-template-columns: minmax(90px, 1fr) auto;
+        gap: 8px;
+    }
+
+    .summary {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        white-space: normal;
+    }
+
+    .actions {
+        grid-column: 2;
+        grid-row: 1;
+    }
+}

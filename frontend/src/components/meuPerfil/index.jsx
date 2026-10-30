@@ -4,6 +4,7 @@ import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 import { ACCOUNT_FIELDS, PASSWORD_FIELDS } from "./meuPerfilMock";
 import styles from "./style.module.css";
+import NavbarPainel from "@/components/NavbarPainel/NavbarPainel";
 
 const MeuPerfil = () => {
   const [accountValues, setAccountValues] = useState({
@@ -38,6 +39,7 @@ const MeuPerfil = () => {
 
   return (
     <main className={styles.main}>
+      <NavbarPainel />
       <div className={styles.container}>
         <header className={styles.header}>
           <Typography component="h1" className={styles.title}>

@@ -64,7 +64,7 @@ export default function DashboardNutricionista({
 // Mock temporário para validar o layout enquanto a API ainda não está disponível.
 export const mockDadosDashboard = {
     titulo: "Resumo de Hoje",
-    data: "Quarta-Feira, 23 de Setembro",
+    data: "Segunda-Feira, 26 de Outubro",
     atualizadoEm: "Atualizado às 11:42",
     fichasConsumidas: 155,
     fichasTotais: 300,

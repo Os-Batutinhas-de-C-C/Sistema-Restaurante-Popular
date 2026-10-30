@@ -23,7 +23,7 @@ export default function NavBar() {
                     </div>
 
                     <div id="statusBadge">
-                        <Button id="voltar">Voltar</Button>
+                        <Button id="voltar" href='/mainPage'>Voltar</Button>
                     </div>
                 </Toolbar>
             </Container>
