@@ -9,7 +9,7 @@
 }
 .headingCopy { max-width: 320px; }
 .title { font-weight: 600 !important; margin-bottom: 4px !important; }
-.actions { flex-shrink: 0; }
+.actions { flex-shrink: 0; gap: 8px !important; }
 .actions button { min-height: 32px; padding: 4px 12px; font-size: 0.72rem; }
 .form { padding-top: 22px; }
 .saveButton { min-height: 44px; margin-top: 36px !important; gap: 8px; }

@@ -16,7 +16,7 @@ export default function FormularioCardapio({ dia, data, valores, onChange, onSav
                     </Typography>
                     <Typography variant="body2" color="text.secondary">Defina a composição nutricional para o almoço.</Typography>
                 </Box>
-                <Stack direction={{ xs: "column", md: "row" }} gap={1} className={styles.actions}>
+                <Stack direction={{ xs: "column", md: "row" }} className={styles.actions}>
                     <Button variant="contained" size="small" startIcon={<AutoAwesome />} onClick={() => {}} sx={{ textTransform: "none" }}>
                         Gerar Cardápio
                     </Button>
