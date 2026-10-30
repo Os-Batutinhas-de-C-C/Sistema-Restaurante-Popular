@@ -1,12 +1,12 @@
 package com.batutinhas.restaurante_pop.controller;
 
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
 import com.batutinhas.restaurante_pop.model.*;
-
+import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
+import com.batutinhas.restaurante_pop.service.UsuarioService;
 
 import java.util.List;
-import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
-
 
 @RestController 
 @RequestMapping("/api/usuarios")
@@ -16,9 +16,11 @@ import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
 })
 public class UsuarioController {
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
 
     public UsuarioController(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioService = new UsuarioService();
     }
 
     @GetMapping 
@@ -26,8 +28,16 @@ public class UsuarioController {
         return usuarioRepository.findAll();
     }
 
+    public record RegistroUsuarioDTO(String nome, String emailRecuperacao, char tipo, String senhaPura) {}
+
     @PostMapping 
-    public Usuario createUsuario(@RequestBody Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public Usuario createUsuario(@RequestBody RegistroUsuarioDTO registroDTO) {
+        Usuario novoUsuario = usuarioService.registrarUsuario(
+                registroDTO.nome(),
+                registroDTO.emailRecuperacao(),
+                registroDTO.tipo(),
+                registroDTO.senhaPura()
+        );
+        return ResponseEntity.ok(novoUsuario).getBody();
     }
 }
