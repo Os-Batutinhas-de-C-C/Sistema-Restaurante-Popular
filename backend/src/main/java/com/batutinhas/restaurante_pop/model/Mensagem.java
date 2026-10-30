@@ -21,6 +21,10 @@ public class Mensagem {
     @Column
     private LocalDate data;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;
+
     public long getIdMensagem() {
         return id_mensagem;
     }
@@ -35,5 +39,25 @@ public class Mensagem {
 
     public LocalDate getData() {
         return data;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    public void setHorario(LocalTime horario) {
+        this.horario = horario;
+    }
+
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 }

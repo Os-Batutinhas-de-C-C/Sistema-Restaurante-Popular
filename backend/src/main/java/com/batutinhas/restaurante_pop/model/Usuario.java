@@ -1,7 +1,8 @@
 package com.batutinhas.restaurante_pop.model;
 
 import jakarta.persistence.*;
-
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "usuarios")
@@ -21,6 +22,9 @@ public class Usuario {
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private CredencialAutenticacao credencialAutenticacao;
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Mensagem> mensagens = new ArrayList<>();
 
 
     public long getIdUsuario() {
@@ -60,5 +64,13 @@ public class Usuario {
     public void setEmailRecuperacao(String email) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setEmailRecuperacao'");
+    }
+
+    public List<Mensagem> getMensagens() {
+        return mensagens;
+    }
+
+    public void setMensagens(List<Mensagem> mensagens) {
+        this.mensagens = mensagens;
     }
 }
