@@ -20,6 +20,12 @@ public class MensagemController {
         this.usuarioRepository = usuarioRepository;
     }
 
+    @GetMapping 
+    public ResponseEntity<List<Mensagem>> getAllMensagens() {
+        List<Mensagem> mensagens = mensagemRepository.findAll();
+        return ResponseEntity.ok(mensagens);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Mensagem> getMensagemById(@PathVariable Long id) {
         return mensagemRepository.findById(id)
