@@ -2,41 +2,8 @@
 
 import { Button, Paper, TextField, Typography } from "@mui/material";
 import { useState } from "react";
+import { ACCOUNT_FIELDS, PASSWORD_FIELDS } from "./meuPerfilMock";
 import styles from "./style.module.css";
-
-const accountFields = [
-  {
-    id: "full-name",
-    label: "Nome Completo",
-    value: "Marlianne Costa",
-  },
-  {
-    id: "recovery-email",
-    label: "E-mail de Recuperação",
-    value: "nutricao.quixada@gmail.com",
-  },
-  {
-    id: "access-level",
-    label: "Nível de Acesso",
-    value: "Nutricionista / Administrador",
-    disabled: true,
-  },
-];
-
-const passwordFields = [
-  {
-    id: "current-password",
-    placeholder: "Senha Atual",
-  },
-  {
-    id: "new-password",
-    placeholder: "Nova Senha",
-  },
-  {
-    id: "confirm-password",
-    placeholder: "Confirmar Nova Senha",
-  },
-];
 
 const MeuPerfil = () => {
   const [accountValues, setAccountValues] = useState({
@@ -51,7 +18,6 @@ const MeuPerfil = () => {
 
   const handleAccountChange = (event) => {
     const { name, value } = event.target;
-
     setAccountValues((currentValues) => ({
       ...currentValues,
       [name]: value,
@@ -60,7 +26,6 @@ const MeuPerfil = () => {
 
   const handlePasswordChange = (event) => {
     const { name, value } = event.target;
-
     setPasswordValues((currentValues) => ({
       ...currentValues,
       [name]: value,
@@ -96,7 +61,7 @@ const MeuPerfil = () => {
               </Typography>
 
               <div className={styles.fields}>
-                {accountFields.map((field) => (
+                {ACCOUNT_FIELDS.map((field) => ( // <-- Usando a constante importada
                   <TextField
                     key={field.id}
                     fullWidth
@@ -145,7 +110,7 @@ const MeuPerfil = () => {
               </Typography>
 
               <div className={styles.fields}>
-                {passwordFields.map((field) => (
+                {PASSWORD_FIELDS.map((field) => ( // <-- Usando a constante importada
                   <TextField
                     key={field.id}
                     fullWidth

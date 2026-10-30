@@ -6,6 +6,9 @@ import com.batutinhas.restaurante_pop.repository.NoticiaRepository;
 
 import java.util.List;
 
+@RestController
+@RequestMapping("/api/noticias")
+
 public class NoticiaController {
     private final NoticiaRepository noticiaRepository;
 

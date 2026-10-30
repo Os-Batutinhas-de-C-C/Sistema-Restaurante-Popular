@@ -1,38 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import "@fontsource/plus-jakarta-sans/400.css";
 import "@fontsource/plus-jakarta-sans/500.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./style.css";
-
-const noticias = [
-  {
-    titulo: "Novo cardápio balanceado com ingredientes da agricultura familiar do Sertão Central",
-    texto: "Hortaliças frescas, polpas de frutas e feijão de corda fornecidos diretamente por pequenos produtores rurais cadastrados no município.",
-  },
-  { titulo: "Título da segunda notícia", texto: "Texto da segunda notícia." },
-  { titulo: "Título da terceira notícia", texto: "Texto da terceira notícia." },
-];
+import { NOTICIAS } from "./noticiasMock";
 
 export default function NewsCard({ id }) {
   const [i, setI] = useState(0);
-  const total = noticias.length;
-  if (total == 0) return null;
+  const total = NOTICIAS.length;
+  
+  const lastClickTime = useRef(0);
 
-  const prev = () => setI((i - 1 + total) % total);
-  const next = () => setI((i + 1) % total);
+  if (total === 0) return null;
+
+  const handleNavigation = (direction) => {
+    const now = Date.now();
+    if (now - lastClickTime.current < 150) return;
+    lastClickTime.current = now;
+
+    setI((prevI) => (prevI + direction + total) % total);
+  };
 
   return (
     <section id={id} className="newsBoxes">
       <div className="newsBoxBorder">
         <span className="tag"><span className="dot" />Notícias</span>
         <hr className="divider" />
+        
         <div className="slides">
-          {noticias.map((n, k) => (
-            <div key={k} className={`slide ${k === i ? "active" : ""}`}>
+          {NOTICIAS.map((n, k) => (
+            <div 
+              key={n.id || k} 
+              className={`slide ${k === i ? "active" : ""}`}
+              aria-hidden={k !== i}
+            >
               <p className="title">{n.titulo}</p>
               <p className="article">{n.texto}</p>
             </div>
@@ -43,20 +48,25 @@ export default function NewsCard({ id }) {
 
         <div className="controls">
           <div className="indicators">
-            {noticias.map((_, k) => (
+            {NOTICIAS.map((n, k) => (
               <button
-                key={k}
+                key={n.id || k}
                 className={`pill ${k === i ? "active" : ""}`}
-                onClick={() => setI(k)}
+                onClick={() => {
+                  const now = Date.now();
+                  if (now - lastClickTime.current < 300) return;
+                  lastClickTime.current = now;
+                  setI(k);
+                }}
                 aria-label={`Ir para notícia ${k + 1}`}
               />
             ))}
           </div>
           <div className="arrows">
-            <button className="arrow" onClick={prev} aria-label="Anterior">
+            <button className="arrow" onClick={() => handleNavigation(-1)} aria-label="Anterior">
               <ChevronLeftIcon fontSize="small" />
             </button>
-            <button className="arrow" onClick={next} aria-label="Próxima">
+            <button className="arrow" onClick={() => handleNavigation(1)} aria-label="Próxima">
               <ChevronRightIcon fontSize="small" />
             </button>
           </div>
