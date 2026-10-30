@@ -43,7 +43,7 @@ export default function NavBar() {
     }, []);
 
     return (
-        <AppBar id="navBar" position="static" elevation={0}>
+        <AppBar id="navBar" position="fixed" elevation={0}>
             <Container className="container" maxWidth="xl">
                 <Toolbar disableGutters className="toolbar">
                     <div id="brand">

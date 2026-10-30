@@ -1,7 +1,7 @@
 "use client";
 
-import ContedoDoPainel from "@/components/painelCaixa";
+import ConteudoDoPainel from "@/components/painelCaixa";
 
 export default function PainelCaixaPage() {
-    return <ContedoDoPainel />;
+    return <ConteudoDoPainel />;
 }
