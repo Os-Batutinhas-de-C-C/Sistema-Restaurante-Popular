@@ -73,4 +73,14 @@ public class Usuario {
     public void setMensagens(List<Mensagem> mensagens) {
         this.mensagens = mensagens;
     }
+
+    public void addMensagem(Mensagem mensagem) {
+        mensagens.add(mensagem);
+        mensagem.setUsuario(this);
+    }
+
+    public void removeMensagem(Mensagem mensagem) {
+        mensagens.remove(mensagem);
+        mensagem.setUsuario(null);
+    }
 }

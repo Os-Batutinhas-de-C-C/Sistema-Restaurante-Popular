@@ -2,6 +2,8 @@ package com.batutinhas.restaurante_pop.model;
 
 import java.time.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -23,6 +25,7 @@ public class Mensagem {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnore 
     private Usuario usuario;
 
     public long getIdMensagem() {
