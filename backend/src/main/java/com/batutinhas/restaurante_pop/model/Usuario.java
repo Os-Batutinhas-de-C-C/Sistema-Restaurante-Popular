@@ -19,9 +19,10 @@ public class Usuario {
     @Column
     private char tipo;
 
-    @Column
-    private String senha;
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private CredencialAutenticacao credencialAutenticacao;
 
+    
     public long getIdUsuario() {
         return id_usuario;
     }
