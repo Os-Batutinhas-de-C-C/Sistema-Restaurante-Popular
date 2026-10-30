@@ -13,7 +13,7 @@ const consumption = {
   remainingLabel: "Restam 150",
 };
 
-const ContedoDoPainel = () => {
+const ConteudoDoPainel = () => {
   const handleAddToken = () => {};
 
   return (
@@ -82,4 +82,4 @@ const ContedoDoPainel = () => {
   );
 };
 
-export default ContedoDoPainel;
+export default ConteudoDoPainel;

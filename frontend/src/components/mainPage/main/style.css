@@ -4,7 +4,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1.5rem;
-    padding-top: 5rem;
+    padding-top: 7rem;
     padding-bottom: 1.5rem;
 }
 
@@ -208,21 +208,31 @@
     border-radius: 999px;
 }
 
-@media (min-width: 600px) {
+@media (min-width: 300px) {
+    #mainContainer {
+        padding-top: 12rem;
+    }
     #indicadores {
         grid-template-columns: repeat(2, 1fr);
     }
     #acesso {
         grid-column: 1 / -1;
     }
+    .boxes { width: 80%; }
 }
 
 @media (min-width: 768px) {
+     #mainContainer {
+        padding-top: 12rem;
+    }
     .boxes { width: 80%; }
     .boxBorder { padding: 1.5rem; }
 }
 
 @media (min-width: 900px) {
+     #mainContainer {
+        padding-top: 12rem;
+    }
     #indicadores {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -232,5 +242,8 @@
 }
 
 @media (min-width: 1200px) {
+    #mainContainer {
+        padding-top: 7rem;
+    }
     .boxes { width: 80%; }
 }
