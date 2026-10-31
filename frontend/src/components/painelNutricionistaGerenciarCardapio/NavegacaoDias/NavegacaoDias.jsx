@@ -14,11 +14,11 @@ export default function NavegacaoDias({ dias, dataSelecionada, intervalo, onSele
     return (
         <Stack spacing={1.5}>
             <Stack className={styles.heading} direction={{ xs: "column", md: "row" }}>
-                <Stack direction="row" spacing={1} alignItems="center" minWidth={0}>
+                <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: 0 }}>
                     <ButtonBase aria-label="Voltar ao painel" onClick={onBack} className={styles.backButton}>
                         <ArrowBack fontSize="small" />
                     </ButtonBase>
-                    <Box minWidth={0}>
+                    <Box sx={{ minWidth: 0 }}>
                         <Typography component="h1" variant="h4" className={styles.title}>Gerenciamento de Cardápio</Typography>
                         <Typography variant="body2" color="text.secondary">{intervalo}</Typography>
                     </Box>

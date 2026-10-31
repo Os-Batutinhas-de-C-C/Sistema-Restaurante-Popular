@@ -22,7 +22,7 @@ import styles from "./navbarPainel.module.css";
 const menuItems = [
     { label: "Início", icon: "/icons/li_house.svg", href: "/painel-nutricionista" },
     { label: "Cardápio", icon: "/icons/li_utensils.svg",  href: "/painel-nutricionista-cardapio" },
-    { label: "Estoque", icon: "/icons/li_file-pen.svg" },
+    { label: "Estoque", icon: "/icons/li_file-pen.svg", href: "/painel-nutricionista-estoque" },
     { label: "Relatórios", icon: "/icons/li_file-chart-line.svg" },
     { label: "Mensagens", icon: "/icons/li_message-square.svg" },
     { label: "Notícias", icon: "/icons/li_newspaper.svg" },
@@ -161,10 +161,14 @@ export default function NavbarNutricionista({ onProfileClick }) {
                         </ListItemIcon>
                         <ListItemText
                             primary={label}
-                            primaryTypographyProps={{
-                                fontSize: "1rem",
-                                fontWeight: 400,
-                                lineHeight: 1.2,
+                            slotProps={{
+                                primary: {
+                                    sx: {
+                                        fontSize: "1rem",
+                                        fontWeight: 400,
+                                        lineHeight: 1.2,
+                                    },
+                                },
                             }}
                         />
                     </MenuItem>

@@ -39,10 +39,12 @@
 - [ ] **T07 — Verificar cenário: Preenchimento e Cópia**
   - Clicar em "Copiar Do Histórico", selecionar um cardápio, confirmar, e verificar se os `TextFields` do formulário refletem exatamente o prato selecionado.
   - **Critério relacionado:** Cenário 2
+TESTADO PELO DESENVOLVEDOR
 
 - [ ] **T08 — Verificar cenário: Responsividade do Formulário e Modal**
   - Inspecionar a tela em 360px. Confirmar se o Grid quebra os inputs em 1 coluna e se o modal não gera scroll horizontal.
   - **Critério relacionado:** RNF001
+TESTADO PELO DESENVOLVEDOR
 
 ## Pronto quando
 

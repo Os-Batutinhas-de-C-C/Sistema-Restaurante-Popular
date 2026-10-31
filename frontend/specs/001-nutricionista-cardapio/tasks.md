@@ -34,15 +34,16 @@
 
 ## Verificação
 
-- [ ] **T07 — Verificar cenário: Responsividade e Layout**
+- [x] **T07 — Verificar cenário: Responsividade e Layout**
   - Confirmar se em telas estreitas (360px) a interface flui para coluna única sem causar rolagem horizontal, conforme imagem do Figma.
   - **Critério relacionado:** RNF001
+  TESTADO PELO DESENVOLVEDOR
 
-- [ ] **T08 — Verificar cenário: Dias pendentes e Interação do Modal**
+- [x] **T08 — Verificar cenário: Dias pendentes e Interação do Modal**
   - Confirmar que dias sem dados mockados exibem "Pendente".
   - Confirmar que o clique no ícone de "Visualizar" abre o modal com as informações correspondentes e fecha ao clicar em "Fechar" ou fora da caixa.
   - **Critério relacionado:** Cenário 2 e 3
-
+TESTADO PELO DESENVOLVEDOR
 ## Pronto quando
 
 - [ ] A tela e os gráficos estão renderizando os dados do arquivo de mock.
