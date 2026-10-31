@@ -1,0 +1,181 @@
+.page {
+    min-height: 100vh;
+    background-color: #f7f9fb;
+}
+
+.main {
+    width: 100%;
+    max-width: 616px;
+    margin: 0 auto;
+    padding: 88px 0 40px;
+}
+
+.title {
+    margin-bottom: 16px !important;
+    color: #1e1e1e;
+    font-size: 1.5625rem !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+}
+
+.sections {
+    gap: 8px;
+}
+
+.filterCard,
+.tableCard {
+    border-color: #e2e6ea !important;
+    border-radius: 8px !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 4%);
+    background-color: #fff;
+}
+
+.filterCard {
+    min-height: 96px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+}
+
+.filters {
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.datePicker {
+    width: 250px;
+}
+
+.datePicker :global(.MuiInputBase-input) {
+    font-size: 0.8125rem;
+}
+
+.datePicker :global(.MuiInputLabel-root) {
+    font-size: 0.6875rem;
+}
+
+.exportButton {
+    min-width: 80px !important;
+    padding: 4px 8px !important;
+    text-transform: none !important;
+    font-size: 0.6875rem !important;
+}
+
+.exportButton :global(.MuiButton-endIcon) {
+    margin-left: 4px;
+}
+
+.exportButton :global(.MuiSvgIcon-root) {
+    font-size: 16px;
+}
+
+.tableCard {
+    padding: 12px 24px 16px;
+}
+
+.table {
+    min-width: 540px;
+}
+
+.table :global(.MuiTableCell-root) {
+    border-bottom-color: #edf0f2;
+}
+
+.blankHeading {
+    padding: 6px 0 !important;
+}
+
+.columnHeading {
+    padding: 6px 4px !important;
+    font-size: 0.625rem !important;
+    font-weight: 700 !important;
+    white-space: nowrap;
+}
+
+.dayCell {
+    width: 25%;
+    padding: 8px !important;
+}
+
+.dayName,
+.date {
+    font-size: 0.75rem !important;
+    line-height: 1.35 !important;
+}
+
+.dayName {
+    color: #222;
+    font-weight: 700 !important;
+}
+
+.date {
+    color: #4b5563;
+}
+
+.mealCell {
+    width: 34%;
+    padding: 8px !important;
+}
+
+.meal {
+    color: #333;
+    font-size: 0.6875rem !important;
+}
+
+.metric {
+    width: 18%;
+    padding: 8px 4px !important;
+    font-size: 0.875rem !important;
+    font-weight: 700 !important;
+}
+
+.editCell {
+    width: 40px;
+    padding: 8px 0 8px 4px !important;
+}
+
+.editButton {
+    padding: 4px !important;
+    color: #fff !important;
+    background-color: #0398dc !important;
+}
+
+.editButton:hover {
+    background-color: #0288c7 !important;
+}
+
+.editDialogContent {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+@media (max-width: 660px) {
+    .main {
+        padding: 80px 16px 24px;
+    }
+
+    .filterCard {
+        padding: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .filters {
+        align-items: stretch;
+    }
+
+    .datePicker {
+        width: 100%;
+    }
+
+    .exportButton {
+        align-self: flex-end;
+    }
+
+    .tableCard {
+        padding: 12px;
+    }
+}

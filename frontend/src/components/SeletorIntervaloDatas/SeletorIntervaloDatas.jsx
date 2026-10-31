@@ -30,6 +30,7 @@ export default function SeletorIntervaloDatas({
     onChange,
     label = "Selecione o período",
     ariaLabel = "Abrir seletor de período",
+    exibirIconeCalendario = true,
 }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const aberto = Boolean(anchorEl);
@@ -52,7 +53,7 @@ export default function SeletorIntervaloDatas({
                 slotProps={{
                     input: {
                         readOnly: true,
-                        endAdornment: (
+                        endAdornment: exibirIconeCalendario ? (
                             <InputAdornment position="end">
                                 <IconButton
                                     aria-label={ariaLabel}
@@ -64,7 +65,7 @@ export default function SeletorIntervaloDatas({
                                     <CalendarMonthOutlinedIcon />
                                 </IconButton>
                             </InputAdornment>
-                        ),
+                        ) : undefined,
                     },
                     htmlInput: {
                         readOnly: true,
