@@ -5,7 +5,7 @@
 Fornecer um formulário claro e direto para a inserção dos dados nutricionais de um dia, apoiado por uma ferramenta de busca em modal para reaproveitar cardápios antigos.
 
 
-# Código de referência (APENAS REFERENCIAL)
+# Código de referência (APENAS REFERENCIAL FEITO PELO ANIMA)
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import ArrowBack from "@mui/icons-material/ArrowBack";
 import ChevronLeft from "@mui/icons-material/ChevronLeft";
