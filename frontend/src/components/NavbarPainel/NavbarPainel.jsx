@@ -161,10 +161,14 @@ export default function NavbarNutricionista({ onProfileClick }) {
                         </ListItemIcon>
                         <ListItemText
                             primary={label}
-                            primaryTypographyProps={{
-                                fontSize: "1rem",
-                                fontWeight: 400,
-                                lineHeight: 1.2,
+                            slotProps={{
+                                primary: {
+                                    sx: {
+                                        fontSize: "1rem",
+                                        fontWeight: 400,
+                                        lineHeight: 1.2,
+                                    },
+                                },
                             }}
                         />
                     </MenuItem>
