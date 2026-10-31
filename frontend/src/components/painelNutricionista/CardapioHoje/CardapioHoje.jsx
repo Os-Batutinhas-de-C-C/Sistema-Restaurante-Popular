@@ -57,6 +57,7 @@ export default function CardapioHoje({ dadosDashboard }) {
                             />
                         }
                         className={styles.editButton}
+                        href='/painel-nutricionista-cardapio/gerenciar/2026-10-26'
                     >
                         Editar Cardápio
                     </Button>

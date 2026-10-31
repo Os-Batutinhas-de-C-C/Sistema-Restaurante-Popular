@@ -46,6 +46,10 @@ Trabalhe de forma **Spec First** e **Design First**. Antes de propor, alterar ou
 ## Organização e qualidade técnica
 
 - Prefira módulos e componentes pequenos, com responsabilidades explícitas.
+- Para telas novas, siga o padrão atômico já usado em `src/components/PainelNutricionista/`: crie uma pasta específica em `src/components/<NomeDaTela>/`, separe cada parte visual em seu próprio componente e stylesheet quando necessário, e monte a tela em um componente de composição. Mantenha o `page.js` da rota enxuto, apenas conectando a tela.
+- Antes de desenhar um controle visual ou gráfico manualmente, procure e use o componente pronto correspondente do MUI/MUI X já instalado ou especificado. Use `@mui/x-charts` para gráficos e não recrie gráficos com elementos HTML/CSS.
+- Prefira as versões gratuitas das bibliotecas; não use componentes MUI X Pro pagos quando houver uma alternativa gratuita especificada, como `@daypicker/react` com `<DayPicker mode="range" />` para selecionar intervalos de datas.
+- Use HTML nativo apenas para estrutura semântica quando não houver um componente MUI equivalente; não substitua componentes de interface disponíveis no MUI por marcação HTML/CSS artesanal.
 - Mantenha integrações HTTP e chamadas de dados simulados (mocks) centralizadas em `src/services/`.
 - Faça a interface tratar erros de rede e respostas inesperadas de forma amigável, sem perder os dados preenchidos.
 - Não adicione novas bibliotecas ou gerenciadores de estado global por suposição sem consulta prévia.

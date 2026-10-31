@@ -1,0 +1,15 @@
+.controls {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.navigation { display: flex; gap: 8px; }
+.navigation button { min-height: 40px; white-space: nowrap; }
+
+@media (max-width: 700px) {
+    .controls { grid-template-columns: minmax(0, 1fr); }
+    .navigation button { flex: 1; }
+}

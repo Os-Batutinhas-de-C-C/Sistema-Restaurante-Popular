@@ -1,0 +1,52 @@
+.heading {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.backButton {
+    width: 40px;
+    height: 40px;
+    color: #1976d2;
+    flex-shrink: 0;
+}
+
+.title { font-weight: 600 !important; font-size: 30px !important; line-height: 1.2 !important; }
+.weekActions { flex-shrink: 0; }
+.weekActions button { min-width: 156px; min-height: 32px; font-size: 0.72rem; text-transform: none; }
+.daysCard { padding: 12px; border-radius: 10px !important; }
+.daysGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; min-height: 108px; align-items: center; }
+.dayButton {
+    min-width: 0;
+    min-height: 72px;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
+    gap: 3px;
+    padding: 8px;
+    border-bottom: 1px solid #d9e0e8 !important;
+    border-radius: 4px;
+    color: #344054;
+    text-align: left;
+}
+.dayName { font-weight: 600; white-space: nowrap; }
+.shortDayName, .shortDate { display: none; }
+.selected { border: 1px solid #1976d2 !important; color: #1976d2; background: #f3f8ff !important; }
+
+@media (max-width: 760px) {
+    .heading { align-items: flex-start; }
+    .weekActions { width: 100%; }
+    .weekActions button { flex: 1; min-width: 0; font-size: 0.72rem; }
+}
+
+@media (max-width: 420px) {
+    .daysCard { padding: 6px; }
+    .daysGrid { gap: 2px; }
+    .dayButton { padding: 6px 2px; min-height: 60px; align-items: center !important; text-align: center; }
+    .dayName, .dayDate { font-size: 0.72rem !important; }
+    .fullDayName, .fullDate { display: none; }
+    .shortDayName, .shortDate { display: inline; }
+}

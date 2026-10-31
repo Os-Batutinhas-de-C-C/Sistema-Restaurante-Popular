@@ -1,4 +1,5 @@
 import "./globals.css";
+import "@daypicker/react/style.css";
 
 export const metadata = {
     title: "Painel Nutricionista",
