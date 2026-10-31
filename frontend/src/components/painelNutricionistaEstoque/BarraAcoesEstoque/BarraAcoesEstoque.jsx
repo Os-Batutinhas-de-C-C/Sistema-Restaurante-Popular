@@ -16,7 +16,7 @@ export default function BarraAcoesEstoque({ pesquisa, onSearch, onAdd }) {
                     placeholder="Buscar insumo pelo nome..."
                     size="small"
                     fullWidth
-                    inputProps={{ "aria-label": "Buscar insumo pelo nome" }}
+                    slotProps={{ htmlInput: { "aria-label": "Buscar insumo pelo nome" } }}
                 />
                 <Button
                     type="button"

@@ -53,7 +53,7 @@ export default function ListaEstoque({ itens, onEdit, onDelete }) {
                                 <TableCell sx={{ minWidth: 160 }}><Chip size="small" label={item.status} color={chipColor[item.status] ?? "default"} sx={{ maxWidth: "none", whiteSpace: "nowrap" }} /></TableCell>
                                 <TableCell><Typography variant="caption">{item.observacao || "—"}</Typography></TableCell>
                                 <TableCell>
-                                    <Stack direction="row" spacing={1} justifyContent="center" alignItems="center" sx={{ width: "100%" }}>
+                                    <Stack direction="row" spacing={1} sx={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                         <IconButton aria-label={`Editar ${item.nome}`} onClick={() => onEdit(item)} size="small" sx={{ width: 34, height: 34, bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}><EditOutlined fontSize="small" /></IconButton>
                                         <IconButton aria-label={`Excluir ${item.nome}`} onClick={() => onDelete(item)} size="small" sx={{ width: 34, height: 34, bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}><BackspaceOutlined fontSize="small" /></IconButton>
                                     </Stack>
