@@ -110,7 +110,7 @@ export default function RegistrarDesperdicio({
                             error ||
                             "Informe o peso em kg. Aceita decimais (ex.: 2,5)."
                         }
-                        inputProps={{ min: 0, step: "any" }}
+                        slotProps={{ htmlInput: { min: 0, step: "any" } }}
                         className={styles.field}
                     />
                 </Stack>
