@@ -41,17 +41,20 @@
 
 ## Verificação
 
-- [ ] **T06 — Verificar cenário: Abertura Modal de Edição**
+- [x] **T06 — Verificar cenário: Abertura Modal de Edição**
   - Clicar no botão de edição de um insumo específico e confirmar se os TextFields aparecem preenchidos (ex: O campo Status deve abrir marcando a opção preexistente).
   - **Critério relacionado:** Cenário 2
+TESTADO PELO DESENVOLVEDOR
 
-- [ ] **T07 — Verificar cenário: Responsividade Extrema**
+- [x] **T07 — Verificar cenário: Responsividade Extrema**
   - Redimensionar a tela para a largura de um smartphone (360px). Confirmar que o Cabeçalho de categorias de tabela da versão desktop desaparece e o card do insumo assume layout em bloco para não causar scroll horizontal.
   - **Critério relacionado:** RNF001
+TESTADO PELO DESENVOLVEDOR
 
-- [ ] **T08 — Verificar cenário: Exclusão de Insumo**
+- [x] **T08 — Verificar cenário: Exclusão de Insumo**
   - Confirmar a ação de exclusão e verificar que somente o item selecionado desaparece da listagem.
   - **Critério relacionado:** Cenário 3
+TESTADO PELO DESENVOLVEDOR
 
 ## Pronto quando
 
