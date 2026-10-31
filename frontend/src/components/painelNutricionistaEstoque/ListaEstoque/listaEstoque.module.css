@@ -1,0 +1,13 @@
+.listCard { padding: 17px 24px; border-radius: 10px !important; overflow: hidden; }
+.desktopList { display: block; overflow-x: auto; }
+.desktopList :global(.MuiTableCell-root) { padding: 14px 10px; border-bottom-color: #e4eaf0; vertical-align: middle; }
+.desktopList :global(.MuiTableHead-root .MuiTableCell-root) { font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+.mobileList { display: none !important; }
+.emptyState { display: flex; flex-direction: column; gap: 6px; padding: 28px 24px; border-radius: 10px !important; }
+
+@media (max-width: 1200px) {
+    .listCard { padding: 0; border: 0; background: transparent !important; box-shadow: none !important; overflow: visible; }
+    .desktopList { display: none; }
+    .mobileList { display: flex !important; }
+    .emptyState { padding: 24px 18px; }
+}

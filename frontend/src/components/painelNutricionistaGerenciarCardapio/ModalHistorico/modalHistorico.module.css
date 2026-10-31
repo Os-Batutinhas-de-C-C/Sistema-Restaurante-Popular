@@ -1,0 +1,40 @@
+.title { padding: 22px 24px 14px !important; }
+.dialogContent { padding: 0 24px 16px !important; }
+.description { padding: 0 12px 18px; }
+.filtersTitle { margin: 0 12px 10px !important; font-weight: 600 !important; }
+.filterForm {
+    display: grid;
+    grid-template-columns: minmax(260px, 1.6fr) minmax(150px, 1fr) auto;
+    align-items: end;
+    gap: 12px;
+    padding: 0 12px 20px;
+}
+.searchButton { min-height: 40px; }
+.results { padding: 0 12px !important; }
+.resultItem { border-bottom: 1px solid #e0e4e8; }
+.resultItem:last-child { border-bottom: 0; }
+.resultItem.selected { border: 1px solid #1976d2; border-radius: 8px; background: #f3f8ff; }
+.resultLabel { display: flex; width: 100%; margin: 0 !important; padding: 14px 10px; align-items: flex-start !important; }
+.resultLabel :global(.MuiRadio-root) { flex-shrink: 0; padding: 2px 10px 0 2px; }
+.resultLabel :global(.MuiFormControlLabel-label) { flex: 1; min-width: 0; }
+.resultContent { display: flex; flex-direction: column; width: 100%; min-width: 0; gap: 8px; }
+.resultHeading { width: 100%; }
+.resultDate { margin-left: auto !important; flex-shrink: 0; white-space: nowrap; text-align: right; }
+.summary { overflow-wrap: anywhere; }
+.empty { margin: 8px 12px 16px; }
+.actions { padding: 14px 24px !important; }
+
+@media (max-width: 700px) {
+    .dialogContent { padding-right: 16px !important; padding-left: 16px !important; }
+    .filterForm { grid-template-columns: minmax(0, 1fr); gap: 14px; padding-left: 8px; padding-right: 8px; }
+    .title { padding-left: 16px !important; }
+    .description, .filtersTitle { padding-left: 8px; margin-left: 0 !important; }
+    .results { padding: 0 !important; }
+    .actions { padding: 12px 16px !important; }
+}
+
+@media (max-width: 380px) {
+    .resultLabel { padding: 10px 2px; }
+    .resultLabel :global(.MuiRadio-root) { padding-right: 6px; }
+    .resultHeading { align-items: flex-start; }
+}

@@ -1,0 +1,8 @@
+.page { min-height: 100vh; background: #f7f9fb; }
+.main { width: 100%; max-width: 866px; margin: 0 auto; padding: 98px 24px 40px; }
+.content { display: flex; flex-direction: column; gap: 10px; }
+
+@media (max-width: 600px) {
+    .main { padding: 82px 12px 24px; }
+    .content { gap: 10px; }
+}
