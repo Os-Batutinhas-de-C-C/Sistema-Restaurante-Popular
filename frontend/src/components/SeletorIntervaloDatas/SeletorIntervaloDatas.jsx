@@ -48,7 +48,27 @@ export default function SeletorIntervaloDatas({
                 onKeyDown={(event) => {
                     if (event.key === "Enter" || event.key === " ") abrirCalendario(event);
                 }}
-                fullWidth
+                sx={{
+                    width: { xs: "100%", sm: 250 },
+                    maxWidth: 250,
+                    "& .MuiInputLabel-root": {
+                        color: "#686868",
+                        fontSize: 10,
+                    },
+                    "& .MuiInputBase-input": {
+                        color: "#959595",
+                        fontSize: 12,
+                        py: 1.3,
+                    },
+                    "& .MuiOutlinedInput-root": {
+                        height: 45,
+                        borderRadius: "3px",
+                        color: "#959595",
+                        "& fieldset": {
+                            borderColor: "#d4d4d4",
+                        },
+                    },
+                }}
                 slotProps={{
                     input: {
                         readOnly: true,
