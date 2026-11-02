@@ -1,3 +1,5 @@
+import { obterDadosDosGraficos, obterRelatoriosIniciais } from "./relatoriosService";
+
 const refeicoesMockadas = [
     {
         resumo: "Gado com legumes, omelete, arroz e feijão",
@@ -40,7 +42,6 @@ function inicioDaSemana(data, diaInicial = 0) {
     inicio.setDate(inicio.getDate() - diasARecuar);
     return inicio;
 }
-
 export function obterIntervaloSemanaAtual() {
     const from = inicioDaSemana(new Date());
     const to = new Date(from);
@@ -88,10 +89,7 @@ function dataLocal(isoDate) {
 export function obterDadosCardapioMockados() {
     return {
         cardapios: cardapiosMockados,
-        graficos: {
-            fichas: [85, 85, 60, 0, 0],
-            desperdicio: [15, 30, 30, 0, 0],
-        },
+        graficos: obterDadosDosGraficos(obterRelatoriosIniciais()),
     };
 }
 

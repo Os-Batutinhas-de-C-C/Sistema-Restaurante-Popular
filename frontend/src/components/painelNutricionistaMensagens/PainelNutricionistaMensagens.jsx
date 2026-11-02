@@ -23,8 +23,7 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SeletorIntervaloDatas from "../SeletorIntervaloDatas/SeletorIntervaloDatas";
 import { listarMensagensPorPeriodo, obterPeriodoPadrao, removerMensagem } from "../../services/mensagensService";
 
@@ -55,7 +54,6 @@ function exibirNomeRemetente(mensagem) {
 }
 
 export default function PainelNutricionistaMensagens() {
-    const router = useRouter();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -66,7 +64,7 @@ export default function PainelNutricionistaMensagens() {
     const [previewMessage, setPreviewMessage] = useState(null);
     const [confirmDeleteMessage, setConfirmDeleteMessage] = useState(null);
 
-    const carregarMensagens = () => {
+    const carregarMensagens = useCallback(() => {
         setLoading(true);
         setError("");
 
@@ -79,24 +77,11 @@ export default function PainelNutricionistaMensagens() {
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        const usuario = JSON.parse(localStorage.getItem("usuarioRestaurantePopular") || "null");
-
-        if (!usuario || !["Nutricionista", "Gestor"].includes(usuario.perfil)) {
-            router.replace("/login");
-            return;
-        }
-
-        carregarMensagens();
-    }, [router]);
+    }, [periodo]);
 
     useEffect(() => {
         carregarMensagens();
-    }, [periodo.from, periodo.to]);
+    }, [carregarMensagens]);
 
     const handleRemover = () => {
         if (!confirmDeleteMessage) return;

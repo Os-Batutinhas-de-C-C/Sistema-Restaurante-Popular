@@ -18,7 +18,6 @@ para visualizar a relação de fichas vendidas e o nível de desperdício ao lon
 
 ## Regras de negócio
 
-- **RN01:** O acesso a esta tela é restrito a usuários autenticados com o perfil de Nutricionista ou Gestor. Caso não esteja logado, deve ser redirecionado (ref HU006).
 - **RN02:** A tela deve exibir os 5 dias úteis da semana (Segunda a Sexta-feira), listando um resumo dos itens do cardápio.
 - **RN03:** Dias que ainda não possuem cardápio cadastrado devem exibir a situação como "Pendente".
 - **RN04:** O botão de Editar (ícone de lápis) deve redirecionar a nutricionista para a rota de edição de cardápio daquele dia específico. (O gerenciamento será tratado em outra spec).

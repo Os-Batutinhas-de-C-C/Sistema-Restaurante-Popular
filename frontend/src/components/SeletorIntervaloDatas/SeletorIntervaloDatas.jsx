@@ -6,6 +6,7 @@ import { ptBR } from "@daypicker/react/locale/pt-BR";
 import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
 import { IconButton, InputAdornment, Popover, TextField, Typography } from "@mui/material";
 import styles from "./seletorIntervaloDatas.module.css";
+import { normalizarPeriodoSemana } from "../../services/relatoriosService";
 
 function formatarData(data) {
     return new Intl.DateTimeFormat("pt-BR").format(data);
@@ -31,6 +32,7 @@ export default function SeletorIntervaloDatas({
     label = "Selecione o período",
     ariaLabel = "Abrir seletor de período",
     exibirIconeCalendario = true,
+    selecionarSemana = false,
 }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const aberto = Boolean(anchorEl);
@@ -103,12 +105,15 @@ export default function SeletorIntervaloDatas({
                 slotProps={{ paper: { className: styles.calendarPaper } }}
             >
                 <DayPicker
-                    mode="range"
+                    mode={selecionarSemana ? "single" : "range"}
                     locale={ptBR}
-                    weekStartsOn={0}
-                    resetOnSelect
-                    selected={value}
-                    onSelect={onChange}
+                    weekStartsOn={selecionarSemana ? 1 : 0}
+                    resetOnSelect={!selecionarSemana}
+                    selected={selecionarSemana ? value?.from : value}
+                    onSelect={(selecionado) => {
+                        if (selecionarSemana && selecionado) onChange(normalizarPeriodoSemana(selecionado));
+                        else if (!selecionarSemana) onChange(selecionado);
+                    }}
                     defaultMonth={value?.from}
                     className={styles.calendar}
                     footer={(

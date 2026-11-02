@@ -11,7 +11,7 @@ A nutricionista deve conseguir acompanhar, em uma única visualização, o plane
 
 ## Fluxo principal
 
-1. A pessoa acessa o painel logado da nutricionista.
+1. A pessoa acessa o painel da nutricionista.
 2. O sistema exibe os gráficos à esquerda (ou topo no mobile) e a lista da semana à direita (ou base no mobile).
 3. A pessoa clica no ícone de "Visualizar" (olho) de um cardápio específico.
 4. O sistema abre um Dialog (modal) contendo os pratos detalhados e botão para fechar.

@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import PainelNutricionistaRelatorios from "../../../components/painel-nutricionista-relatorios/PainelNutricionistaRelatorios";
 
-export default function RelatoriosAntigosPage() {
-    redirect("/painel-nutricionista-relatorio");
+export default function RelatoriosPage() {
+    return <PainelNutricionistaRelatorios />;
 }

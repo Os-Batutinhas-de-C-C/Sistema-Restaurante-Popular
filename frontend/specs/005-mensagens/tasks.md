@@ -34,10 +34,6 @@
 - Desabilitar com Tooltip "Cliente não informou contato" até a decisão do cliente (ver pendências em Requisitos).
 - **Relacionada a:** RN06
 
-- [x] **T07 — Proteção de Rota**
-- Restringir a página a usuários autenticados com perfil Nutricionista ou Gestor, redirecionando os demais para o login.
-- **Relacionada a:** RN01, HU006
-
 - [x] **T08 — Acessibilidade**
 - Adicionar `aria-label` descritivo nos ícones de ação, `aria-labelledby` no modal e foco inicial automático.
 - Garantir navegação por teclado (Tab, Enter, Esc) e touch target de 44x44px no mobile.
@@ -57,9 +53,6 @@
 - Confirmar que o modal abre com as informações corretas, mostra "Não informado" quando o nome está vazio, preserva quebras de linha do texto e fecha por "Fechar", Esc e clique fora.
 - **Critério relacionado:** Cenários 3 e 4
 
-- [x] **T12 — Verificar cenário: Acesso restrito**
-- Confirmar que usuário não logado é redirecionado para o login.
-- **Critério relacionado:** Cenário 6
 
 ## Pronto quando
 

@@ -10,7 +10,7 @@ A nutricionista ou gestor deve conseguir consultar as notícias de um período, 
 
 ## Fluxo principal
 
-1. A pessoa acessa "Notícias e Avisos" no painel administrativo logado.
+1. A pessoa acessa "Notícias e Avisos" no painel administrativo.
 2. O sistema exibe o filtro de período e a lista de notícias do período padrão.
 3. A pessoa clica em "Publicar Notícia".
 4. O sistema abre um Dialog com o formulário (título, texto e duração em horas).

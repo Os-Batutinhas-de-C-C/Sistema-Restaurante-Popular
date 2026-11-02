@@ -4,6 +4,7 @@ import { useState } from "react";
 import DownloadIcon from "@mui/icons-material/Download";
 import {
     Button,
+    Divider,
     Menu,
     MenuItem,
     Paper,
@@ -36,6 +37,7 @@ export default function FiltrosRelatorio({ periodo, onPeriodoChange, onExport })
                     onChange={onPeriodoChange}
                     label="Selecione o Período"
                     exibirIconeCalendario={false}
+                    selecionarSemana
                 />
                 <Button
                     variant="contained"
@@ -43,6 +45,7 @@ export default function FiltrosRelatorio({ periodo, onPeriodoChange, onExport })
                     endIcon={<DownloadIcon />}
                     aria-haspopup="menu"
                     aria-expanded={Boolean(menuAnchor)}
+                    aria-controls={menuAnchor ? "menu-exportar-relatorio" : undefined}
                     onClick={(event) => setMenuAnchor(event.currentTarget)}
                     className={styles.exportButton}
                 >
@@ -50,12 +53,15 @@ export default function FiltrosRelatorio({ periodo, onPeriodoChange, onExport })
                 </Button>
             </Stack>
             <Menu
+                id="menu-exportar-relatorio"
+                aria-label="Opções de exportação"
                 anchorEl={menuAnchor}
                 open={Boolean(menuAnchor)}
                 onClose={() => setMenuAnchor(null)}
             >
-                <MenuItem onClick={() => selecionarFormato("csv")}>Exportar CSV</MenuItem>
-                <MenuItem onClick={() => selecionarFormato("pdf")}>Exportar PDF</MenuItem>
+                <MenuItem onClick={() => selecionarFormato("pdf")}>PDF</MenuItem>
+                <Divider component="li" />
+                <MenuItem onClick={() => selecionarFormato("csv")}>CSV</MenuItem>
             </Menu>
         </Paper>
     );

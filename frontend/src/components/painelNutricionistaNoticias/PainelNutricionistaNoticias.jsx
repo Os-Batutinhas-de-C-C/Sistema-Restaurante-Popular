@@ -26,8 +26,7 @@ import {
     useMediaQuery,
     useTheme,
 } from "@mui/material";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import SeletorIntervaloDatas from "../SeletorIntervaloDatas/SeletorIntervaloDatas";
 import {
     listarNoticiasPorPeriodo,
@@ -54,7 +53,6 @@ function formatarDataHora(data, hora) {
 }
 
 export default function PainelNutricionistaNoticias() {
-    const router = useRouter();
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -69,7 +67,7 @@ export default function PainelNutricionistaNoticias() {
     const [form, setForm] = useState({ titulo: "", texto: "", duracaoHoras: "12" });
     const [formErrors, setFormErrors] = useState({});
 
-    const carregarNoticias = () => {
+    const carregarNoticias = useCallback(() => {
         setLoading(true);
         setError("");
 
@@ -82,24 +80,11 @@ export default function PainelNutricionistaNoticias() {
         } finally {
             setLoading(false);
         }
-    };
-
-    useEffect(() => {
-        if (typeof window === "undefined") return;
-
-        const usuario = JSON.parse(localStorage.getItem("usuarioRestaurantePopular") || "null");
-
-        if (!usuario || !["Nutricionista", "Gestor"].includes(usuario.perfil)) {
-            router.replace("/login");
-            return;
-        }
-
-        carregarNoticias();
-    }, [router]);
+    }, [periodo]);
 
     useEffect(() => {
         carregarNoticias();
-    }, [periodo.from, periodo.to]);
+    }, [carregarNoticias]);
 
     const mostrarSnackbar = (message, severity = "success") => {
         setSnackbar({ open: true, message, severity });

@@ -20,7 +20,6 @@ para acompanhar problemas, dúvidas e sugestões sobre o restaurante.
 
 ## Regras de negócio
 
-- **RN01:** O acesso a esta tela é restrito a usuários autenticados com o perfil de Nutricionista ou Gestor. Caso não esteja logado, deve ser redirecionado para a tela de login (ref HU006).
 - **RN02:** A lista exibe as mensagens do período selecionado, da mais recente para a mais antiga. [SUPOSIÇÃO]
 - **RN03:** Cada mensagem exibe data, hora, título e descrição (texto truncado). A mensagem do cliente tem texto obrigatório e nome opcional (ref HU011).
 - **RN04:** O botão Visualizar (ícone de olho) abre um modal na mesma tela com o conteúdo completo da mensagem, sem navegar para outra página.
@@ -53,11 +52,6 @@ para acompanhar problemas, dúvidas e sugestões sobre o restaurante.
 **Dado que** o período selecionado não possui mensagens
 **Quando** a lista é exibida
 **Então** aparece a mensagem "Nenhuma mensagem no período selecionado."
-
-### Cenário 6 — Acesso sem autenticação
-**Dado que** o usuário não está logado
-**Quando** tenta acessar a tela de mensagens
-**Então** é redirecionado para a tela de login.
 
 ## Restrições
 - Como não há integração com backend no momento, os dados devem ser consumidos de um mock no diretório `services` (`src/services/mensagensService.js`), com a função de listar por período.

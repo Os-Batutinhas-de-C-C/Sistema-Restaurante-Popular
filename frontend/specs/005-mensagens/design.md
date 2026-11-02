@@ -11,7 +11,7 @@ A nutricionista ou gestor deve conseguir consultar as mensagens enviadas pelos c
 
 ## Fluxo principal
 
-1. A pessoa acessa "Mensagens" no painel administrativo logado.
+1. A pessoa acessa "Mensagens" no painel administrativo.
 2. O sistema exibe o filtro de período e a lista de mensagens do período padrão.
 3. A pessoa clica no ícone de "Visualizar" (olho) de uma mensagem.
 4. O sistema abre um Dialog com a mensagem completa e o botão para fechar.
