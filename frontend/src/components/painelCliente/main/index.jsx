@@ -4,16 +4,7 @@ import { useState } from "react";
 import Button from "@mui/material/Button";
 import "./style.css";
 
-function formatarTelefone(valor) {
-    const d = valor.replace(/\D/g, "").slice(0, 11);
-    if (d.length === 0) return "";
-    if (d.length <= 2) return `(${d}`;
-    if (d.length <= 3) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-    if (d.length <= 7) return `(${d.slice(0, 2)}) ${d.slice(2, 3)} ${d.slice(3)}`;
-    return `(${d.slice(0, 2)}) ${d.slice(2, 3)} ${d.slice(3, 7)}-${d.slice(7)}`;
-}
-
-const VAZIO = { telefone: "", assunto: "", mensagem: "" };
+const VAZIO = { assunto: "", mensagem: "" };
 
 export default function Main({ onEnviar }) {
     const [form, setForm] = useState(VAZIO);
@@ -21,7 +12,7 @@ export default function Main({ onEnviar }) {
     const [status, setStatus] = useState("idle"); // idle | enviando | ok | erro
 
     const atualizar = (campo) => (e) => {
-        const valor = campo === "telefone" ? formatarTelefone(e.target.value) : e.target.value;
+        const valor = e.target.value;
         setForm((f) => ({ ...f, [campo]: valor }));
         setErros((x) => ({ ...x, [campo]: undefined }));
         setStatus("idle");
@@ -29,7 +20,6 @@ export default function Main({ onEnviar }) {
 
     function validar() {
         const e = {};
-        if (form.telefone.replace(/\D/g, "").length !== 11) e.telefone = "Informe o telefone com DDD.";
         if (!form.assunto.trim()) e.assunto = "Informe o assunto da mensagem.";
         if (form.mensagem.trim().length < 10) e.mensagem = "Descreva sua solicitação (mínimo de 10 caracteres).";
         return e;
@@ -44,7 +34,6 @@ export default function Main({ onEnviar }) {
         setStatus("enviando");
         try {
             if (!onEnviar) throw new Error("Passe a prop onEnviar com a chamada à sua API.");
-            await onEnviar({ ...form, telefone: form.telefone.replace(/\D/g, "") });
             setForm(VAZIO);
             setStatus("ok");
         } catch (err) {
@@ -60,22 +49,6 @@ export default function Main({ onEnviar }) {
                 <p className="contatoSub">Envie sua mensagem para a nossa equipe.</p>
 
                 <form onSubmit={enviar} noValidate>
-                    <div className="contatoCampo">
-                        <label htmlFor="contato-telefone">Telefone:</label>
-                        <input
-                            id="contato-telefone"
-                            type="tel"
-                            inputMode="numeric"
-                            autoComplete="tel-national"
-                            placeholder="(00) 0 0000-0000"
-                            value={form.telefone}
-                            onChange={atualizar("telefone")}
-                            aria-invalid={!!erros.telefone}
-                            aria-describedby={erros.telefone ? "contato-erro-telefone" : undefined}
-                        />
-                        {erros.telefone && <span id="contato-erro-telefone" className="contatoErro">{erros.telefone}</span>}
-                    </div>
-
                     <div className="contatoCampo">
                         <label htmlFor="contato-assunto">Assunto da mensagem:</label>
                         <input
