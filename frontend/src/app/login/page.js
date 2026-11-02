@@ -1,51 +1,23 @@
+
 "use client";
 
-import {
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Container,
-    Stack,
-    Typography,
-} from "@mui/material";
-import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Box } from "@mui/material";
+import LoginForm from "../../components/login/LoginForm";
+import LoginHeader from "../../components/login/LoginHeader";
+import { encerrarSessao } from "../../services/authService";
 
 export default function LoginPage() {
-    const router = useRouter();
-
-    const handleLogin = (perfil) => {
-        localStorage.setItem(
-            "usuarioRestaurantePopular",
-            JSON.stringify({
-                perfil,
-                nome: perfil === "Nutricionista" ? "Nutricionista" : "Caixa",
-            }),
-        );
-
-        router.push("/painel-nutricionista-noticias");
-    };
+    useEffect(() => {
+        encerrarSessao();
+    }, []);
 
     return (
-        <Container maxWidth="sm" sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <Card sx={{ width: "100%", borderRadius: 3, p: 1 }}>
-                <CardContent sx={{ p: 4 }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, textAlign: "center" }}>
-                        Login
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "text.secondary", mb: 3, textAlign: "center" }}>
-                        Escolha o perfil para acessar o painel.
-                    </Typography>
-                    <Stack spacing={2}>
-                        <Button variant="contained" size="large" onClick={() => handleLogin("Nutricionista")}>
-                            Entrar como Nutricionista
-                        </Button>
-                        <Button variant="outlined" size="large" onClick={() => handleLogin("Caixa")}>
-                            Entrar como Caixa
-                        </Button>
-                    </Stack>
-                </CardContent>
-            </Card>
-        </Container>
+        <Box sx={{ minHeight: "100dvh", bgcolor: "#f5f8fb", background: "linear-gradient(117deg, #f7f9fb 0%, #eef3f8 100%)" }}>
+            <LoginHeader />
+            <Box component="main" sx={{ display: "flex", justifyContent: "center", pt: { xs: 6, sm: 6.25 }, px: 2, pb: 6 }}>
+                <LoginForm />
+            </Box>
+        </Box>
     );
 }

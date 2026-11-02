@@ -6,6 +6,7 @@ import RegistrarDesperdicio from "../../components/painelNutricionista/Registrar
 import DashboardNutricionista, {
     mockDadosDashboard,
 } from "../../components/painelNutricionista/DashboardNutricionista/DashboardNutricionista";
+import ProtectedRoute from "../../components/login/ProtectedRoute";
 
 /**
  * Página container do painel.
@@ -20,7 +21,7 @@ export default function PainelNutricionistaPage() {
     const [dadosDashboard, setDadosDashboard] = useState(mockDadosDashboard);
 
     return (
-        <>
+        <ProtectedRoute>
             {/* Dashboard recebe somente os dados e eventos necessários para renderizar. */}
             <DashboardNutricionista
                 dadosDashboard={dadosDashboard}
@@ -39,6 +40,6 @@ export default function PainelNutricionistaPage() {
                     }))
                 }
             />
-        </>
+        </ProtectedRoute>
     );
 }
