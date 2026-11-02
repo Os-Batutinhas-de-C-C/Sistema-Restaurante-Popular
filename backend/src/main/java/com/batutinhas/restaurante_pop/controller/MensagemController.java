@@ -1,63 +1,65 @@
 package com.batutinhas.restaurante_pop.controller;
 
-import org.springframework.web.bind.annotation.*; //[cite: 4]
+import com.batutinhas.restaurante_pop.dto.MensagemCreateRequestDTO;
+import com.batutinhas.restaurante_pop.dto.MensagemResponseDTO;
+import com.batutinhas.restaurante_pop.dto.MensagemUpdateRequestDTO;
+import com.batutinhas.restaurante_pop.service.MensagemService;
 import org.springframework.http.ResponseEntity;
-import com.batutinhas.restaurante_pop.model.*; //[cite: 4]
-import com.batutinhas.restaurante_pop.repository.MensagemRepository; //[cite: 4]
-import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-    
 @RestController
 @RequestMapping("/api/mensagens")
 public class MensagemController {
-    private final MensagemRepository mensagemRepository;
-    private final UsuarioRepository usuarioRepository;
+    private final MensagemService mensagemService;
 
-    public MensagemController(MensagemRepository mensagemRepository, UsuarioRepository usuarioRepository) {
-        this.mensagemRepository = mensagemRepository;
-        this.usuarioRepository = usuarioRepository;
+    public MensagemController(MensagemService mensagemService) {
+        this.mensagemService = mensagemService;
     }
 
-    @GetMapping 
-    public ResponseEntity<List<Mensagem>> getAllMensagens() {
-        List<Mensagem> mensagens = mensagemRepository.findAll();
-        return ResponseEntity.ok(mensagens);
+    @GetMapping
+    public ResponseEntity<List<MensagemResponseDTO>> getAllMensagens() {
+        return ResponseEntity.ok(mensagemService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Mensagem> getMensagemById(@PathVariable Long id) {
-        return mensagemRepository.findById(id)
+    public ResponseEntity<MensagemResponseDTO> getMensagemById(@PathVariable Long id) {
+        return mensagemService.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping("/usuario/{usuarioId}")
-    public ResponseEntity<Mensagem> createMensagem(@PathVariable Long usuarioId, @RequestBody Mensagem mensagem) {    
-        return usuarioRepository.findById(usuarioId).map(usuario -> {
-            usuario.addMensagem(mensagem); // Utiliza o método auxiliar criado no passo anterior
-            Mensagem novaMensagem = mensagemRepository.save(mensagem);
-            return ResponseEntity.ok(novaMensagem);
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<MensagemResponseDTO> createMensagem(
+            @PathVariable Long usuarioId,
+            @RequestBody MensagemCreateRequestDTO request
+    ) {
+        return mensagemService.create(usuarioId, request)
+                .map(saved -> ResponseEntity.ok(saved))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Mensagem> updateMensagem(@PathVariable Long id, @RequestBody Mensagem detalhesMensagem) {
-        return mensagemRepository.findById(id).map(mensagemExistente -> {
-            mensagemExistente.setTexto(detalhesMensagem.getTexto());
-            mensagemExistente.setHorario(detalhesMensagem.getHorario());
-            mensagemExistente.setData(detalhesMensagem.getData());
-            
-            Mensagem atualizada = mensagemRepository.save(mensagemExistente);
-            return ResponseEntity.ok(atualizada);
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<MensagemResponseDTO> updateMensagem(
+            @PathVariable Long id,
+            @RequestBody MensagemUpdateRequestDTO request
+    ) {
+        return mensagemService.update(id, request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMensagem(@PathVariable Long id) {
-        if (mensagemRepository.existsById(id)) {
-            mensagemRepository.deleteById(id);
+        if (mensagemService.delete(id)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

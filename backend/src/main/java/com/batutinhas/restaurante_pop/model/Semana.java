@@ -26,7 +26,12 @@ public class Semana {
     @Column(name = "quantidade_fichas")
     private List<Integer> fichas_vendidas = new ArrayList<>();   
 
-    @OneToMany(mappedBy = "semana", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "semana_refeicoes",
+            joinColumns = @JoinColumn(name = "semana_id"),
+            inverseJoinColumns = @JoinColumn(name = "refeicao_id")
+    )
     private List<Refeicao> cardapio = new ArrayList<>();   
 
     public long getIdSemana() { return id_semana; }   
@@ -50,11 +55,9 @@ public class Semana {
         }
 
         cardapio.add(novaRefeicao);
-        novaRefeicao.setSemana(this);
     }
 
     public void removeRefeicao(Refeicao refeicao) {
         cardapio.remove(refeicao);
-        refeicao.setSemana(null);
     }
 }

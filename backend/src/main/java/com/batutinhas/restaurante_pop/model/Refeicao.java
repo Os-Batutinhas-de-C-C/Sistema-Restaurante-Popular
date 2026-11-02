@@ -14,11 +14,6 @@ public class Refeicao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id_refeicao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "semana_id")
-    @JsonIgnore
-    private Semana semana;
-
     @Column 
     private String proteina;
     @Column
@@ -89,7 +84,6 @@ public class Refeicao {
 
     public void setCalorias(double calorias) { this.calorias = calorias; }
     
-    public void setSemana(Semana semana) { this.semana = semana; }
 
 
 

@@ -1,19 +1,130 @@
 package com.batutinhas.restaurante_pop.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import com.batutinhas.restaurante_pop.repository.SemanaRepository;
+import com.batutinhas.restaurante_pop.dto.RefeicaoRequestDTO;
+import com.batutinhas.restaurante_pop.dto.RefeicaoResponseDTO;
+import com.batutinhas.restaurante_pop.dto.SemanaCreateRequestDTO;
+import com.batutinhas.restaurante_pop.dto.SemanaResponseDTO;
+import com.batutinhas.restaurante_pop.dto.SemanaUpdateRequestDTO;
+import com.batutinhas.restaurante_pop.model.Refeicao;
 import com.batutinhas.restaurante_pop.model.Semana;
+import com.batutinhas.restaurante_pop.repository.RefeicaoRepository;
+import com.batutinhas.restaurante_pop.repository.SemanaRepository;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class SemanaService {
-    
-    @Autowired
-    private SemanaRepository semanaRepository;
+    private final SemanaRepository semanaRepository;
+    private final RefeicaoRepository refeicaoRepository;
 
-    public Optional<Semana> findByData(LocalDate data) {
-        return semanaRepository.findByData(data);
+    public SemanaService(SemanaRepository semanaRepository, RefeicaoRepository refeicaoRepository) {
+        this.semanaRepository = semanaRepository;
+        this.refeicaoRepository = refeicaoRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<SemanaResponseDTO> findAll() {
+        return semanaRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public SemanaResponseDTO create(SemanaCreateRequestDTO request) {
+        Semana semana = new Semana();
+        semana.setData(request.data());
+        semana.setDesperdicio(copyList(request.desperdicio()));
+        semana.setFichasVendidas(copyList(request.fichasVendidas()));
+        replaceCardapio(semana, request.cardapio());
+        return toResponseDTO(semanaRepository.save(semana));
+    }
+
+    @Transactional
+    public Optional<SemanaResponseDTO> update(LocalDate data, SemanaUpdateRequestDTO request) {
+        return semanaRepository.findByData(data).map(semana -> {
+            semana.setDesperdicio(copyList(request.desperdicio()));
+            semana.setFichasVendidas(copyList(request.fichasVendidas()));
+            replaceCardapio(semana, request.cardapio());
+            return toResponseDTO(semanaRepository.save(semana));
+        });
+    }
+
+    private void replaceCardapio(Semana semana, List<RefeicaoRequestDTO> requestItems) {
+        for (Refeicao refeicao : new ArrayList<>(semana.getCardapio())) {
+            semana.removeRefeicao(refeicao);
+        }
+        if (requestItems == null) {
+            return;
+        }
+        for (RefeicaoRequestDTO item : requestItems) {
+            if (item == null) {
+                throw new IllegalArgumentException("O cardápio contém uma refeição inválida.");
+            }
+            semana.addRefeicao(resolveRefeicao(item));
+        }
+    }
+
+    private Refeicao resolveRefeicao(RefeicaoRequestDTO item) {
+        if (item.idRefeicao() != null) {
+            if (item.hasMealFields()) {
+                throw new IllegalArgumentException("Uma referência de refeição não pode incluir campos de criação.");
+            }
+            return refeicaoRepository.findById(item.idRefeicao())
+                    .orElseThrow(() -> new EntityNotFoundException("Refeição não encontrada."));
+        }
+
+        Refeicao refeicao = new Refeicao();
+        refeicao.setProteina(RequestValidation.text(item.proteina(), "proteina", 255));
+        refeicao.setGuarnicao(RequestValidation.text(item.guarnicao(), "guarnicao", 255));
+        refeicao.setAcompanhamento1(RequestValidation.text(item.acompanhamento1(), "acompanhamento1", 255));
+        refeicao.setAcompanhamento2(RequestValidation.text(item.acompanhamento2(), "acompanhamento2", 255));
+        refeicao.setSuco(RequestValidation.text(item.suco(), "suco", 255));
+        refeicao.setSobremesa(RequestValidation.text(item.sobremesa(), "sobremesa", 255));
+        refeicao.setOpcaoProteica(RequestValidation.text(item.opcaoProteica(), "opcaoProteica", 255));
+        refeicao.setCalorias(item.calorias() == null ? 0 : item.calorias());
+        return refeicao;
+    }
+
+    private SemanaResponseDTO toResponseDTO(Semana semana) {
+        List<RefeicaoResponseDTO> cardapio = semana.getCardapio() == null
+                ? List.of()
+                : semana.getCardapio().stream().map(this::toResponseDTO).collect(Collectors.toList());
+
+        return new SemanaResponseDTO(
+                semana.getIdSemana(),
+                semana.getData(),
+                safeList(semana.getDesperdicio()),
+                safeList(semana.getFichasVendidas()),
+                cardapio
+        );
+    }
+
+    private RefeicaoResponseDTO toResponseDTO(Refeicao refeicao) {
+        return new RefeicaoResponseDTO(
+                refeicao.getIdRefeicao(),
+                refeicao.getProteina(),
+                refeicao.getGuarnicao(),
+                refeicao.getAcompanhamento1(),
+                refeicao.getAcompanhamento2(),
+                refeicao.getSuco(),
+                refeicao.getSobremesa(),
+                refeicao.getOpcaoProteica(),
+                refeicao.getCalorias()
+        );
+    }
+
+    private static <T> List<T> copyList(List<T> values) {
+        return values == null ? new ArrayList<>() : new ArrayList<>(values);
+    }
+
+    private static <T> List<T> safeList(List<T> values) {
+        return values == null ? List.of() : List.copyOf(values);
     }
 }

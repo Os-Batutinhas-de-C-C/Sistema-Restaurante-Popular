@@ -1,45 +1,47 @@
 package com.batutinhas.restaurante_pop.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.batutinhas.restaurante_pop.model.*;
-import com.batutinhas.restaurante_pop.repository.SemanaRepository;
+import com.batutinhas.restaurante_pop.dto.SemanaCreateRequestDTO;
+import com.batutinhas.restaurante_pop.dto.SemanaResponseDTO;
+import com.batutinhas.restaurante_pop.dto.SemanaUpdateRequestDTO;
 import com.batutinhas.restaurante_pop.service.SemanaService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/semanas")
 public class SemanaController {
-    private final SemanaRepository semanaRepository;
     private final SemanaService semanaService;
 
-    public SemanaController(SemanaRepository semanaRepository) {
-        this.semanaRepository = semanaRepository;
-        this.semanaService = new SemanaService();
+    public SemanaController(SemanaService semanaService) {
+        this.semanaService = semanaService;
     }
 
     @GetMapping
-    public List<Semana> getSemanas() {
-        return semanaRepository.findAll();
+    public List<SemanaResponseDTO> getSemanas() {
+        return semanaService.findAll();
     }
 
     @PostMapping
-    public Semana createSemana(@RequestBody Semana semana) {
-        return semanaRepository.save(semana);
+    public ResponseEntity<SemanaResponseDTO> createSemana(@RequestBody SemanaCreateRequestDTO request) {
+        return ResponseEntity.ok(semanaService.create(request));
     }
 
     @PutMapping("/{data}")
-    public ResponseEntity<Semana> updateSemana(@PathVariable LocalDate data, @RequestBody Semana detalhesSemana) {
-        return semanaService.findByData(data).map(semanaExistente -> {
-            semanaExistente.setDesperdicio(detalhesSemana.getDesperdicio());
-            semanaExistente.setFichasVendidas(detalhesSemana.getFichasVendidas());
-            semanaExistente.setCardapio(detalhesSemana.getCardapio());
-
-            
-            Semana atualizada = semanaRepository.save(semanaExistente);
-            return ResponseEntity.ok(atualizada);
-        }).orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<SemanaResponseDTO> updateSemana(
+            @PathVariable LocalDate data,
+            @RequestBody SemanaUpdateRequestDTO request
+    ) {
+        return semanaService.update(data, request)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
-
 }
