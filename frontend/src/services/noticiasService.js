@@ -1,7 +1,7 @@
 const noticiasBase = [
     {
         id: 1,
-        data: "2026-10-21",
+        data: "2026-11-02",
         hora: "08:12",
         titulo: "Atualização do Cardápio",
         texto: "Atenção: o cardápio da próxima semana foi atualizado com novas opções de legumes e proteínas.",
@@ -11,7 +11,7 @@ const noticiasBase = [
     },
     {
         id: 2,
-        data: "2026-10-22",
+        data: "2026-11-03",
         hora: "09:45",
         titulo: "Manutenção no Refeitório",
         texto: "Avisamos que a área de atendimento será interrompida por 12 horas para manutenção preventiva.",
@@ -21,7 +21,7 @@ const noticiasBase = [
     },
     {
         id: 3,
-        data: "2026-10-23",
+        data: "2026-11-04",
         hora: "11:20",
         titulo: "Campanha de Saúde",
         texto: "Nova campanha de alimentação saudável começa hoje com orientações de nutrição e hidratação.",
@@ -31,7 +31,7 @@ const noticiasBase = [
     },
     {
         id: 4,
-        data: "2026-10-28",
+        data: "2026-11-05",
         hora: "15:40",
         titulo: "Entrega de Mercadorias",
         texto: "A entrega de novos insumos será feita amanhã pela manhã. Fiquem atentos ao horário de recebimento.",

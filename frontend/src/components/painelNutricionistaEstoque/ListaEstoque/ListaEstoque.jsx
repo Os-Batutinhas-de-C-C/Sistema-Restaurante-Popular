@@ -1,4 +1,4 @@
-import { BackspaceOutlined, EditOutlined } from "@mui/icons-material";
+import { DeleteOutlineOutlined, EditOutlined } from "@mui/icons-material";
 import { Box, Card, Chip, IconButton, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import ItemEstoqueMobile from "../ItemEstoqueMobile/ItemEstoqueMobile";
 import { formatarDataEstoque, formatarQuantidade } from "../../../services/estoqueService";
@@ -55,7 +55,7 @@ export default function ListaEstoque({ itens, onEdit, onDelete }) {
                                 <TableCell>
                                     <Stack direction="row" spacing={1} sx={{ width: "100%", justifyContent: "center", alignItems: "center" }}>
                                         <IconButton aria-label={`Editar ${item.nome}`} onClick={() => onEdit(item)} size="small" sx={{ width: 34, height: 34, bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}><EditOutlined fontSize="small" /></IconButton>
-                                        <IconButton aria-label={`Excluir ${item.nome}`} onClick={() => onDelete(item)} size="small" sx={{ width: 34, height: 34, bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}><BackspaceOutlined fontSize="small" /></IconButton>
+                                        <IconButton aria-label={`Excluir ${item.nome}`} onClick={() => onDelete(item)} size="small" sx={{ width: 34, height: 34, bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}><DeleteOutlineOutlined fontSize="small" /></IconButton>
                                     </Stack>
                                 </TableCell>
                             </TableRow>
