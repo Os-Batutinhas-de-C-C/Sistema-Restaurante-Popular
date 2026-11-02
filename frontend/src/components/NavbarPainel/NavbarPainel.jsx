@@ -23,7 +23,7 @@ const menuItems = [
     { label: "Início", icon: "/icons/li_house.svg", href: "/painel-nutricionista" },
     { label: "Cardápio", icon: "/icons/li_utensils.svg",  href: "/painel-nutricionista-cardapio" },
     { label: "Estoque", icon: "/icons/li_file-pen.svg", href: "/painel-nutricionista-estoque" },
-    { label: "Relatórios", icon: "/icons/li_file-chart-line.svg" },
+    { label: "Relatórios", icon: "/icons/li_file-chart-line.svg", href: "/painel-nutricionista-relatorio" },
     { label: "Mensagens", icon: "/icons/li_message-square.svg", href: "/painel-nutricionista-mensagens" },
     { label: "Notícias", icon: "/icons/li_newspaper.svg", href: "/painel-nutricionista-noticias" },
     { label: "Sair", icon: "/icons/li_log-out.svg", href: "/mainPage" },
