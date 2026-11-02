@@ -41,8 +41,8 @@ export default function AcoesRapidas({ onWasteClick }) {
                 <Stack
                     direction={{ xs: "column", sm: "row" }}
                     spacing={2}
-                    justifyContent="center"
                     className={styles.actions}
+                    sx={{ justifyContent: "center" }}
                 >
                     {/* O layout muda para coluna em telas pequenas. */}
                     {/* As outras ações permanecem visuais até seus fluxos serem implementados. */}

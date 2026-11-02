@@ -38,9 +38,8 @@ export default function CardapioHoje({ dadosDashboard }) {
             <CardContent className={styles.content}>
                 <Stack
                     direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
                     className={styles.header}
+                    sx={{ justifyContent: "space-between", alignItems: "center" }}
                 >
                     <Typography variant="h6" className={styles.title}>
                         Cardápio de Hoje

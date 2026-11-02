@@ -13,7 +13,7 @@ function Metric({ title, value, suffix, children, borderLeft = false }) {
             >
                 {title}
             </Typography>
-            <Stack direction="row" alignItems="baseline" spacing={0.75}>
+            <Stack direction="row" spacing={0.75} sx={{ alignItems: "baseline" }}>
                 <Typography
                     variant="h4"
                     className={styles.value}

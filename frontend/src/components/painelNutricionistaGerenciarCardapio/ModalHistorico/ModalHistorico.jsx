@@ -60,7 +60,7 @@ export default function ModalHistorico({ open, onClose, onSelect }) {
                                     className={styles.resultLabel}
                                     label={
                                         <Stack className={styles.resultContent}>
-                                            <Stack direction="row" justifyContent="space-between" alignItems="center" gap={2} className={styles.resultHeading}>
+                                            <Stack direction="row" className={styles.resultHeading} sx={{ justifyContent: "space-between", alignItems: "center", gap: 2 }}>
                                                 <Typography variant="subtitle1" fontWeight={600}>{cardapio.dia}</Typography>
                                                 <Typography variant="body2" color="text.secondary" className={styles.resultDate}>{formatarDataCardapio(cardapio.data)}</Typography>
                                             </Stack>
