@@ -1,0 +1,6 @@
+.calendarPaper { padding: 8px; }
+.calendar {
+    --rdp-accent-color: #1565c0;
+    --rdp-accent-background-color: #e3f2fd;
+    font-family: inherit;
+}

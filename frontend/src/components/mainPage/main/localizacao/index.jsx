@@ -9,7 +9,7 @@ import DirectionsIcon from "@mui/icons-material/Directions";
 const ENDERECO = "Rua José de Alencar, Centro, nº 420, Quixadá - CE";
 const TELEFONE = "(88) 3412-0000";
 const MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ENDERECO)}`;
-const TEL_URL = `tel:+55${TELEFONE.replace(/\D/g, "")}`;
+const TEL_URL = `/painelCliente`;
 
 export default function Localizacao() {
     return (

@@ -1,0 +1,27 @@
+.card { padding: 32px 32px 36px; border-radius: 10px !important; }
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e4e8;
+}
+.headingCopy { max-width: 320px; }
+.title { font-weight: 600 !important; margin-bottom: 4px !important; }
+.actions { flex-shrink: 0; gap: 8px !important; }
+.actions button { min-height: 32px; padding: 4px 12px; font-size: 0.72rem; }
+.form { padding-top: 22px; }
+.saveButton { min-height: 44px; margin-top: 36px !important; gap: 8px; }
+
+@media (max-width: 700px) {
+    .card { padding: 24px 24px 28px; }
+    .cardHeader { align-items: stretch; }
+    .actions { width: 100%; }
+    .actions button { width: 100%; min-height: 40px; font-size: 0.72rem; }
+    .saveButton { margin-top: 28px !important; }
+}
+
+@media (max-width: 420px) {
+    .card { padding: 20px 16px 22px; }
+}
