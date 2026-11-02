@@ -26,7 +26,7 @@
 
 - [x] **T05 — Proteção de Rotas Administrativas**
 - Criar um componente/guard reutilizável que lê a sessão e redireciona para `/login` quando não há usuário logado (evitar flash de conteúdo e erro de hidratação lendo o `localStorage` apenas no cliente).
-- Aplicar em `/painel-nutricionista`, na tela de Notícias e na de Mensagens.
+- Aplicar em `/painel-nutricionista`, Cardápio (incluindo edição), Estoque, Caixa, Meu Perfil, Notícias e Mensagens.
 - **Relacionada a:** RN05, HU006
 
 - [x] **T06 — Modal de Recuperação de Acesso**
@@ -42,31 +42,31 @@
 
 ## Verificação
 
-- [ ] **T08 — Verificar cenário: Login e Credenciais Inválidas**
+- [x] **T08 — Verificar cenário: Login e Credenciais Inválidas**
 - Confirmar que `admin`/`admin` leva a `/painel-nutricionista`, que credenciais erradas mantêm a pessoa em `/login` e que uma sessão anterior não pula o formulário.
 - **Critério relacionado:** Cenários 1, 2 e 10
 
-- [ ] **T09 — Verificar cenário: Mostrar Senha e Voltar**
+- [x] **T09 — Verificar cenário: Mostrar Senha e Voltar**
 - Confirmar a alternância de visibilidade da senha (e do `aria-label`) e que "Voltar" leva ao Portal.
 - **Critério relacionado:** Cenários 3 e 4
 
-- [ ] **T10 — Verificar cenário: Recuperação de Acesso**
+- [x] **T10 — Verificar cenário: Recuperação de Acesso**
 - Confirmar que o modal abre com foco no e-mail, que "ENVIAR LINK" fica desabilitado com e-mail vazio ou inválido, que o envio fecha o modal com Snackbar e que cancelar, Esc e clique fora fecham e limpam o campo.
 - **Critério relacionado:** Cenários 5, 6, 7 e 8
 
-- [ ] **T11 — Verificar cenário: Proteção de Rotas**
+- [x] **T11 — Verificar cenário: Proteção de Rotas**
 - Confirmar que, sem sessão, `/painel-nutricionista`, Notícias e Mensagens redirecionam para `/login`, sem erro de hidratação no console.
 - **Critério relacionado:** Cenário 9
 
-- [ ] **T12 — Verificar cenário: Responsividade e Layout**
+- [x] **T12 — Verificar cenário: Responsividade e Layout**
 - Confirmar que em 360px a tela não tem rolagem horizontal e que os alvos de toque têm 44px.
 - **Critério relacionado:** RNF001, HU001
 
 ## Pronto quando
 
-- [ ] O login valida no mock, redireciona para o painel da nutricionista e mantém a sessão.
-- [ ] As três telas administrativas bloqueiam acesso sem login.
-- [ ] A recuperação de acesso funciona de ponta a ponta no mock (validação, confirmação, cancelamento).
-- [ ] O fluxo funciona em desktop e mobile (responsividade).
-- [ ] Os botões, campos e o modal são plenamente acessíveis por teclado (Tab, Enter e Esc).
-- [ ] As pendências com o cliente (perfis, tela de redefinição, mensagens de erro) estão registradas.
+- [x] O login valida no mock, redireciona para o painel da nutricionista e mantém a sessão.
+- [x] Todas as rotas administrativas bloqueiam acesso sem login: Painel Nutricionista, Cardápio, Estoque, Caixa, Meu Perfil, Notícias e Mensagens.
+- [x] A recuperação de acesso funciona de ponta a ponta no mock (validação, confirmação, cancelamento).
+- [x] O fluxo funciona em desktop e mobile (responsividade).
+- [x] Os botões, campos e o modal são plenamente acessíveis por teclado (Tab, Enter e Esc).
+- [x] As pendências com o cliente (perfis, tela de redefinição, mensagens de erro) estão registradas.
