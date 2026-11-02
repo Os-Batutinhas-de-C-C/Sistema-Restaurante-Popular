@@ -38,6 +38,7 @@ public class Semana {
     public void setData(LocalDate data) { this.data = data; }
     public void setDesperdicio(List<Double> desperdicio) { this.desperdicio = desperdicio; }
     public void setFichasVendidas(List<Integer> fichas_vendidas) { this.fichas_vendidas = fichas_vendidas; }
+    public void setCardapio(List<Refeicao> cardapio) { this.cardapio = cardapio; }
     
     public void addRefeicao(Refeicao novaRefeicao) {
         if (this.cardapio.size() >= 5) {
