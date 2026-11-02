@@ -1,7 +1,7 @@
 const mensagensBase = [
     {
         id: 1,
-        data: "2026-10-30",
+        data: "2026-11-05",
         hora: "08:12",
         titulo: "Solicitação de ajuste no cardápio",
         texto:
@@ -11,7 +11,7 @@ const mensagensBase = [
     },
     {
         id: 2,
-        data: "2026-10-29",
+        data: "2026-11-04",
         hora: "09:45",
         titulo: "Sugestão de cardápio",
         texto:
@@ -21,7 +21,7 @@ const mensagensBase = [
     },
     {
         id: 3,
-        data: "2026-10-27",
+        data: "2026-11-03",
         hora: "11:20",
         titulo: "Opinião sobre o restaurante",
         texto:
@@ -31,7 +31,7 @@ const mensagensBase = [
     },
     {
         id: 4,
-        data: "2026-10-26",
+        data: "2026-11-02",
         hora: "14:05",
         titulo: "Sobre o almoço de segunda-feira",
         texto:

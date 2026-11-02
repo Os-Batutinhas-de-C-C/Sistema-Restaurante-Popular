@@ -19,7 +19,7 @@ export default function LoginPage() {
             "usuarioRestaurantePopular",
             JSON.stringify({
                 perfil,
-                nome: perfil === "Nutricionista" ? "Nutricionista" : "Gestor",
+                nome: perfil === "Nutricionista" ? "Nutricionista" : "Caixa",
             }),
         );
 
@@ -40,8 +40,8 @@ export default function LoginPage() {
                         <Button variant="contained" size="large" onClick={() => handleLogin("Nutricionista")}>
                             Entrar como Nutricionista
                         </Button>
-                        <Button variant="outlined" size="large" onClick={() => handleLogin("Gestor")}>
-                            Entrar como Gestor
+                        <Button variant="outlined" size="large" onClick={() => handleLogin("Caixa")}>
+                            Entrar como Caixa
                         </Button>
                     </Stack>
                 </CardContent>
