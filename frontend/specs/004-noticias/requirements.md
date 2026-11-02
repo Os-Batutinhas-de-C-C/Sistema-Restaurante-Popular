@@ -39,9 +39,9 @@
 - Substituir os `onClick` placeholders (`setSelectedNotice`) do protótipo pelos handlers reais.
 - **Relacionada a:** RN04, RF009
 
-- [ ] **T08 — Proteção de Rota**
-- Restringir a página a usuários autenticados com perfil Nutricionista ou Gestor, redirecionando os demais para o login.
-- **Relacionada a:** RN01, HU006
+- [x] **T08 — Acesso público à página**
+- Manter a página de notícias e avisos acessível sem autenticação.
+- **Relacionada a:** HU018
 
 - [ ] **T09 — Acessibilidade**
 - Adicionar `aria-label` descritivo nos ícones de ação, `aria-labelledby` nos modais e foco inicial automático.
@@ -62,9 +62,9 @@
 - Confirmar que o modal de visualização abre e fecha corretamente, que a remoção só ocorre após confirmação e que período sem notícias mostra a mensagem de vazio.
 - **Critério relacionado:** Cenários 4, 5 e 6
 
-- [ ] **T13 — Verificar cenário: Acesso restrito**
-- Confirmar que usuário não logado é redirecionado para o login.
-- **Critério relacionado:** Cenário 7
+- [ ] **T13 — Verificar acesso público**
+- Confirmar que a página abre sem exigir login.
+- **Critério relacionado:** acesso público
 
 ## Pronto quando
 

@@ -1,4 +1,4 @@
-import { BackspaceOutlined, EditOutlined } from "@mui/icons-material";
+import { DeleteOutlineOutlined, EditOutlined } from "@mui/icons-material";
 import { Box, Chip, Divider, IconButton, Paper, Typography } from "@mui/material";
 import { formatarDataEstoque, formatarQuantidade } from "../../../services/estoqueService";
 import styles from "./itemEstoqueMobile.module.css";
@@ -50,7 +50,7 @@ export default function ItemEstoqueMobile({ item, onEdit, onDelete }) {
                         <EditOutlined />
                     </IconButton>
                     <IconButton aria-label={`Excluir ${item.nome}`} onClick={() => onDelete(item)} sx={{ width: 48, height: 48, bgcolor: "primary.main", color: "common.white", "&:hover": { bgcolor: "primary.dark" } }}>
-                        <BackspaceOutlined />
+                        <DeleteOutlineOutlined />
                     </IconButton>
                 </Box>
             </Box>

@@ -49,19 +49,19 @@ export default function SeletorIntervaloDatas({
                     if (event.key === "Enter" || event.key === " ") abrirCalendario(event);
                 }}
                 sx={{
-                    width: { xs: "100%", sm: 250 },
-                    maxWidth: 250,
+                    width: { xs: "100%", sm: 320 },
+                    maxWidth: 320,
                     "& .MuiInputLabel-root": {
                         color: "#686868",
                         fontSize: 10,
                     },
                     "& .MuiInputBase-input": {
                         color: "#959595",
-                        fontSize: 12,
-                        py: 1.3,
+                        fontSize: 14,
+                        py: 1.5,
                     },
                     "& .MuiOutlinedInput-root": {
-                        height: 45,
+                        height: 52,
                         borderRadius: "3px",
                         color: "#959595",
                         "& fieldset": {
@@ -81,7 +81,7 @@ export default function SeletorIntervaloDatas({
                                     onClick={abrirCalendario}
                                     edge="end"
                                 >
-                                    <CalendarMonthOutlinedIcon />
+                                    <CalendarMonthOutlinedIcon sx={{ fontSize: 23 }} />
                                 </IconButton>
                             </InputAdornment>
                         ),
