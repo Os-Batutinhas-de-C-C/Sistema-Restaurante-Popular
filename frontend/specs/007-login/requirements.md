@@ -1,45 +1,92 @@
-# Requisitos — Tela de Login e Autenticação
+# Requisitos — Login de Funcionários e Recuperação de Acesso
 
 ## Objetivo
 
-Permitir que usuários credenciados (Nutricionista, Operador do Caixa e Gestores) realizem autenticação segura no sistema com e-mail e senha, redirecionando-os para os respectivos painéis administrativos conforme seu nível de permissão, além de oferecer funcionalidade para recuperação de senha.
+Permitir que funcionários acessem o painel administrativo com nome de usuário e senha, e iniciem a recuperação de acesso por e-mail, bloqueando páginas administrativas para quem não está logado.
 
 ## Histórias de usuário
 
-- **HU006 — Controle de Acesso Administrativo:**
-  Como um administrador do sistema (nutricionista, caixa ou gestores), eu posso fazer login com minhas credenciais, de modo que eu acesse as ferramentas do sistema de acordo com o meu nível de permissão.
+### RF002 — Login e recuperação de senha
+Como funcionário (nutricionista ou caixa),
+quero fazer login com minhas credenciais,
+para que o sistema libere acesso apenas às ferramentas pertinentes ao meu nível de permissão, e poder recuperar a senha pela tela de login informando um e-mail de recuperação previamente cadastrado.
 
-- **RF002 — Login e Recuperação de Senha:**
-  Como um funcionário (nutricionista ou caixa), eu posso fazer login com minhas credenciais, de modo que o sistema libere acesso apenas às ferramentas pertinentes ao meu nível de permissão. Posso também recuperar a senha de acesso pela tela de login informando um e-mail de recuperação previamente cadastrado.
-
-- **RF011 — Gestão de Credenciais de Login / Perfil:**
-  Como um usuário logado (caixa ou nutricionista), eu posso gerenciar minhas credenciais para garantir a manutenção e segurança da minha conta.
+### HU006 — Controle de acesso administrativo
+Como administrador do sistema (nutricionista, caixa ou gestores),
+quero fazer login com minhas credenciais,
+para acessar as ferramentas do sistema de acordo com o meu nível de permissão.
 
 ## Regras de negócio
 
-- **RN01 (Autenticação por Perfil):** O sistema deve validar e-mail e senha informados. Se válidos, deve identificar a categoria do usuário (ex: `nutricionista` ou `caixa`) e redirecioná-lo para o seu painel correspondente.
-- **RN02 (Mensagem de Erro Visual):** Caso as credenciais sejam inválidas ou os campos estejam em branco, o sistema deve exibir uma mensagem de erro clara sem expor detalhes sensíveis.
-- **RN03 (Recuperação de Senha):** A tela deve conter um link/botão "Esqueceu a senha?". Ao ser acionado, deve abrir um modal (Dialog) solicitando o e-mail de recuperação.
-- **RN04 (Bloqueio de Rotas Protegidas):** O sistema deve impedir o acesso direto a URLs administrativas caso o usuário não esteja autenticado, redirecionando-o para `/login`.
-- **RN05 (Persistência e Mock):** A validação de login e o envio do e-mail de recuperação serão simulados localmente via `authService.js` até a integração com a API final.
+- **RN01:** Apenas funcionários fazem login. Clientes usam o Portal do Cidadão sem cadastro (ref HU004, HU007, HU008).
+- **RN02:** O login é por nome de usuário e senha (não por e-mail nem matrícula).
+- **RN03:** Sem backend, a autenticação consulta um mock em `src/services/authService.js` com um único usuário: usuário `admin`, senha `admin`, perfil Nutricionista. [SUPOSIÇÃO: o perfil do mock é Nutricionista, pois o redirecionamento vai para o painel da nutricionista]
+- **RN04:** Após o login bem-sucedido, o usuário é redirecionado para `/painel-nutricionista` (ref HU006). A rota do painel do Caixa não está definida nesta spec.
+- **RN05:** Páginas administrativas (`/painel-nutricionista` e as de Notícias e Mensagens) bloqueiam acesso de quem não está logado, redirecionando para `/login` (ref HU006).
+- **RN06:** O botão "Voltar" leva à tela inicial do Portal do Cidadão (`/mainPage`).
+- **RN07:** A recuperação de acesso pede o e-mail de recuperação. O e-mail é cadastrado em "Meu Perfil" (RF011). Nesta versão, "ENVIAR LINK" não envia nada (sem backend) e mostra confirmação genérica, sem informar se o e-mail existe. [SUPOSIÇÃO]
+- **RN08:** Mensagens de erro de credenciais inválidas não são exibidas nesta versão (decisão de escopo). A HU006 prevê "mensagem clara de erro"; esse critério fica para uma próxima entrega.
+- **RN09:** A sessão é mantida no navegador durante a navegação administrativa e removida no logout. Ao abrir `/login`, a sessão anterior é encerrada e o formulário sempre é exibido; um novo login válido é necessário para entrar novamente. [SUPOSIÇÃO]
 
 ## Critérios de aceitação
 
-### Cenário 1 — Login bem-sucedido (Nutricionista ou Caixa)
-**Dado que** o usuário insere credenciais válidas na tela de login  
-**Quando** clica no botão "Entrar"  
-**Então** o sistema realiza a autenticação e redireciona imediatamente para o painel correspondente.
+### Cenário 1 — Login com credenciais válidas
+**Dado que** a pessoa está em `/login`
+**Quando** informa usuário `admin` e senha `admin` e clica em "ENTRAR" (ou pressiona Enter)
+**Então** é redirecionada para `/painel-nutricionista`.
 
-### Cenário 2 — Tentativa de login com dados inválidos
-**Dado que** o usuário preenche e-mail ou senha incorretos  
-**Quando** clica em "Entrar"  
-**Então** o sistema permanece na tela de login e exibe um alerta de erro em destaque.
+### Cenário 2 — Login com credenciais inválidas
+**Dado que** a pessoa informa usuário ou senha incorretos
+**Quando** clica em "ENTRAR"
+**Então** permanece em `/login`, sem acesso ao painel (nesta versão, sem mensagem de erro).
 
-### Cenário 3 — Solicitação de recuperação de senha
-**Dado que** o usuário clica em "Esqueceu a senha?"  
-**Quando** preenche um e-mail válido no modal de recuperação e clica em "Enviar"  
-**Então** uma mensagem de confirmação é exibida e o modal é fechado.
+### Cenário 3 — Mostrar e ocultar senha
+**Dado que** a senha está digitada
+**Quando** a pessoa clica no ícone de olho
+**Então** a senha alterna entre visível e oculta, e o `aria-label` do ícone alterna entre "Mostrar senha" e "Ocultar senha".
+
+### Cenário 4 — Botão Voltar
+**Dado que** a pessoa está em `/login`
+**Quando** clica em "Voltar"
+**Então** é levada à tela inicial do Portal do Cidadão.
+
+### Cenário 5 — Abrir a recuperação de acesso
+**Dado que** a pessoa clica em "RECUPERAR SENHA"
+**Quando** a ação é disparada
+**Então** o modal "Recuperação de Acesso" abre com o foco no campo de e-mail, sem sair da tela.
+
+### Cenário 6 — Envio do link de recuperação
+**Dado que** a pessoa informa um e-mail em formato válido no modal
+**Quando** clica em "ENVIAR LINK"
+**Então** o modal fecha e um Snackbar confirma o envio de forma genérica.
+
+### Cenário 7 — E-mail vazio ou inválido
+**Dado que** o campo de e-mail está vazio ou com formato inválido
+**Quando** a pessoa observa o botão "ENVIAR LINK"
+**Então** o botão está desabilitado.
+
+### Cenário 8 — Cancelar a recuperação
+**Dado que** o modal está aberto
+**Quando** a pessoa clica em "CANCELAR", pressiona Esc ou clica fora da caixa
+**Então** o modal fecha, o campo é limpo e o foco volta ao botão "RECUPERAR SENHA".
+
+### Cenário 9 — Acesso a página administrativa sem login
+**Dado que** a pessoa não está logada
+**Quando** tenta abrir `/painel-nutricionista`, a tela de Notícias ou a de Mensagens
+**Então** é redirecionada para `/login`.
+
+### Cenário 10 — Abrir o login com uma sessão anterior
+**Dado que** a pessoa possui uma sessão administrativa ativa
+**Quando** acessa `/login`
+**Então** a sessão anterior é encerrada e o formulário de login é exibido; só credenciais válidas liberam o painel. [SUPOSIÇÃO]
 
 ## Restrições
-- A tela deve ser totalmente responsiva (mobile-first, a partir de 360px).
-- Os estilos visuais devem seguir rigorosamente o padrão do Material UI v6 configurado no projeto.
+- Como não há integração com backend no momento, a autenticação deve consumir o mock em `src/services/authService.js`. As credenciais em texto puro são aceitáveis só enquanto não houver backend e não podem ir para produção.
+- Deve utilizar exclusivamente componentes da biblioteca Material UI (MUI).
+- Deve atender à RNF001 e à HU001: mobile-first, a partir de 360px, sem rolagem horizontal.
+
+## Pendências com o cliente
+- O RF002 cita só "nutricionista ou caixa", enquanto a HU006 inclui gestores. Confirmar os perfis que logam e para onde cada um vai (Caixa e Gestor não têm rota definida).
+- A tela de redefinição de senha (a que o link do e-mail abriria) não existe no SRS. Definir se entra no escopo.
+- Mensagens de erro de login (HU006) ficaram para uma próxima entrega.
+- Confirmar se há limite de tentativas de login ou bloqueio; o SRS não menciona, e a spec assume que não há.
