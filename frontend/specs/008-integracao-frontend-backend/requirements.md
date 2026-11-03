@@ -42,6 +42,8 @@ A aplicação deve obter o endereço de origem do backend de uma variável de am
 
 **Decisão confirmada pelo solicitante:** usar proxy/rewrite de mesma origem do Next.js para encaminhar `/api/:path*` ao backend. Os componentes e serviços chamam caminhos relativos `/api/...`; o navegador não chama diretamente a origem Spring. Não alterar CORS no backend para atender ao frontend.
 
+**Correção autorizada em 03/11/2026:** antes do rewrite, o proxy valida o cabeçalho `Origin`, quando presente, contra o protocolo e o `Host` da requisição ao Next.js. Origens diferentes, opacas (`null`) ou malformadas recebem `403` com `ApiErrorDTO`; `X-Forwarded-Host` não autoriza origens. Requisições identificadas por `Sec-Fetch-Site` como `same-site` ou `cross-site` também são rejeitadas. Chamadas sem `Origin`, como GETs da própria página e clientes de API, continuam funcionando. Somente após essa validação, o proxy remove `Origin` da requisição ao Spring, preservando corpo, método e `Authorization`. Isso corrige o login no navegador sem alterar CORS, JWT ou permissões do backend.
+
 O valor usado em cada ambiente deve ser documentado em arquivos de exemplo sem credenciais. Segredos, senhas e tokens não podem ser incluídos em variáveis públicas do frontend.
 
 ### RF002 — Chamadas HTTP centralizadas
@@ -227,7 +229,7 @@ O serviço de cardápio converte nomes como `pratoProteico`/`sucoNatural` para `
 
 ## Decisões pendentes e verificações
 
-Nenhuma decisão de produto permanece pendente. Recuperação de senha não possui endpoint nem serviço de e-mail e permanece fora da integração. Os testes de frontend e a verificação em navegador continuam pendentes de autorização; os testes focados de segurança foram autorizados e estão registrados em `tasks.md`.
+Nenhuma decisão de produto permanece pendente. Recuperação de senha não possui endpoint nem serviço de e-mail e permanece fora da integração. A verificação de frontend/navegador, os testes focados de segurança e a correção de origem no proxy foram autorizados; resultados e limitações estão registrados em `tasks.md`.
 
 ## Pronto quando
 
