@@ -1,6 +1,6 @@
 package com.batutinhas.restaurante_pop;
 
-import com.batutinhas.restaurante_pop.model.CredencialAutenticacao;
+import com.batutinhas.restaurante_pop.factory.UsuarioFactory;
 import com.batutinhas.restaurante_pop.model.Usuario;
 import com.batutinhas.restaurante_pop.repository.EstoqueRepository;
 import com.batutinhas.restaurante_pop.repository.MensagemRepository;
@@ -12,7 +12,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URI;
@@ -20,7 +19,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -32,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class DtoApiIntegrationTests {
-    private static final String PASSWORD = "dto-test-password";
+        private static final String PASSWORD = "password";
 
     @Value("${local.server.port}") private int port;
     private final HttpClient client = HttpClient.newHttpClient();
@@ -42,8 +40,6 @@ class DtoApiIntegrationTests {
     @Autowired private MensagemRepository mensagemRepository;
     @Autowired private NoticiaRepository noticiaRepository;
     @Autowired private EstoqueRepository estoqueRepository;
-    @Autowired private PasswordEncoder passwordEncoder;
-
     private Usuario nutricionista;
     private Usuario caixa;
 
@@ -201,18 +197,7 @@ class DtoApiIntegrationTests {
     }
 
     private Usuario createUser(String email, char role) {
-        Usuario user = new Usuario();
-        user.setNome(role == 'N' ? "Nutricionista de Teste" : "Caixa de Teste");
-        user.setEmailRecuperacao(email);
-        user.setTipo(role);
-
-        CredencialAutenticacao credentials = new CredencialAutenticacao();
-        credentials.setPasswordHash(passwordEncoder.encode(PASSWORD));
-        credentials.setDataCriacao(LocalDate.now());
-        credentials.setTentativasFalhas(0);
-        credentials.setUsuario(user);
-        user.setCredencialAutenticacao(credentials);
-        return usuarioRepository.save(user);
+                return usuarioRepository.save(UsuarioFactory.criarUsuarioEntidadeValido(email, role));
     }
 
     private HttpResponse<String> request(String method, String path, Usuario user, String jsonBody) throws Exception {

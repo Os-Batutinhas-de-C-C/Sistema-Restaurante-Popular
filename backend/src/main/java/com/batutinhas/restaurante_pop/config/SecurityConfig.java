@@ -25,7 +25,7 @@ public class SecurityConfig {
                 
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/noticias").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/usuarios").denyAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuarios").authenticated()
                 
                 .requestMatchers("/api/refeicoes/**").hasRole("NUTRICIONISTA")
                 .requestMatchers("/api/semanas/**").hasRole("NUTRICIONISTA")
@@ -38,7 +38,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.disable()); // Reativa o basic auth provisoriamente para testes
+            .httpBasic(basic -> basic.realmName("Restaurante Popular"));
 
         return http.build();
     }
