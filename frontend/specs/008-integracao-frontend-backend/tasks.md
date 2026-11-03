@@ -23,6 +23,10 @@
 
 - [x] **T13 — Corrigir e validar origem no proxy de login:** correção autorizada em 03/11/2026. O proxy valida a origem antes de removê-la no encaminhamento ao Spring, mantendo CORS/JWT/permissões e o visual. Os 21 testes de regressão, lint, build e 35 verificações HTTP passaram. Em Edge headless (1440×900), a submissão real do formulário retornou `200` para ambos os perfis: Gestor chegou a `/painel-nutricionista`, com consultas de semanas `200`, e Caixa a `/painel-caixa`. Não houve erros de console ou exceções de execução nos dois fluxos. Os testes iniciais de login anteriores a esta correção omitiam `Origin` e não verificavam a submissão do navegador.
 
+- [x] **T14 — Corrigir navegação autenticada do painel:** substituir `href` por `router.push()` no perfil e na edição diária, e conectar as ações rápidas às páginas existentes de notícias e estoque. O lint dos três componentes, o build de produção e a revisão dos destinos/callbacks passaram. A verificação dos cliques e da conservação da sessão no navegador não foi executada: a solicitação de permissão para iniciar Edge headless foi cancelada. Esta limitação permanece registrada; nenhum serviço em execução foi reiniciado ou encerrado.
+
+- [x] **T15 — Corrigir falha no primeiro cadastro de cardápio:** reproduzido HTTP `500` em `POST /api/semanas` com `1000` kcal. A consulta derivada `existsByData()` falhava com `PropertyReferenceException: No property 'id' found for type 'Semana'` antes da gravação. O service agora usa `findByData(...).isPresent()` e o método derivado defeituoso foi removido. O novo teste focado `DtoApiIntegrationTests#firstMenuCanBeCreatedWithFiveDaySlotsAndReadBack` passou em H2 explicitamente isolado. Em um backend temporário na porta `18080`, o cadastro autorizado da semana `2099-01-05` retornou `200`, persistiu refeição/slots e foi lido novamente com `200`; os registros de teste foram removidos e as contagens voltaram a zero. A instância temporária foi encerrada. O backend do usuário em `8080` não foi reiniciado e precisa de reinício para carregar a correção.
+
 ## Decisões confirmadas
 
 - `/api` usa proxy Next de mesma origem; CORS não foi alterado.

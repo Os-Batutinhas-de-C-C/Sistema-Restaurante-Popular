@@ -52,7 +52,11 @@ git clone https://github.com/Os-Batutinhas-de-C-C/Sistema-Restaurante-Popular.gi
 Set-Location .\Sistema-Restaurante-Popular
 ```
 
-O banco local deste ambiente já foi inicializado e recebeu a migração de integração. As tabelas JPA atuais começaram vazias e as tabelas legadas foram preservadas, sem importação. Use `validate` nas próximas inicializações. Para preparar outro banco, consulte [backend.md](./backend.md); os scripts antigos de `database/` não correspondem ao modelo JPA atual.
+O banco local deste ambiente já foi inicializado e recebeu a migração de integração. As tabelas JPA atuais foram criadas sem importar as tabelas legadas; desde então, contas de desenvolvimento autorizadas foram registradas no banco local. Use `validate` nas próximas inicializações. Para preparar outro banco, consulte [backend.md](./backend.md); os scripts antigos de `database/` não correspondem ao modelo JPA atual.
+
+Os arquivos locais `backend/src/main/resources/application.properties` e `frontend/.env.local` são ignorados pelo Git e não aparecem em um clone novo. Neste computador eles já existem. Em outra instalação, configure as variáveis de conexão do PostgreSQL e `JWT_SECRET_BASE64` no terminal do backend, configure `BACKEND_API_BASE_URL` no terminal do frontend e prepare o schema conforme [backend.md](./backend.md). `ddl-auto=validate` exige que as tabelas JPA já existam; o comando de inicialização não cria nem migra o schema.
+
+Os comandos de inicialização abaixo são servidores em primeiro plano e **não devolvem o prompt do PowerShell enquanto estiverem funcionando**. Isso é esperado: deixe o primeiro terminal aberto, espere a mensagem de inicialização e abra um segundo terminal para iniciar o outro serviço. O backend confirma a inicialização com `Started RestaurantePopApplication`; o frontend mostra `Ready` e `http://localhost:3000`. Fechar um terminal ou pressionar `Ctrl+C` encerra aquele serviço.
 
 ### Terminal 1 — backend
 
@@ -110,7 +114,7 @@ java -version
 
 Aguarde a mensagem de inicialização do Spring Boot. A API fica em **http://localhost:8080**.
 
-As tabelas atuais de usuários e credenciais estão inicialmente vazias. Para criar contas de desenvolvimento, configure opcionalmente o perfil `local` e os pares de variáveis `BOOTSTRAP_NUTRICIONISTA_EMAIL`/`BOOTSTRAP_NUTRICIONISTA_PASSWORD`, `BOOTSTRAP_CAIXA_EMAIL`/`BOOTSTRAP_CAIXA_PASSWORD` ou `BOOTSTRAP_GESTOR_EMAIL`/`BOOTSTRAP_GESTOR_PASSWORD` antes de iniciar o backend, conforme [backend.md](./backend.md). Não existem credenciais padrão.
+Em um banco novo, as tabelas de usuários e credenciais ficam vazias. Para criar contas de desenvolvimento, configure opcionalmente o perfil `local` e os pares de variáveis `BOOTSTRAP_NUTRICIONISTA_EMAIL`/`BOOTSTRAP_NUTRICIONISTA_PASSWORD`, `BOOTSTRAP_CAIXA_EMAIL`/`BOOTSTRAP_CAIXA_PASSWORD` ou `BOOTSTRAP_GESTOR_EMAIL`/`BOOTSTRAP_GESTOR_PASSWORD` antes de iniciar o backend, conforme [backend.md](./backend.md). Não existem credenciais padrão.
 
 ### Terminal 2 — frontend
 

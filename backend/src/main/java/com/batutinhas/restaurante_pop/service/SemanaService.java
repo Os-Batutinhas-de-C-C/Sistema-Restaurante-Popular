@@ -52,7 +52,7 @@ public class SemanaService {
     @Transactional
     public SemanaResponseDTO create(SemanaCreateRequestDTO request) {
         requireMonday(request.data());
-        if (semanaRepository.existsByData(request.data())) {
+        if (semanaRepository.findByData(request.data()).isPresent()) {
             throw new IllegalArgumentException("J\u00e1 existe um card\u00e1pio cadastrado para esta semana.");
         }
         Semana semana = new Semana();

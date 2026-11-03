@@ -72,6 +72,34 @@ class DtoApiIntegrationTests {
     }
 
     @Test
+    void firstMenuCanBeCreatedWithFiveDaySlotsAndReadBack() throws Exception {
+        String body = """
+                {"data":"2026-11-02","desperdicio":[],"fichasVendidas":[],
+                 "cardapio":[null,{"proteina":"Frango","guarnicao":"Farofa",
+                  "acompanhamento1":"Arroz","acompanhamento2":"Feijao","suco":"Caju",
+                  "sobremesa":"Fruta","opcaoProteica":"Ovo","saladaDoDia":"Salada",
+                  "calorias":1000},null,null,null]}
+                """;
+
+        HttpResponse<String> created = request("POST", "/api/semanas", nutricionista, body);
+        assertEquals(200, created.statusCode(), created.body());
+        assertTrue(created.body().contains("\"cardapio\":[null,{"));
+        assertEquals(1, semanaRepository.count());
+        assertEquals(1, refeicaoRepository.count());
+        assertEquals(1000.0, refeicaoRepository.findAll().getFirst().getCalorias());
+
+        HttpResponse<String> listed = request("GET", "/api/semanas", nutricionista, null);
+        assertEquals(200, listed.statusCode());
+        assertTrue(listed.body().contains("\"data\":\"2026-11-02\""));
+        assertTrue(listed.body().contains("\"proteina\":\"Frango\""));
+
+        HttpResponse<String> duplicate = request("POST", "/api/semanas", nutricionista, body);
+        assertEquals(400, duplicate.statusCode(), duplicate.body());
+        assertEquals(1, semanaRepository.count());
+        assertEquals(1, refeicaoRepository.count());
+    }
+
+    @Test
     void mealCanBeSharedByWeeksWithoutAWeekIdInMealDtos() throws Exception {
         HttpResponse<String> meal = request("POST", "/api/refeicoes", nutricionista,
                 "{\"proteina\":\"Peixe\",\"guarnicao\":\"Arroz\",\"acompanhamento1\":\"Feijao\",\"acompanhamento2\":\"Salada\",\"suco\":\"Caju\",\"sobremesa\":\"Fruta\",\"opcaoProteica\":\"Ovo\",\"calorias\":450}");

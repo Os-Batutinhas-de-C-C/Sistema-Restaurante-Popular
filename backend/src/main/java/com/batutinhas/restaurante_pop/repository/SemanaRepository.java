@@ -9,7 +9,5 @@ import java.time.LocalDate;
 public interface SemanaRepository extends JpaRepository<Semana, Long> {
     Optional<Semana> findByData(LocalDate data);
 
-    boolean existsByData(LocalDate data);
-
     List<Semana> findAllByOrderByDataAsc();
 }

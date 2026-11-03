@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Box,
     Button,
@@ -6,6 +8,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 import styles from "./cardapioHoje.module.css";
 
 // Define a ordem, o campo de origem e a cor de cada item do cardápio.
@@ -26,6 +29,7 @@ const menuFields = [
  * Recebe os dados do cardápio diário já convertidos pelo serviço da API.
  */
 export default function CardapioHoje({ dadosDashboard }) {
+    const router = useRouter();
     // O fallback permite renderizar o card mesmo durante carregamentos parciais.
     const cardapio = dadosDashboard?.cardapio || {};
 
@@ -33,7 +37,6 @@ export default function CardapioHoje({ dadosDashboard }) {
         <Card
             className={styles.card}
         >
-            {/* A ação de edição fica pronta para receber um callback futuro. */}
             <CardContent className={styles.content}>
                 <Stack
                     direction="row"
@@ -55,7 +58,7 @@ export default function CardapioHoje({ dadosDashboard }) {
                             />
                         }
                         className={styles.editButton}
-                        href={dadosDashboard.dataIso ? `/painel-nutricionista-cardapio/gerenciar/${dadosDashboard.dataIso}` : "/painel-nutricionista-cardapio"}
+                        onClick={() => router.push(dadosDashboard.dataIso ? `/painel-nutricionista-cardapio/gerenciar/${dadosDashboard.dataIso}` : "/painel-nutricionista-cardapio")}
                     >
                         Editar Cardápio
                     </Button>

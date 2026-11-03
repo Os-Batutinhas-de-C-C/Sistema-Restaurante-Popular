@@ -119,6 +119,8 @@ A forma genérica do erro deve seguir a resposta já definida pelo backend; o fr
 
 - **RN10 — Proxy de mesma origem:** chamadas do navegador usam o caminho `/api/...` do Next.js, encaminhado por rewrite ao endereço server-side `BACKEND_API_BASE_URL`. Não expor a origem do backend em variável `NEXT_PUBLIC_*` nem alterar CORS do backend nesta funcionalidade.
 
+- **RN11 — Navegação autenticada do dashboard:** os botões de perfil e edição do cardápio usam `router.push()` para conservar a sessão JWT em memória durante a navegação. O perfil abre `/meuPerfil`; editar cardápio conserva a rota `/painel-nutricionista-cardapio/gerenciar/{dataIso}`, com a lista de cardápios como fallback quando não houver data. “Publicar Nova Notícia” abre `/painel-nutricionista-noticias` e “Atualizar Estoque” abre `/painel-nutricionista-estoque`. Registrar desperdício continua abrindo o diálogo existente. A correção foi solicitada em 03/11/2026.
+
 ## Contratos HTTP de referência
 
 Os caminhos e os formatos de sucesso abaixo refletem `backend/specs/DTOs/requirements.md` e os controllers existentes. Os campos detalhados de cada DTO permanecem definidos naquela especificação.

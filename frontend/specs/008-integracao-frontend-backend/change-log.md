@@ -121,3 +121,36 @@ Os testes iniciais de login não enviavam `Origin` e, por isso, não detectaram 
 - Consultas públicas continuam respondendo `200`; origens externas, `null`, preflight externo, Fetch Metadata cross-site e tentativa de autorizar origem por `X-Forwarded-Host` recebem `403`. Nenhum cabeçalho de autenticação interno aparece na resposta ao cliente. O Spring acessado diretamente com a origem frontend continua retornando `403`, confirmando a preservação do CORS.
 - Formulário real em Edge headless (1440×900), contextos isolados por perfil: Gestor recebeu `200`, abriu `/painel-nutricionista` e carregou semanas com `200`; Caixa recebeu `200` e abriu `/painel-caixa`. Ambos os fluxos tiveram zero erros de console e zero exceções de execução. O navegador temporário foi encerrado e seu perfil removido; credenciais e tokens não foram gravados.
 - T13 concluída. O Next em execução carregou a correção; o backend permaneceu em execução sem reinício. Os dois serviços continuam disponíveis.
+
+## Navegação do painel sem perda da sessão — 03/11/2026
+
+O solicitante autorizou substituir os links de perfil e edição do cardápio por `router.push()` e conectar as ações rápidas de publicação de notícia e atualização do estoque. A navegação nativa por `href` recarregava o documento, apagava o JWT mantido somente em memória e fazia `ProtectedRoute` devolver o usuário ao login.
+
+| Arquivo | Alteração | Razão |
+|---|---|---|
+| `frontend/src/components/NavbarPainel/NavbarPainel.jsx` | Remover o `href` do botão de perfil e navegar para `/meuPerfil` com o router existente, preservando o callback opcional e `preventDefault()`. | Abrir o perfil mantendo a sessão atual. |
+| `frontend/src/components/painelNutricionista/CardapioHoje/CardapioHoje.jsx` | Adicionar `useRouter` em componente cliente e substituir `href` por `onClick` com `router.push()`, conservando a URL diária e seu fallback. | Abrir a edição do dia sem recarregar a aplicação. |
+| `frontend/src/components/painelNutricionista/AcoesRapidas/AcoesRapidas.jsx` | Adicionar `useRouter` em componente cliente; conectar notícias a `/painel-nutricionista-noticias` e estoque a `/painel-nutricionista-estoque`. Conservar o callback de desperdício. | Tornar funcionais as duas ações rápidas usando as páginas já existentes. |
+| `requirements.md`, `design.md`, `tasks.md` desta especificação | Registrar RN11, destinos e progresso de T14. | Documentar os comportamentos e a causa da correção. |
+
+O lint dos três componentes alterados e `npm.cmd run build` passaram. Nenhum arquivo de estilo ou backend foi alterado. A sessão permanece somente em memória; esta mudança conserva a sessão na navegação interna, e uma recarga manual da página continua exigindo novo login conforme a política vigente.
+
+A revisão do código confirmou os destinos existentes, a remoção dos dois `href` nativos e a preservação do callback de desperdício e do cancelamento opcional no perfil. A verificação automatizada dos quatro cliques em navegador não foi executada: a solicitação de permissão para iniciar Edge headless foi cancelada. Não se afirma validação de sessão ou de layout em navegador para T14. Os serviços que já estavam em execução foram mantidos.
+
+## Correção da criação de cardápio — 03/11/2026
+
+O formulário aceitava `1000` kcal e emitia a requisição de gravação, mas o backend retornava `500` antes de inserir os registros. A consulta derivada `SemanaRepository.existsByData()` falhava na projeção do identificador com `PropertyReferenceException: No property 'id' found for type 'Semana'`. A falha acontecia na verificação de semana duplicada. A mensagem de erro do frontend fica acima do formulário e pode estar fora da área visível ao clicar em salvar.
+
+| Arquivo | Alteração | Razão |
+|---|---|---|
+| `backend/src/main/java/com/batutinhas/restaurante_pop/service/SemanaService.java` | Usar `findByData(request.data()).isPresent()` na verificação de duplicata. | Evitar a projeção de existência que falhava, reutilizando o finder já disponível. |
+| `backend/src/main/java/com/batutinhas/restaurante_pop/repository/SemanaRepository.java` | Remover a declaração sem outros consumidores de `existsByData()`. | Impedir o reaproveitamento acidental da consulta defeituosa. |
+| `backend/src/test/java/com/batutinhas/restaurante_pop/DtoApiIntegrationTests.java` | Adicionar teste focado de primeiro cadastro com refeição inline na terça-feira, cinco posições, `1000` kcal, leitura posterior e rejeição da semana duplicada. | Cobrir a falha reproduzida e preservar a proteção contra duplicatas. |
+| `design.md`, `tasks.md` desta especificação | Registrar diagnóstico, alteração e verificações de T15. | Manter o histórico coerente com o comportamento observado. |
+
+- Edge isolado confirmou botão habilitado, formulário válido, um clique, uma submissão e um `POST /api/semanas`, sem exceção JavaScript. A requisição dessa etapa foi interceptada antes de escrever no banco.
+- O solicitante autorizou um cadastro temporário na semana `2099-01-05` com remoção exclusiva dos registros criados. Antes da correção, o teste retornou `500` e nenhuma linha persistiu.
+- `mvn.cmd -o -Dtest=DtoApiIntegrationTests#firstMenuCanBeCreatedWithFiveDaySlotsAndReadBack test` passou: um teste, zero falhas/erros. URL e driver H2 foram explicitamente definidos no processo de teste, separando-o do PostgreSQL de desenvolvimento.
+- O backend corrigido foi iniciado somente para diagnóstico em `18080`, usando PostgreSQL e `ddl-auto=validate`. O cadastro retornou `200`, criou uma semana, uma refeição e cinco posições; `GET /api/semanas` retornou a mesma refeição com `1000` kcal e os quatro dias restantes nulos.
+- A limpeza removeu apenas as linhas da semana/refeição marcadas para diagnóstico. As contagens finais de `semanas`, `refeicoes` e slots voltaram a zero; as tabelas legadas `semana` e `refeicao` mantiveram 20 registros cada. A instância `18080` foi encerrada. Nenhuma credencial ou JWT foi registrado nos documentos.
+- Os serviços do usuário em `3000` e `8080` permaneceram em execução. A instância `8080` precisa ser reiniciada na mesma sessão PowerShell configurada para carregar o código corrigido. Nenhum model, schema ou regra de segurança foi alterado.

@@ -54,6 +54,11 @@ export default function NavbarNutricionista({ onProfileClick }) {
         setMenuAnchor(null);
     };
 
+    const handleProfileClick = (event) => {
+        onProfileClick?.(event);
+        if (!event.defaultPrevented) router.push("/meuPerfil");
+    };
+
     // Navega quando o item possui uma rota e sempre fecha o menu.
     const handleMenuItemClick = (label, href) => {
         handleMenuClose();
@@ -102,9 +107,8 @@ export default function NavbarNutricionista({ onProfileClick }) {
                     <Box className={styles.spacer} />
                     <ButtonBase
                         aria-label="Abrir perfil do usuário"
-                        onClick={onProfileClick}
+                        onClick={handleProfileClick}
                         className={styles.profileButton}
-                        href='/meuPerfil'
                     >
                         <Avatar className={styles.avatar}>
                             <Box
