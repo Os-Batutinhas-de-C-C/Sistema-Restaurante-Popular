@@ -1,28 +1,33 @@
 package com.batutinhas.restaurante_pop.controller;
 
-import org.springframework.web.bind.annotation.*;
+import com.batutinhas.restaurante_pop.dto.RefeicaoCreateRequestDTO;
+import com.batutinhas.restaurante_pop.dto.RefeicaoResponseDTO;
+import com.batutinhas.restaurante_pop.service.RefeicaoService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
-
-import com.batutinhas.restaurante_pop.model.*;
-import com.batutinhas.restaurante_pop.repository.RefeicaoRepository;
-
-@RestController 
+@RestController
 @RequestMapping("/api/refeicoes")
 public class RefeicaoController {
-    private final RefeicaoRepository refeicaoRepository;
+    private final RefeicaoService refeicaoService;
 
-    public RefeicaoController(RefeicaoRepository refeicaoRepository) {
-        this.refeicaoRepository = refeicaoRepository;
+    public RefeicaoController(RefeicaoService refeicaoService) {
+        this.refeicaoService = refeicaoService;
     }
 
     @GetMapping
-    public List<Refeicao> getRefeicoes() {
-        return refeicaoRepository.findAll();
+    public List<RefeicaoResponseDTO> getRefeicoes() {
+        return refeicaoService.findAll();
     }
 
-    @PostMapping 
-    public Refeicao createRefeicao(@RequestBody Refeicao refeicao) {
-        return refeicaoRepository.save(refeicao);
+    @PostMapping
+    public ResponseEntity<RefeicaoResponseDTO> createRefeicao(@RequestBody RefeicaoCreateRequestDTO request) {
+        return ResponseEntity.ok(refeicaoService.create(request));
     }
 }

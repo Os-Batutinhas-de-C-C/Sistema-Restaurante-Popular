@@ -58,4 +58,32 @@ public class Estoque {
     public String getObservacoes() {
         return observacoes;
     }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setQuantidade(double quantidade) {
+        this.quantidade = quantidade;
+    }
+
+    public void setUnidade(String unidade) {
+        this.unidade = unidade;
+    }
+
+    public void setLote(String lote) {
+        this.lote = lote;
+    }
+
+    public void setDataDeRecebimento(LocalDate dataDeRecebimento) {
+        this.data_de_recebimento = dataDeRecebimento;
+    }
+
+    public void setDataDeValidade(LocalDate dataDeValidade) {
+        this.data_de_validade = dataDeValidade;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
 }

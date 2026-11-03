@@ -52,18 +52,15 @@ public class Usuario {
     }
 
     public void setNome(String nome2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setNome'");
+        this.nome = nome2;
     }
 
     public void setTipo(char tipo2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setTipo'");
+        this.tipo = tipo2;
     }
 
     public void setEmailRecuperacao(String email) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setEmailRecuperacao'");
+        this.emailRecuperacao = email;
     }
 
     public List<Mensagem> getMensagens() {
