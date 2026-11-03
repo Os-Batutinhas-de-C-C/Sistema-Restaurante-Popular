@@ -5,6 +5,11 @@ target/
 !**/src/test/**/target/
 src/resources/application.properties
 src/main/resources/application.properties
+frontend/docs
+backend/.mvn/wrapper
+backend/.m2-repository
+diagrama_de_clases/
+diagramas_atividade/
 
 ### STS ###
 .apt_generated
@@ -33,3 +38,4 @@ build/
 
 ### VS Code ###
 .vscode/
+
