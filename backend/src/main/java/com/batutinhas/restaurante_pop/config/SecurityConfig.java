@@ -25,6 +25,7 @@ public class SecurityConfig {
                 
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/noticias").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/usuarios").denyAll()
                 
                 .requestMatchers("/api/refeicoes/**").hasRole("NUTRICIONISTA")
                 .requestMatchers("/api/semanas/**").hasRole("NUTRICIONISTA")
@@ -36,7 +37,8 @@ public class SecurityConfig {
 
                 .anyRequest().authenticated()
             )
-            .httpBasic(org.springframework.security.config.Customizer.withDefaults()); // Reativa o basic auth provisoriamente para testes
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable()); // Reativa o basic auth provisoriamente para testes
 
         return http.build();
     }
