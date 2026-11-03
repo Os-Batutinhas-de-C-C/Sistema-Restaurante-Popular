@@ -24,21 +24,21 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/noticias").permitAll()
+                .requestMatchers("/api/**").permitAll()
+            /*  .requestMatchers(HttpMethod.GET, "/api/noticias").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/usuarios").authenticated()
                 
                 .requestMatchers("/api/refeicoes/**").hasRole("NUTRICIONISTA")
                 .requestMatchers("/api/semanas/**").hasRole("NUTRICIONISTA")
                 .requestMatchers("/api/estoque/**").hasRole("NUTRICIONISTA")
 
-                .requestMatchers("/api/vendas/**").hasRole("CAIXA")
-
                 .requestMatchers("/api/mensagens/**").hasAnyRole("NUTRICIONISTA", "CAIXA")
-
+            */
                 .anyRequest().authenticated()
+
             )
             .formLogin(form -> form.disable())
-            .httpBasic(basic -> basic.realmName("Restaurante Popular"));
+            .httpBasic(basic -> basic.disable());
 
         return http.build();
     }
