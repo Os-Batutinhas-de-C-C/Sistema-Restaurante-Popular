@@ -8,6 +8,8 @@ As decisões registradas em [`change-log.md`](./change-log.md) atualizam este do
 
 ## Objetivo
 
+**Aditivo de fichas aprovado — 03/11/2026:** os indicadores das telas pública, Nutricionista/Gestor e Caixa representam um único total de fichas entregues. Cada clique confirmado soma uma ficha; o limite diário é 300. A contagem usa o dia de `America/Fortaleza`, funciona de segunda a sexta mesmo sem cardápio cadastrado e preserva os dias anteriores. A leitura do total de hoje é pública; somente Caixa pode registrar fichas. Os testes focados de permissões e concorrência foram autorizados.
+
 **Aditivo de Meu Perfil — 03/11/2026:** o solicitante autorizou integrar a própria conta ao backend e distinguir Nutricionista/Gestor de Caixa. Foram aprovados os endpoints pessoais, identidade pelo JWT, papel somente leitura, senha atual para mudar e-mail/senha, e-mail único, nova senha de seis caracteres Unicode no mínimo e 72 bytes UTF-8 no máximo, e revogação imediata de todos os tokens anteriores por versão persistida. A comparação de e-mail preserva o contrato existente, sensível a maiúsculas/minúsculas. Alterar somente o nome mantém a sessão e sua expiração.
 
 Conectar os serviços do frontend Next.js à API Spring Boot para consultar e persistir os dados do Restaurante Popular, mantendo a interface existente. Este documento define os limites da integração, os contratos HTTP de referência, a conversão entre os dados exibidos pela interface e os DTOs da API, além das decisões que precisam ser confirmadas antes de implementar comportamentos ainda indefinidos.
@@ -102,7 +104,7 @@ O frontend preserva os dados do formulário se a API rejeitar a gravação.
 O frontend deve tratar, no mínimo, os seguintes resultados sem perder dados digitados:
 
 - `400 Bad Request`: entrada rejeitada pelo backend; quando houver `ApiErrorDTO`, ler `code` e `message`;
-- `409 Conflict`: e-mail de login já utilizado; associar `EMAIL_IN_USE` ao campo de e-mail e manter os valores digitados;
+- `409 Conflict`: e-mail de login já utilizado ou registro de fichas bloqueado; associar `EMAIL_IN_USE` ao campo de e-mail e manter os valores digitados. Para fichas, mostrar o motivo e consultar o estado atual, sem repetir o POST;
 - `401 Unauthorized`: autenticação ausente ou inválida, quando aplicável ao contrato confirmado;
 - `403 Forbidden`: perfil sem permissão, quando aplicável ao contrato confirmado;
 - `404 Not Found`: recurso ou usuário relacionado inexistente, conforme endpoint;
@@ -119,6 +121,14 @@ A tela consulta `GET /api/usuarios/me` e exibe nome, e-mail e nível de acesso d
 “Atualizar Senha” envia `SenhaUpdateRequestDTO(senhaAtual, novaSenha, confirmacaoSenha)` a `PUT /api/usuarios/me/senha`. A nova senha exige pelo menos seis pontos de código Unicode, no máximo 72 bytes UTF-8 e confirmação igual; sucesso `204` limpa a sessão e exige novo login. O backend valida a propriedade da conta e revoga todos os tokens anteriores após e-mail/senha alterados. Senhas incorretas e entradas inválidas retornam `400`; e-mail em uso retorna `409`; sessão inválida retorna `401`.
 
 Carregamento, falha com repetição, salvamento e sucesso devem ter estados explícitos. Erros ficam próximos ao campo/formulário, mantendo os dados digitados. Nenhuma resposta de perfil contém senha, hash, salt, token ou versão de credenciais.
+
+### RF009 — Fichas entregues sincronizadas
+
+As três telas consultam `GET /api/fichas/hoje`, que retorna `data`, `entregues`, `capacidade`, `restantes` e `permiteAdicionar`. Contagem zero é um dado válido; falhas não podem ser substituídas por valores de demonstração. Capacidade, percentual e restantes usam a mesma resposta. Nos fins de semana, a consulta retorna total zero e registro desabilitado.
+
+O botão do Caixa envia `POST /api/fichas/hoje/incrementos`, sem escolher data nem quantidade. O backend soma exatamente um ao total persistido de hoje e responde com o novo estado; o botão fica desabilitado durante a solicitação, fora dos dias úteis ou ao atingir 300. Não há incremento otimista nem repetição automática de gravações. Limite atingido ou dia fechado retorna `409`, com `FICHAS_LIMIT_REACHED` ou `FICHAS_CLOSED_DAY`.
+
+As telas atualizam a leitura a cada cinco segundos enquanto visíveis, ao recuperar o foco e na atualização manual disponível. O Caixa aplica imediatamente a resposta confirmada do registro. Carregamento, zero, erro, tentativa novamente e sucesso devem ser explícitos, sem mostrar dados antigos como atuais. A data de referência vem do servidor, inclusive na virada do dia; o histórico semanal continua usando os mesmos registros.
 
 ## Regras de negócio e integração
 
@@ -140,6 +150,8 @@ Carregamento, falha com repetição, salvamento e sucesso devem ter estados expl
 
 - **RN13 — Identidade e sessão no perfil:** a conta é resolvida pelo JWT validado, sem ID ou papel escolhido no formulário. O backend revalida `tokenVersion` após bloquear a conta para atualização. E-mail/senha alterados invalidam todos os tokens anteriores; nome apenas mantém token e expiração. A apresentação distingue Caixa de Nutricionista/Gestor, mantendo o nível somente leitura.
 
+- **RN14 — Contagem de fichas:** fichas entregues têm uma única fonte persistente em `semana_fichas`, com posição `0–4` derivada de segunda a sexta. A ausência de semana não impede registrar: o backend inicializa a semana sem refeições. Incrementos concorrentes e edições de cardápio preservam a contagem; `fichasVendidas` permanece como nome histórico de saída da API semanal, mas o valor enviado em cadastro/edição de cardápio deixa de alterar fichas. Essa compatibilidade evita que um formulário antigo apague entregas registradas pelo Caixa. Os rótulos dos painéis indicam fichas entregues; o gráfico semanal atualiza o índice de hoje com a consulta diária, mantendo os demais índices históricos.
+
 ## Contratos HTTP de referência
 
 Os caminhos e os formatos de sucesso abaixo refletem `backend/specs/DTOs/requirements.md` e os controllers existentes. Os campos detalhados de cada DTO permanecem definidos naquela especificação.
@@ -147,6 +159,8 @@ Os caminhos e os formatos de sucesso abaixo refletem `backend/specs/DTOs/require
 | Método e caminho | Uso no frontend | Sucesso documentado |
 |---|---|---|
 | `POST /api/auth/login` | Login | `200`, JWT Bearer com validade de 3600 segundos e perfil; `401` JSON para credenciais inválidas |
+| `GET /api/fichas/hoje` | Contador público e painéis | `200`, `FichasDiaResponseDTO`; somente data/contagem/capacidade/restantes/permissão do dia |
+| `POST /api/fichas/hoje/incrementos` | Adicionar uma ficha pelo Caixa | `200`, contador confirmado; `409` limite/dia fechado; `401` sem login; `403` para outro papel |
 | `GET /api/usuarios` | Consulta administrativa de usuários | `200`, lista de `UsuarioResponseDTO` |
 | `POST /api/usuarios` | Cadastro de usuário | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso |
 | `GET /api/usuarios/me` | Consulta da própria conta | `200`, `UsuarioResponseDTO`; identidade do JWT |
@@ -258,6 +272,22 @@ O serviço de cardápio converte nomes como `pratoProteico`/`sucoNatural` para `
 ### Cenário 10 — Atualização e nova autenticação
 
 **Dado que** o formulário é válido e, quando necessário, a senha atual foi confirmada, **quando** a API confirma a gravação, **então** alterar apenas o nome mantém a sessão/expiração. Alterar e-mail/senha exige novo login e invalida todos os tokens anteriores; falhas de entrada/conflito preservam os valores e exibem o erro sem anunciar sucesso.
+
+### Cenário 11 — Mesmo total nas telas
+
+**Dado que** Caixa, Nutricionista/Gestor e página pública estão abertos, **quando** o backend confirma uma nova ficha, **então** o Caixa mostra imediatamente o total confirmado e as demais telas visíveis passam ao mesmo total na consulta seguinte, agendada a cada cinco segundos ou ao recuperar foco. Capacidade, percentual e restantes derivam do mesmo DTO. O índice de hoje no gráfico semanal também usa esse total, sem substituir os outros dias.
+
+### Cenário 12 — Registro, limite e dias úteis
+
+**Dado que** há menos de 300 fichas em um dia útil de Fortaleza, **quando** Caixa aciona o botão, **então** uma única requisição soma uma ficha, sem depender de cardápio. O botão impede outra solicitação enquanto a anterior está em andamento. Ao atingir 300 ou em fins de semana, o registro fica desabilitado, com o motivo visível; o servidor também rejeita tentativas incompatíveis. Outro papel não pode registrar pela API.
+
+### Cenário 13 — Falhas e respostas antigas
+
+**Dado que** uma consulta ou gravação falha, **então** a tela mostra erro e oferece nova consulta, sem substituir a contagem por mock nem anunciar uma gravação não confirmada. Uma leitura iniciada antes do POST não pode restaurar um total anterior depois do sucesso. A operação de gravação não é repetida automaticamente, inclusive quando a resposta se perde.
+
+### Cenário 14 — Novo dia sem apagar histórico
+
+**Dado que** há fichas registradas, **quando** muda o dia no servidor em `America/Fortaleza`, **então** as telas passam à data/contagem correspondentes na atualização seguinte, sem reapresentar o dia anterior como atual. Editar o cardápio ou registrar desperdício não apaga fichas; a API mantém o histórico dos dias e semanas anteriores.
 
 ## Decisões pendentes e verificações
 

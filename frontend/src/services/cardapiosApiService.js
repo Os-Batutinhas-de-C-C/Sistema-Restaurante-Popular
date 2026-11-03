@@ -111,7 +111,6 @@ export async function salvarRefeicaoDiaApi(dataDia, valores, options = {}) {
 
     const body = {
         desperdicio: semana?.desperdicio ?? [],
-        fichasVendidas: semana?.fichasVendidas ?? [],
         cardapio,
     };
 
@@ -136,7 +135,6 @@ export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}
         : Array(5).fill(null);
     const body = {
         desperdicio: desperdicioPorDia,
-        fichasVendidas: semana?.fichasVendidas ?? [],
         cardapio,
     };
     const result = semana

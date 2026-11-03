@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Box, Button, Skeleton, Stack } from "@mui/material";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
+import useFichasDia from "../../services/useFichasDia";
+import { dataIsoFortaleza } from "../../services/fichasService";
 import {
     filtrarCardapiosPorIntervalo,
     listarDadosCardapio,
@@ -23,7 +25,14 @@ function somarDias(data, quantidade) {
 
 export default function PainelNutricionistaCardapio() {
     const router = useRouter();
-    const [intervaloSelecionado, setIntervaloSelecionado] = useState(obterIntervaloSemanaAtual);
+    const fichasDia = useFichasDia();
+    const [dataInicial] = useState(dataIsoFortaleza);
+    const dataReferencia = fichasDia.dados?.data ?? fichasDia.dataReferencia ?? dataInicial;
+    const [intervaloEscolhido, setIntervaloEscolhido] = useState(null);
+    const intervaloSelecionado = useMemo(
+        () => intervaloEscolhido ?? obterIntervaloSemanaAtual(dataReferencia),
+        [intervaloEscolhido, dataReferencia],
+    );
     const [refeicaoSelecionada, setRefeicaoSelecionada] = useState(null);
     const [semanas, setSemanas] = useState([]);
     const [todosCardapios, setTodosCardapios] = useState([]);
@@ -53,25 +62,32 @@ export default function PainelNutricionistaCardapio() {
             ativo = false;
             loadSequence.current += 1;
         };
-    }, [refreshKey]);
+    }, [refreshKey, dataReferencia]);
 
     const cardapios = useMemo(
         () => filtrarCardapiosPorIntervalo(todosCardapios, intervaloSelecionado),
         [todosCardapios, intervaloSelecionado],
     );
-    const graficos = useMemo(() => obterGraficosSemana(semanas, intervaloSelecionado), [semanas, intervaloSelecionado]);
+    const graficos = useMemo(
+        () => obterGraficosSemana(semanas, intervaloSelecionado, fichasDia.dados, dataReferencia),
+        [semanas, intervaloSelecionado, fichasDia.dados, dataReferencia],
+    );
 
     const recarregar = () => {
         setLoading(true);
         setError("");
         setRefreshKey((atual) => atual + 1);
+        fichasDia.recarregar();
     };
 
     const navegarPeriodo = (quantidadeSemanas) => {
-        setIntervaloSelecionado((atual) => ({
-            from: somarDias(atual.from, quantidadeSemanas * 7),
-            to: somarDias(atual.to, quantidadeSemanas * 7),
-        }));
+        setIntervaloEscolhido((atual) => {
+            const referencia = atual ?? intervaloSelecionado;
+            return {
+                from: somarDias(referencia.from, quantidadeSemanas * 7),
+                to: somarDias(referencia.to, quantidadeSemanas * 7),
+            };
+        });
     };
 
     return (
@@ -79,7 +95,12 @@ export default function PainelNutricionistaCardapio() {
             <NavbarPainel />
             <Box component="main" className={styles.main}>
                 <Box className={styles.layout}>
-                    <GraficosCardapio graficos={graficos} />
+                    <GraficosCardapio
+                        graficos={graficos}
+                        erroFichas={fichasDia.error}
+                        carregandoFichas={fichasDia.loading}
+                        onRefreshFichas={fichasDia.recarregar}
+                    />
                     {loading ? (
                         <Stack spacing={1}><Skeleton variant="rounded" height={56} /><Skeleton variant="rounded" height={210} /></Stack>
                     ) : error ? (
@@ -88,7 +109,7 @@ export default function PainelNutricionistaCardapio() {
                         <ListaCardapios
                             cardapios={cardapios}
                             intervaloSelecionado={intervaloSelecionado}
-                            onSelectRange={setIntervaloSelecionado}
+                            onSelectRange={setIntervaloEscolhido}
                             onPreviousRange={() => navegarPeriodo(-1)}
                             onNextRange={() => navegarPeriodo(1)}
                             onEdit={(date) => router.push(`/painel-nutricionista-cardapio/gerenciar/${date}`)}

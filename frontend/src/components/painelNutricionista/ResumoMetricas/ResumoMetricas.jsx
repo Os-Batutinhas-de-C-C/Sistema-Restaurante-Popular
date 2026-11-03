@@ -37,8 +37,8 @@ function Metric({ title, value, suffix, children, borderLeft = false }) {
  */
 export default function ResumoMetricas({ dadosDashboard }) {
     // Normaliza valores ausentes para evitar resultados inválidos na interface.
-    const fichasDisponiveis = dadosDashboard?.fichasConsumidas != null && Number.isFinite(Number(dadosDashboard.fichasConsumidas));
-    const fichasConsumidas = fichasDisponiveis ? Number(dadosDashboard.fichasConsumidas) : "—";
+    const fichasDisponiveis = Number.isSafeInteger(dadosDashboard?.fichasEntregues);
+    const fichasEntregues = fichasDisponiveis ? dadosDashboard.fichasEntregues : "—";
     const desperdicioExiste =
         dadosDashboard?.desperdicioKg !== null &&
         dadosDashboard?.desperdicioKg !== undefined &&
@@ -51,16 +51,20 @@ export default function ResumoMetricas({ dadosDashboard }) {
         >
             <Box className={styles.metrics}>
                 <Metric
-                    title="FICHAS VENDIDAS"
-                    value={fichasConsumidas}
+                    title="FICHAS ENTREGUES"
+                    value={<span data-testid="fichas-entregues">{fichasEntregues}</span>}
                     suffix={fichasDisponiveis ? "fichas" : ""}
                 >
                     <Stack spacing={0.75} className={styles.details}>
                         <Typography variant="caption" className={styles.blueText}>
-                            {fichasDisponiveis ? "Dados carregados da semana" : "Sem dado disponível"}
+                            {fichasDisponiveis
+                                ? <>Capacidade diária: <span data-testid="fichas-capacidade">{dadosDashboard.fichasTotais}</span></>
+                                : dadosDashboard?.fichasCarregando ? "Carregando contagem..." : "Sem dado disponível"}
                         </Typography>
                         <Typography variant="caption" className={styles.grayText}>
-                            {fichasDisponiveis ? "Valor registrado para hoje" : "Aguardando registro"}
+                            {fichasDisponiveis
+                                ? dadosDashboard.fichasDiaUtil ? `Restam ${dadosDashboard.fichasRestantes} fichas hoje` : "Entregas de segunda a sexta-feira"
+                                : "Atualize os dados do painel"}
                         </Typography>
                     </Stack>
                 </Metric>

@@ -65,6 +65,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/noticias").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/cardapios/publicos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/fichas/hoje").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/fichas/hoje/incrementos").hasRole("CAIXA")
                         .requestMatchers(HttpMethod.POST, "/api/mensagens/publicas").permitAll()
                         .requestMatchers("/api/semanas/**", "/api/refeicoes/**", "/api/estoque/**")
                         .hasAnyRole("NUTRICIONISTA", "GESTOR")

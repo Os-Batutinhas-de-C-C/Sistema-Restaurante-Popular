@@ -58,7 +58,6 @@ public class SemanaService {
         Semana semana = new Semana();
         semana.setData(request.data());
         semana.setDesperdicio(copyList(request.desperdicio()));
-        semana.setFichasVendidas(copyList(request.fichasVendidas()));
         replaceCardapio(semana, request.cardapio());
         return toResponseDTO(semanaRepository.save(semana));
     }
@@ -66,9 +65,8 @@ public class SemanaService {
     @Transactional
     public Optional<SemanaResponseDTO> update(LocalDate data, SemanaUpdateRequestDTO request) {
         requireMonday(data);
-        return semanaRepository.findByData(data).map(semana -> {
+        return semanaRepository.findByDataForUpdate(data).map(semana -> {
             semana.setDesperdicio(copyList(request.desperdicio()));
-            semana.setFichasVendidas(copyList(request.fichasVendidas()));
             replaceCardapio(semana, request.cardapio());
             return toResponseDTO(semanaRepository.save(semana));
         });

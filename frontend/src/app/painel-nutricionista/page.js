@@ -1,35 +1,34 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import RegistrarDesperdicio from "../../components/PainelNutricionista/RegistrarDesperdicio/RegistrarDesperdicio";
 import DashboardNutricionista from "../../components/PainelNutricionista/DashboardNutricionista/DashboardNutricionista";
 import ProtectedRoute from "../../components/login/ProtectedRoute";
+import useFichasDia from "../../services/useFichasDia";
 import {
-    dataIsoLocal,
+    dataIsoFortaleza,
+    diaUtilFichas,
+    formatarAtualizacaoFichas,
+    formatarDataFichas,
+} from "../../services/fichasService";
+import {
+    dataDeIsoLocal,
     listarSemanasApi,
     mapearRefeicao,
     obterSegundaIso,
     salvarDesperdicioDiaApi,
 } from "../../services/cardapiosApiService";
 
-function montarDadosDashboard(semana, agora = new Date()) {
-    const dataIso = dataIsoLocal(agora);
-    const diaDaSemana = agora.getDay();
+function montarDadosDashboard(semana, dataIso) {
+    const diaDaSemana = new Date(`${dataIso}T12:00:00Z`).getUTCDay();
     const indiceDia = diaDaSemana >= 1 && diaDaSemana <= 5 ? diaDaSemana - 1 : -1;
     const refeicao = indiceDia >= 0 ? semana?.cardapio?.[indiceDia] : null;
-    const formatadorData = new Intl.DateTimeFormat("pt-BR", {
-        weekday: "long", day: "2-digit", month: "long", year: "numeric",
-    });
     const desperdicio = indiceDia >= 0 ? semana?.desperdicio?.[indiceDia] : null;
-    const fichas = indiceDia >= 0 ? semana?.fichasVendidas?.[indiceDia] : null;
 
     return {
         titulo: "Painel da Nutricionista",
-        data: formatadorData.format(agora),
+        data: formatarDataFichas(dataIso),
         dataIso,
-        atualizadoEm: `Atualizado às ${new Intl.DateTimeFormat("pt-BR", { hour: "2-digit", minute: "2-digit" }).format(agora)}`,
-        fichasConsumidas: fichas == null ? null : Number(fichas),
-        fichasTotais: null,
         desperdicioKg: desperdicio == null ? null : Number(desperdicio),
         cardapio: mapearRefeicao(refeicao),
         permiteRegistrarDesperdicio: indiceDia >= 0,
@@ -37,13 +36,14 @@ function montarDadosDashboard(semana, agora = new Date()) {
 }
 
 export default function PainelNutricionistaPage() {
-    const agora = useMemo(() => new Date(), []);
-    const dataIso = dataIsoLocal(agora);
-    const dataSegunda = obterSegundaIso(agora);
+    const fichas = useFichasDia();
+    const [dataInicial] = useState(dataIsoFortaleza);
+    const dataIso = fichas.dados?.data ?? fichas.dataReferencia ?? dataInicial;
+    const dataSegunda = obterSegundaIso(dataDeIsoLocal(dataIso));
     const [isWasteDialogOpen, setIsWasteDialogOpen] = useState(false);
-    const [dadosDashboard, setDadosDashboard] = useState(() => montarDadosDashboard(null, agora));
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
+    const [dadosSemana, setDadosSemana] = useState({
+        referencia: null, semana: null, loading: true, error: "", atualizadoEm: null,
+    });
     const [refreshKey, setRefreshKey] = useState(0);
 
     useEffect(() => {
@@ -51,39 +51,53 @@ export default function PainelNutricionistaPage() {
         listarSemanasApi()
             .then((semanas) => {
                 if (!ativo) return;
-                const semanaAtual = semanas.find((semana) => semana.data === dataSegunda) ?? null;
-                setDadosDashboard(montarDadosDashboard(semanaAtual, agora));
-                setError("");
+                const semana = semanas.find((item) => item.data === dataSegunda) ?? null;
+                setDadosSemana({ referencia: dataSegunda, semana, loading: false, error: "", atualizadoEm: new Date() });
             })
             .catch((erro) => {
-                if (ativo) setError(erro?.message || "Não foi possível carregar os dados do painel.");
-            })
-            .finally(() => {
-                if (ativo) setLoading(false);
+                if (ativo) setDadosSemana({
+                    referencia: dataSegunda, semana: null, loading: false,
+                    error: erro?.message || "Não foi possível carregar os dados do painel.", atualizadoEm: null,
+                });
             });
         return () => { ativo = false; };
-    }, [agora, dataSegunda, refreshKey]);
+    }, [dataSegunda, refreshKey]);
+
+    const semanaAtual = dadosSemana.referencia === dataSegunda ? dadosSemana.semana : null;
+    const dadosDashboard = {
+        ...montarDadosDashboard(semanaAtual, dataIso),
+        atualizadoEm: formatarAtualizacaoFichas(fichas.atualizadoEm ?? dadosSemana.atualizadoEm),
+        fichasEntregues: fichas.dados?.entregues ?? null,
+        fichasTotais: fichas.dados?.capacidade ?? null,
+        fichasRestantes: fichas.dados?.restantes ?? null,
+        fichasDiaUtil: fichas.dados ? diaUtilFichas(fichas.dados.data) : null,
+        fichasCarregando: fichas.loading,
+    };
 
     const recarregar = () => {
-        setLoading(true);
-        setError("");
+        setDadosSemana((anterior) => ({ ...anterior, loading: true, error: "" }));
         setRefreshKey((atual) => atual + 1);
+        fichas.recarregar();
     };
 
     const registrarDesperdicio = async (value) => {
-        const semanaAtualizada = await salvarDesperdicioDiaApi(dataIso, value);
-        setDadosDashboard(montarDadosDashboard(semanaAtualizada, agora));
-        setError("");
+        const segundaDoRegistro = dataSegunda;
+        const semana = await salvarDesperdicioDiaApi(dataIso, value);
+        setDadosSemana((anterior) => {
+            if (anterior.referencia && anterior.referencia !== segundaDoRegistro) return anterior;
+            return { referencia: segundaDoRegistro, semana, loading: false, error: "", atualizadoEm: new Date() };
+        });
     };
 
+    const erroSemana = dadosSemana.referencia === dataSegunda ? dadosSemana.error : "";
     return (
         <ProtectedRoute allowedProfiles={["Nutricionista", "Gestor"]}>
             <DashboardNutricionista
                 dadosDashboard={dadosDashboard}
                 onWasteClick={() => setIsWasteDialogOpen(true)}
                 onRefresh={recarregar}
-                loading={loading}
-                error={error}
+                loading={dadosSemana.loading || dadosSemana.referencia !== dataSegunda || fichas.loading}
+                error={[erroSemana, fichas.error].filter(Boolean).join(" ")}
             />
             <RegistrarDesperdicio
                 open={isWasteDialogOpen}

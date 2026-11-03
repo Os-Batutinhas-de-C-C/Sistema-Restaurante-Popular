@@ -31,6 +31,8 @@
 
 - [x] **T17 — Integrar Meu Perfil e distinguir os papéis:** dados próprios por `GET /api/usuarios/me`, atualização de nome/e-mail e senha, papel somente leitura, navbar Caixa ou Nutricionista/Gestor. Senha atual, confirmação, unicidade do e-mail e revogação por `tokenVersion` seguem o plano aprovado. Migração `V20261103__perfil_usuario.sql` aplicada e preservação dos usuários/credenciais verificada; 12 testes H2, lint/build frontend e guards PostgreSQL passaram. Next/Spring/H2 no navegador confirmou Caixa em `360×844`, Nutricionista em `1440×900`, nome persistido com sessão mantida, erros inline/dados preservados, bloqueio de senha curta e novo login após e-mail/senha alterados. Capturas inspecionadas; servidores temporários encerrados e build normal restaurado para backend `8080`.
 
+- [x] **T18 — Contador diário de fichas integrado:** concluído conforme RF009/RN14, com leitura pública, registro exclusivo do Caixa, limite de 300 em dias úteis/Fortaleza e proteção contra concorrência/edições antigas. Passaram 19 testes H2 (10 fichas, seis DTO, três JWT), lint geral/focado e build de produção. No navegador, Next.js → Spring/H2 reais confirmaram zero nas três telas, um POST por clique com bloqueio durante a solicitação, sincronização entre contextos, limite de 300, gráfico semanal e preservação do intervalo anterior. Falha de consulta mostrou erro sem valor fictício; nova consulta recuperou a contagem. Foram verificados Caixa em `360×844`, Nutricionista em `1440×900`, cartão público de 360 px e referência Fortaleza mesmo com navegador em outro fuso. A auditoria PostgreSQL foi somente leitura; todos os registros de teste ocorreram em H2. As capturas mobile/desktop e o gráfico em 300 foram inspecionados; navegador/serviços temporários foram encerrados e o build normal passou novamente com destino `http://localhost:8080` conferido no manifest. A auditoria final manteve uma semana, nenhuma linha de fichas e total zero no PostgreSQL, sem alterar dados reais.
+
 ## Decisões confirmadas
 
 - `/api` usa proxy Next de mesma origem; CORS não foi alterado.
@@ -42,7 +44,7 @@
 - O menu público retorna somente datas e refeições.
 - Mensagens públicas não coletam nome nem contato; exclusão administrativa de mensagens/notícias e CRUD de estoque estão habilitados.
 - “Vence em breve” aplica-se até sete dias antes da validade; “Vencido” começa no dia seguinte.
-- O dashboard não inventa capacidade total de fichas, campo ausente no contrato.
+- O aditivo de fichas define capacidade de 300 por dia, total único de fichas entregues e registro exclusivo do Caixa, de segunda a sexta no horário de Fortaleza, mesmo sem cardápio.
 - O PostgreSQL mantém as tabelas legadas e seus registros; o conjunto JPA atual foi inicializado vazio ao lado delas, sem importar dados ou contas antigas.
 
 ## Limitações registradas

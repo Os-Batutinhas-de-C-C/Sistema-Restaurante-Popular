@@ -6,6 +6,8 @@ Este aditivo atualiza as restrições anteriores de escopo, incluindo RN05/RN06:
 
 ## Objetivo
 
+**Aditivo de fichas aprovado — 03/11/2026:** um contador de fichas entregues atende às três telas. Cada registro soma exatamente um, limitado a 300 por dia de segunda a sexta em `America/Fortaleza`, sem exigir refeição cadastrada. O total de hoje é público; somente Caixa pode incrementar. O solicitante autorizou testes focados de permissões e incrementos concorrentes.
+
 **Aditivo de perfil aprovado — 03/11/2026:** conectar “Meu Perfil” à própria conta autenticada, com identidade obtida do `userId` do JWT e nível de acesso somente leitura. O solicitante aprovou os endpoints de consulta/atualização pessoal, exigência da senha atual para alterar e-mail ou senha, e-mail de login único, nova senha de pelo menos seis caracteres Unicode e no máximo 72 bytes UTF-8, e invalidação de todos os tokens anteriores após mudança de e-mail/senha por uma versão persistida nas credenciais. A comparação de e-mail permanece sensível a maiúsculas/minúsculas, conforme o contrato existente de login. Alteração somente de nome mantém token e expiração da sessão.
 
 Definir DTOs de requisição e resposta para a API, separando os contratos HTTP das entidades JPA. O aditivo de integração aprovado amplia o escopo para incluir autenticação JWT, permissões, persistência semanal e operações consumidas pelo frontend.
@@ -23,7 +25,7 @@ Aplicar DTOs aos endpoints atualmente definidos em `controller/`:
 - mensagens (`Mensagem`);
 - estoque (`Estoque`).
 
-`CredencialAutenticacao` é um detalhe interno de autenticação e não deve ser exposto por nenhum DTO de resposta. O aditivo inclui `POST /api/auth/login`; rotas sem controller correspondente, como vendas, permanecem fora do escopo.
+`CredencialAutenticacao` é um detalhe interno de autenticação e não deve ser exposto por nenhum DTO de resposta. Os aditivos incluem login e o contador de fichas; pagamentos, emissão de comprovantes e outros fluxos de vendas permanecem fora do escopo.
 
 ## Convenções dos DTOs
 
@@ -48,6 +50,8 @@ Aplicar DTOs aos endpoints atualmente definidos em `controller/`:
 - **RN09 — Troca de senha:** a senha atual é conferida pelo `PasswordEncoder` existente. A nova senha deve ser não vazia, conter pelo menos seis pontos de código Unicode, ocupar no máximo 72 bytes UTF-8 e coincidir com a confirmação. Somente o novo hash BCrypt é persistido. Falhas de validação ou senha atual retornam `400` sem alterar a conta.
 - **RN10 — Revogação e sessão:** `credenciais_autenticacao.versao_token` inicia em `0`. Os JWTs recebem o claim numérico `tokenVersion`; o decoder exige `userId` inteiro positivo, versão inteira não negativa, conta/credencial existentes, versão atual e subject igual ao e-mail atual. O service revalida a versão depois de bloquear a conta para atualização, evitando usar uma sessão revogada durante uma operação concorrente. Alterar e-mail/senha incrementa a versão, tornando todos os tokens anteriores inválidos (`401`), mesmo antes de completar uma hora. Tokens antigos sem versão também exigem novo login. Alteração apenas do nome não incrementa a versão.
 
+- **RN11 — Fichas entregues:** o servidor define a data de hoje em `America/Fortaleza`; o cliente não escolhe dia, índice ou quantidade. GET sem registro retorna zero sem gravar. Fins de semana retornam zero e `permiteAdicionar=false`; POST é rejeitado com `409 FICHAS_CLOSED_DAY`. Em dia útil, a primeira entrega inicializa a semana sem refeições, se necessário; incrementos são serializados e não excedem 300 (`409 FICHAS_LIMIT_REACHED`). A virada do dia inicia outro índice/semana sem apagar o histórico. Todos os demais dias, refeições e desperdício são preservados. `fichasVendidas` continua na resposta semanal como nome legado do mesmo contador, mas o valor enviado nos DTOs semanais é ignorado, preservando compatibilidade sem permitir alterar contagens fora da operação exclusiva do Caixa.
+
 ## Contrato por endpoint
 
 Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode ajustar o nome Java mantendo a distinção entre request e response. Os acessos refletem o contrato aprovado no aditivo, não o comportamento histórico do `SecurityConfig`.
@@ -55,6 +59,8 @@ Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode 
 | Método e caminho | Request | Response de sucesso | Acesso contratado |
 |---|---|---|---|
 | `POST /api/auth/login` | `LoginDTO` (`email`, `senha`) | `200`, token Bearer/profile; `401` para credenciais inválidas | Público |
+| `GET /api/fichas/hoje` | Sem corpo | `200`, `FichasDiaResponseDTO`; sem métricas semanais ou dados pessoais | Público |
+| `POST /api/fichas/hoje/incrementos` | Sem corpo; data/quantidade definidas pelo servidor | `200`, `FichasDiaResponseDTO`; `409` limite/dia fechado | Papel `CAIXA` |
 | `GET /api/usuarios` | Sem corpo | `200`, lista de `UsuarioResponseDTO` | Usuário autenticado |
 | `POST /api/usuarios` | `UsuarioCreateRequestDTO` | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso | Usuário autenticado |
 | `GET /api/usuarios/me` | Sem corpo | `200`, `UsuarioResponseDTO` da própria conta | Usuário autenticado, identidade do JWT |
@@ -99,8 +105,9 @@ Os campos abaixo definem o contrato base a partir dos modelos e operações atua
 | `PerfilUpdateRequestDTO` | `nome`, `emailRecuperacao`, `senhaAtual`. Nome/e-mail obrigatórios; senha atual obrigatória somente quando o e-mail mudar. Não recebe ID nem papel. |
 | `PerfilUpdateResponseDTO` | `usuario` (`UsuarioResponseDTO`) e `requerNovoLogin` (`true` após alterar o e-mail; `false` quando o e-mail é mantido). |
 | `SenhaUpdateRequestDTO` | `senhaAtual`, `novaSenha`, `confirmacaoSenha`, todos obrigatórios. Regras de RN09; nenhum campo é devolvido. |
-| `SemanaCreateRequestDTO` | `data` (segunda-feira), `desperdicio`, `fichasVendidas`, `cardapio` com exatamente cinco posições; `null` indica dia vazio |
-| `SemanaUpdateRequestDTO` | `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições; a data da rota deve ser segunda-feira. |
+| `FichasDiaResponseDTO` | `data`, `entregues`, `capacidade` (300), `restantes`, `permiteAdicionar` (dia útil e abaixo do limite). Este último indica disponibilidade operacional; a autorização para registrar continua exclusiva do Caixa. Não expõe outras métricas ou usuários. |
+| `SemanaCreateRequestDTO` | `data` (segunda-feira), `desperdicio`, `cardapio` com exatamente cinco posições; `null` indica dia vazio. `fichasVendidas` legado é aceito e ignorado; novas contagens iniciam em zero. |
+| `SemanaUpdateRequestDTO` | `desperdicio`, `cardapio` com cinco posições; a data da rota deve ser segunda-feira. `fichasVendidas` legado é aceito e ignorado, preservando as entregas persistidas. |
 | `SemanaResponseDTO` | `idSemana`, `data`, `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições de `RefeicaoResponseDTO` ou `null` |
 | `RefeicaoCreateRequestDTO` | `proteina`, `guarnicao`, `acompanhamento1`, `acompanhamento2`, `suco`, `sobremesa`, `opcaoProteica`, `calorias`, `saladaDoDia`. Não recebe `semanaId`; a refeição pode permanecer sem associação. |
 | `RefeicaoRequestDTO` | Para item de `cardapio`: `idRefeicao` para referência existente, ou os campos de refeição acima para criação inline. Não aceitar ambos no mesmo item. |
@@ -117,7 +124,7 @@ Os campos abaixo definem o contrato base a partir dos modelos e operações atua
 
 Campos de ID gerados (`idUsuario`, `idSemana`, `idRefeicao`, `idMensagem` e `idMaterial`) são somente de resposta, exceto `idRefeicao` usado como referência de associação em `RefeicaoRequestDTO`. O DTO de atualização de mensagem não deve passar a atualizar `assunto` implicitamente; isso exigiria mudança explícita do comportamento contratado.
 
-Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `senhaPura`) são obrigatórios. Em `MensagemCreateRequestDTO`, `texto` é obrigatório e não vazio; `assunto`, `horario` e `data` podem ser nulos conforme o model atual. `MensagemPublicaCreateRequestDTO` exige `assunto` (até 100 caracteres) e `texto` (até 1000 caracteres); o servidor define data e horário. Os demais campos mantêm a nulabilidade dos models atuais, salvo as validações descritas aqui. Listas de cardápio ausentes ou nulas são convertidas em cinco posições nulas; desperdício e fichas ausentes ou nulos são tratados como vazios. Os valores das listas de desperdício e fichas mantêm sua posição. A unidade de `Noticia.duracao` é hora, com valor inteiro de 1 a 72.
+Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `senhaPura`) são obrigatórios. Em `MensagemCreateRequestDTO`, `texto` é obrigatório e não vazio; `assunto`, `horario` e `data` podem ser nulos conforme o model atual. `MensagemPublicaCreateRequestDTO` exige `assunto` (até 100 caracteres) e `texto` (até 1000 caracteres); o servidor define data e horário. Os demais campos mantêm a nulabilidade dos models atuais, salvo as validações descritas aqui. Listas de cardápio ausentes ou nulas são convertidas em cinco posições nulas; desperdício ausente ou nulo é tratado como vazio. Fichas enviadas nos DTOs semanais são ignoradas, inclusive quando ausentes ou nulas; a atualização mantém os valores persistidos. As respostas de desperdício e fichas mantêm a posição de cada dia. A unidade de `Noticia.duracao` é hora, com valor inteiro de 1 a 72.
 
 ## Critérios de aceitação
 
@@ -189,6 +196,22 @@ Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `sen
 ### Cenário 11 — Perfil inválido ou conflitante
 
 **Dado que** a senha atual está incorreta, a confirmação diverge, a nova senha viola RN09 ou o e-mail pertence a outra conta, **quando** a atualização é solicitada, **então** a API responde `400` ou `409`, conforme o contrato, sem alteração parcial da conta/credenciais.
+
+### Cenário 12 — Fichas públicas e registro autorizado
+
+**Dado que** um visitante consulta `/api/fichas/hoje`, **então** recebe somente os cinco campos do DTO diário, com zero quando ainda não há entrega e sem criar uma semana. **Quando** um cliente registra uma ficha, **então** apenas Caixa autenticado recebe sucesso; ausência/token inválido recebe `401` e Nutricionista/Gestor recebem `403`. As permissões de `/api/semanas` permanecem inalteradas.
+
+### Cenário 13 — Dia, capacidade e ausência de cardápio
+
+**Dado que** hoje é dia útil em Fortaleza e há menos de 300 fichas, **quando** Caixa registra uma entrega, **então** o total aumenta exatamente um no índice do dia, mesmo sem semana/refeição anterior. Data ou quantidade enviadas pelo cliente não controlam a operação. A ficha 300 é aceita; tentativas seguintes recebem `409 FICHAS_LIMIT_REACHED`. Sábado/domingo recebem `409 FICHAS_CLOSED_DAY`, sem gravação.
+
+### Cenário 14 — Concorrência e edição semanal
+
+**Dado que** vários Caixas registram simultaneamente, inclusive na primeira entrega da semana ou perto do limite, **então** existe uma única semana para a data e cada sucesso soma um, sem ultrapassar 300. **Quando** um formulário de cardápio envia `fichasVendidas` antigo ou arbitrário, **então** a contagem persistida é preservada; refeições, desperdício e os demais dias também são preservados pelo incremento.
+
+### Cenário 15 — Virada do dia e histórico
+
+**Dado que** há fichas registradas em um dia, **quando** passa meia-noite em `America/Fortaleza`, **então** a consulta passa ao novo dia com zero até a primeira entrega, preservando o índice anterior. A mudança de data UTC antes da meia-noite local não reinicia a contagem. Na semana seguinte, a nova contagem mantém integralmente a semana anterior.
 
 ## Restrições de implementação
 

@@ -1,6 +1,7 @@
 package com.batutinhas.restaurante_pop.config;
 
 import com.batutinhas.restaurante_pop.dto.ApiErrorDTO;
+import com.batutinhas.restaurante_pop.exception.FichasException;
 import com.batutinhas.restaurante_pop.exception.PerfilException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(FichasException.class)
+    public ResponseEntity<ApiErrorDTO> handleFichas(FichasException exception) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ApiErrorDTO(exception.getCode(), exception.getMessage()));
+    }
+
     @ExceptionHandler(PerfilException.class)
     public ResponseEntity<ApiErrorDTO> handlePerfil(PerfilException exception) {
         return ResponseEntity.status(exception.getStatus())

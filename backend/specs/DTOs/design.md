@@ -34,6 +34,16 @@ Nome e e-mail aceitam até 255 caracteres Unicode e são normalizados apenas por
 - A migração converte semanas antigas para segunda-feira e associa refeições legadas por `refeicao_id` crescente. Dados com datas ausentes, associações acima de cinco ou semanas que colidem na normalização bloqueiam a migração para tratamento explícito.
 - `GET /api/cardapios/publicos` devolve datas e refeições sem métricas de vendas/desperdício.
 
+## Contador diário de fichas
+
+Um controller dedicado devolve `FichasDiaResponseDTO` na leitura pública de hoje e no incremento exclusivo do Caixa. A data vem de relógio injetável em `America/Fortaleza`. A lista `Semana.fichasVendidas`/`semana_fichas` permanece a única fonte do histórico de segunda a sexta; não há novo schema nem migração. GET não cria registros. POST garante a existência da semana sem refeições e bloqueia sua linha antes de incrementar, com limite de 300 e preservação dos demais campos.
+
+A inicialização precisa tratar a corrida entre transações: a data semanal única é a garantia final, e a tentativa de criação ocorre em transação separada para que um conflito não invalide a transação de incremento. A edição semanal usa o mesmo bloqueio e preserva fichas, inclusive diante de payload antigo. DTOs semanais mantêm o campo legado de entrada por compatibilidade, ignorando-o. O cliente não pode aumentar fichas por outro papel através do cadastro/edição do cardápio.
+
+`FichasService` coordena a data e chama `FichasTransacaoService` em transações `REQUIRES_NEW`; uma disputa na criação é tratada fora da transação que falhou e o incremento volta a consultar a semana. Antes das consultas, o helper limpa seu contexto de persistência. Isso evita que o `EntityManager` mantido por OpenEntityManagerInView reutilize a semana recém-criada com uma coleção de fichas antiga. A leitura da contagem ocorre depois de adquirir o bloqueio da linha semanal. A configuração global de OpenEntityManagerInView permanece a mesma.
+
+Contagens existentes não são reduzidas automaticamente: um total já igual ou superior a 300 bloqueia novos registros; um valor negativo recebe `409 FICHAS_INVALID_DATA` para conferência. As respostas diárias não expõem a lista semanal, desperdício ou dados dos usuários. `permiteAdicionar` descreve o dia/limite; `SecurityConfig` verifica separadamente o papel Caixa no POST.
+
 ## Notícias, mensagens e estoque
 
 - Notícias podem ser criadas por qualquer usuário autenticado e removidas por `NUTRICIONISTA`/`GESTOR`.
@@ -51,3 +61,5 @@ Nome e e-mail aceitam até 255 caracteres Unicode e são normalizados apenas por
 O teste focado `JwtSecurityIntegrationTests` cobre login, JWT ausente/malformado/expirado e regras públicas/papel. Outros testes backend e frontend e a aplicação da migração num banco PostgreSQL não fazem parte dessa execução focada; seus estados são mantidos em `frontend/specs/008-integracao-frontend-backend/tasks.md`.
 
 Na integração de perfil de 03/11/2026, os testes focados de perfil/JWT passaram (12 testes em H2), e lint/build frontend passaram. PostgreSQL iniciou com `ddl-auto=validate`; consultas próprias, gravação sem mudança de nome, senha atual incorreta e conflitos de e-mail foram verificados com Gestor/Caixa sem alterar os registros existentes. O navegador foi verificado por Next.js → Spring/H2 isolado: perfis de Caixa/Nutricionista, menus correspondentes, salvamento do nome, validação de e-mail/senha e novo login após alterações sensíveis. Os detalhes estão em T17 e no change log da integração.
+
+O aditivo de fichas passou em 19 testes focados: 10 de `FichasApiIntegrationTests`, seis de `DtoApiIntegrationTests` e três de `JwtSecurityIntegrationTests`, com zero falhas/erros. O teste de fichas usa H2 explicitamente isolado, relógio controlado e OpenEntityManagerInView habilitado; cobre primeira semana concorrente, limite concorrente, dia/Fortaleza, histórico e preservação diante de PUT semanal antigo. O fixture de semana ausente foi corrigido para uma segunda-feira válida, mantendo a expectativa `404` sem alterar a validação da API. A auditoria PostgreSQL foi somente leitura: uma semana, nenhuma linha de ficha e nenhum valor fora de faixa; nenhum registro real foi alterado. Lint/build e o navegador Next.js → Spring/H2 também passaram: contagem compartilhada, registro real, limite `409`, ausência de Bearer na leitura pública e recuperação de falha foram verificados. O escopo completo está registrado em T18 e no change log da integração; não houve gravação de teste no PostgreSQL.

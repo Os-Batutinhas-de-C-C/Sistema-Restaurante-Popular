@@ -67,11 +67,15 @@ function responseError(response, body) {
  * Sends a request through the same-origin Next.js rewrite to the Spring API.
  * Writes are never retried automatically.
  */
-export async function apiRequest(path, { method = "GET", body, headers: customHeaders, signal } = {}) {
+export async function apiRequest(path, { method = "GET", body, headers: customHeaders, signal, auth = true } = {}) {
     const headers = new Headers(customHeaders);
     headers.set("Accept", "application/json");
-    const accessToken = getAccessToken();
-    if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+    if (auth) {
+        const accessToken = getAccessToken();
+        if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+    } else {
+        headers.delete("Authorization");
+    }
 
     let requestBody = body;
     if (body !== undefined && body !== null && typeof body !== "string") {

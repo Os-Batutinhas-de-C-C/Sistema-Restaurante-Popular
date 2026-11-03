@@ -8,8 +8,8 @@ function inicioDaSemana(data) {
     return inicio;
 }
 
-export function obterIntervaloSemanaAtual() {
-    const from = inicioDaSemana(new Date());
+export function obterIntervaloSemanaAtual(dataReferencia) {
+    const from = inicioDaSemana(dataReferencia ? dataDeIsoLocal(dataReferencia) : new Date());
     const to = new Date(from);
     to.setDate(to.getDate() + 6);
     return { from, to };
@@ -36,13 +36,23 @@ export function filtrarCardapiosPorIntervalo(cardapios, intervalo) {
     });
 }
 
-export function obterGraficosSemana(semanas, intervalo) {
+export function obterGraficosSemana(semanas, intervalo, fichasDia = null, dataReferencia = fichasDia?.data) {
     const segunda = inicioDaSemana(intervalo?.from ?? new Date());
     const segundaIso = `${segunda.getFullYear()}-${String(segunda.getMonth() + 1).padStart(2, "0")}-${String(segunda.getDate()).padStart(2, "0")}`;
     const semana = semanas.find((item) => item.data === segundaIso);
     const cincoValores = (valores) => Array.from({ length: 5 }, (_, index) => Number(valores?.[index]) || 0);
+    const fichas = cincoValores(semana?.fichasVendidas);
+    if (dataReferencia) {
+        const diaAtual = dataDeIsoLocal(dataReferencia);
+        const segundaAtual = inicioDaSemana(diaAtual);
+        const indiceDia = diaAtual.getDay() - 1;
+        if (segunda.getTime() === segundaAtual.getTime() && indiceDia >= 0 && indiceDia < 5) {
+            fichas[indiceDia] = fichasDia?.data === dataReferencia ? fichasDia.entregues : null;
+        }
+    }
     return {
-        fichas: cincoValores(semana?.fichasVendidas),
+        fichas,
+        capacidadeFichas: fichasDia?.capacidade,
         desperdicio: cincoValores(semana?.desperdicio),
     };
 }

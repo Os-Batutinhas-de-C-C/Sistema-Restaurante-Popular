@@ -133,7 +133,7 @@ class DtoApiIntegrationTests {
         assertEquals(200, update.statusCode());
         assertTrue(update.body().contains("\"desperdicio\":[2.0]"));
 
-        HttpResponse<String> absentWeek = request("PUT", "/api/semanas/2099-01-01", nutricionista, "{}");
+        HttpResponse<String> absentWeek = request("PUT", "/api/semanas/2099-01-05", nutricionista, "{}");
         assertEquals(404, absentWeek.statusCode());
 
         HttpResponse<String> standaloneMeal = request("POST", "/api/refeicoes", nutricionista,
