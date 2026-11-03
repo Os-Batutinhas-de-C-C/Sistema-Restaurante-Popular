@@ -143,6 +143,8 @@ class JwtSecurityIntegrationTests {
                 .expiresAt(now.minusSeconds(3600))
                 .subject(nutricionista.getEmailRecuperacao())
                 .claim("roles", List.of("NUTRICIONISTA"))
+                .claim("userId", nutricionista.getIdUsuario())
+                .claim("tokenVersion", nutricionista.getCredencialAutenticacao().getVersaoToken())
                 .build();
         return jwtEncoder.encode(JwtEncoderParameters.from(
                 JwsHeader.with(MacAlgorithm.HS256).build(), claims

@@ -17,12 +17,19 @@ O cardápio semanal usa `Semana.data` como segunda-feira e cinco posições de r
 
 ## Conversão e telas
 
+- `NavbarPainel` aceita a variante `caixa`, usada explicitamente pela página `/painel-caixa`. Ela compartilha os mesmos SVGs, CSS, avatar e handlers da navbar padrão, altera o título para “Painel do Caixa” e filtra o menu para “Sair”. A variante padrão conserva o menu da nutricionista. O conteúdo do Caixa recebe 64 px adicionais no padding superior para acomodar a barra fixa, preservando os 28 px de espaço do layout original.
 - Serviços de recurso convertem os DTOs HTTP aos modelos visuais. Notícias, mensagens e estoque carregam dados reais e mostram estados de loading/empty/error.
 - Formulários só mostram sucesso depois da resposta do backend e conservam valores em caso de falha.
 - Estoque exibe o status calculado pela API, não solicita status manual. Edição e exclusão usam PUT/DELETE.
 - Mensagens usam a rota pública anônima com assunto/texto e as rotas administrativas protegidas para lista/exclusão.
 - O cardápio público usa `GET /api/cardapios/publicos`. A área nutricionista usa `GET /api/semanas` e envia as cinco posições ao criar/atualizar uma semana, preservando os IDs de refeições já existentes.
 - O dashboard nutricionista usa métricas de `/api/semanas`; não inventa limite de fichas quando não há capacidade no contrato. O registro diário de desperdício atualiza somente o índice do dia.
+
+## Meu Perfil
+
+`perfilService.js` centraliza `GET`/`PUT /api/usuarios/me` e `PUT /api/usuarios/me/senha`, valida os DTOs recebidos e converte o papel para a sessão. `useMeuPerfil` gerencia carga, repetição, validação dos dois formulários, salvamento e erros inline, substituindo os valores de mock por dados da própria conta. O nível de acesso não é editável; o perfil carregado seleciona navbar Caixa ou Nutricionista/Gestor.
+
+Alteração somente de nome usa `updateAuthSessionUser`, conservando `accessToken` e `expiresAt`. Mudança de e-mail/senha limpa a sessão e leva a `/login?motivo=perfil-alterado`; `LoginNotice` mostra uma mensagem conhecida, sem renderizar livremente o parâmetro recebido. O backend exige senha atual para operações sensíveis, mantém e-mail único e incrementa `versao_token`. A validação do JWT contra essa versão revoga todos os tokens anteriores, mantendo a assinatura HS256, validade de uma hora e regras de papel existentes.
 
 ## Configuração e limites
 
@@ -43,3 +50,7 @@ A submissão real do formulário também passou em Edge headless a 1440×900, us
 Para a correção posterior dos quatro botões do dashboard (T14/RN11), o lint dos três componentes e o build de produção passaram; a revisão confirmou os destinos e a preservação dos callbacks de perfil/desperdício. A verificação de navegação no navegador não foi executada porque a permissão necessária para iniciar Edge headless foi cancelada. Portanto, os resultados anteriores de login não comprovam os novos cliques. Os serviços existentes não foram reiniciados ou encerrados.
 
 A investigação posterior do botão “Salvar Cardápio” (T15) confirmou em Edge isolado que o formulário com `1000` kcal era válido e emitia `POST /api/semanas`; essa primeira etapa interceptou a escrita. Após autorização para salvar um registro temporário e removê-lo, o endpoint retornou `500`. Um backend de diagnóstico na porta `18080` revelou que `existsByData()` tentava resolver uma propriedade `id` inexistente em `Semana`. A verificação de semana duplicada passou a reutilizar `findByData(...).isPresent()`, preservando a rejeição de duplicatas e o mapeamento existente. O teste focado em H2 passou; o teste PostgreSQL do backend corrigido confirmou cadastro e leitura `200`, cinco posições e `1000` kcal. Seus registros foram removidos e o backend temporário foi encerrado. O processo do usuário em `8080` requer reinício para receber a alteração.
+
+A navbar do Caixa (T16/RN12) passou em lint e build e foi verificada em Edge a `360×844` e `1440×900`: título, somente “Sair” no dropdown, SVGs reaproveitados, barra de 64 px e espaço de 28 px antes do conteúdo. Sair navegou para `/mainPage` sem recarregar o documento; voltar à rota protegida levou a `/login`, confirmando limpeza da sessão da interface. A variante padrão manteve título e sete itens. A verificação usou respostas de API de teste somente no navegador, sem backend nem banco; não representa um novo teste de autenticação do servidor. O frontend temporário em `3100` foi encerrado.
+
+Meu Perfil (T17) passou em 12 testes focados H2 de perfil/JWT, lint/build frontend e startup PostgreSQL com `ddl-auto=validate`. A migração de perfil já foi aplicada localmente, preservando exatamente os dados existentes; consultas próprias e guards de senha/e-mail foram conferidos para Gestor/Caixa. O navegador usou Next.js `3100` → Spring/H2 `18080` reais: Caixa em `360×844` e Nutricionista em `1440×900`, dados próprios, nível somente leitura, navbars correspondentes e layout sem overflow. Nome salvo foi relido ao remontar a rota mantendo a sessão; e-mail/senha alterados exigiram novo login e aceitaram os dados atualizados. Erros mantiveram o formulário e uma senha de cinco caracteres foi bloqueada antes da chamada. As capturas dos dois tamanhos foram inspecionadas. Os servidores de teste foram encerrados e o build normal foi restaurado para `http://localhost:8080`.

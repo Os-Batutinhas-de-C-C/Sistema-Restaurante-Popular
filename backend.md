@@ -45,6 +45,10 @@ Essa migração é incremental: exige as tabelas JPA existentes `refeicoes`, `me
 
 Os scripts em `database/` usam nomes de tabelas e colunas diferentes dos mapeamentos JPA atuais. Não os execute como esquema inicial deste backend sem antes alinhá-los às entidades.
 
+Para o código de Meu Perfil, aplique também `backend/database/migrations/V20261103__perfil_usuario.sql` nas tabelas JPA antes de iniciar com `ddl-auto=validate`. A migração acrescenta `credenciais_autenticacao.versao_token BIGINT NOT NULL DEFAULT 0` e a unicidade de `usuarios.email_recuperacao`, sensível a maiúsculas/minúsculas; interrompe se houver e-mails exatamente duplicados. Ela já foi aplicada e validada neste banco local, com os valores dos usuários/credenciais existentes preservados. Não é necessário repeti-la aqui.
+
+Após atualizar esse código, reinicie o backend na sessão configurada e faça novo login. JWTs antigos sem `tokenVersion` são rejeitados, mesmo quando a chave de assinatura é mantida. Alterar e-mail/senha pelo próprio perfil incrementa a versão das credenciais e invalida todos os tokens anteriores; nome apenas mantém a sessão. A nova senha exige senha atual, confirmação, pelo menos seis caracteres Unicode e no máximo 72 bytes UTF-8. Tokens, senhas e hashes não devem ser registrados.
+
 ## Compilar e executar
 
 No Linux ou macOS, a partir da pasta `backend/`:

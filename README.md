@@ -56,6 +56,8 @@ O banco local deste ambiente já foi inicializado e recebeu a migração de inte
 
 Os arquivos locais `backend/src/main/resources/application.properties` e `frontend/.env.local` são ignorados pelo Git e não aparecem em um clone novo. Neste computador eles já existem. Em outra instalação, configure as variáveis de conexão do PostgreSQL e `JWT_SECRET_BASE64` no terminal do backend, configure `BACKEND_API_BASE_URL` no terminal do frontend e prepare o schema conforme [backend.md](./backend.md). `ddl-auto=validate` exige que as tabelas JPA já existam; o comando de inicialização não cria nem migra o schema.
 
+O código de Meu Perfil também exige a migração [V20261103__perfil_usuario.sql](./backend/database/migrations/V20261103__perfil_usuario.sql), aplicada antes de iniciar com `validate`: ela adiciona a versão de tokens e o e-mail de login único. Neste banco local, essa migração já foi aplicada e os dados existentes foram preservados. Depois de atualizar o código, reinicie o backend e faça novo login; tokens emitidos sem a nova versão deixam de ser aceitos. Consulte [backend.md](./backend.md) para preparar outro banco.
+
 Os comandos de inicialização abaixo são servidores em primeiro plano e **não devolvem o prompt do PowerShell enquanto estiverem funcionando**. Isso é esperado: deixe o primeiro terminal aberto, espere a mensagem de inicialização e abra um segundo terminal para iniciar o outro serviço. O backend confirma a inicialização com `Started RestaurantePopApplication`; o frontend mostra `Ready` e `http://localhost:3000`. Fechar um terminal ou pressionar `Ctrl+C` encerra aquele serviço.
 
 ### Terminal 1 — backend

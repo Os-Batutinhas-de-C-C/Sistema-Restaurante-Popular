@@ -29,6 +29,23 @@ export function getAccessToken() {
     return getAuthSession()?.accessToken ?? null;
 }
 
+export function updateAuthSessionUser(usuario) {
+    const current = getAuthSession();
+    if (!current || current.usuario.idUsuario !== usuario.idUsuario) return null;
+
+    session = {
+        ...current,
+        usuario: {
+            idUsuario: current.usuario.idUsuario,
+            nome: usuario.nome,
+            email: usuario.email,
+            perfil: usuario.perfil,
+        },
+    };
+    notify();
+    return session;
+}
+
 export function clearAuthSession() {
     session = null;
     notify();

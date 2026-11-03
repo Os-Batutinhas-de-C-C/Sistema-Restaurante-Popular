@@ -4,7 +4,11 @@
 
 As decisões registradas em [`change-log.md`](./change-log.md) atualizam este documento e prevalecem sobre as restrições e pendências históricas abaixo. O trabalho autorizado inclui as alterações necessárias no frontend, backend e PostgreSQL, usando login por e-mail/senha com JWT Bearer em memória por uma hora e a matriz de acesso da spec DTO. Não alterar CORS. O plano e os testes focados de segurança foram aprovados. A leitura pública do cardápio usa rota separada, somente leitura, que não retorna métricas administrativas. Não há definições de produto pendentes.
 
+**Aditivo de 03/11/2026:** o solicitante autorizou adicionar ao painel do Caixa uma navbar no modelo da navbar existente, reutilizando seus assets, com título “Painel do Caixa” e dropdown contendo somente “Sair”. O espaço superior do conteúdo pode ser ajustado para acomodar a barra fixa.
+
 ## Objetivo
+
+**Aditivo de Meu Perfil — 03/11/2026:** o solicitante autorizou integrar a própria conta ao backend e distinguir Nutricionista/Gestor de Caixa. Foram aprovados os endpoints pessoais, identidade pelo JWT, papel somente leitura, senha atual para mudar e-mail/senha, e-mail único, nova senha de seis caracteres Unicode no mínimo e 72 bytes UTF-8 no máximo, e revogação imediata de todos os tokens anteriores por versão persistida. A comparação de e-mail preserva o contrato existente, sensível a maiúsculas/minúsculas. Alterar somente o nome mantém a sessão e sua expiração.
 
 Conectar os serviços do frontend Next.js à API Spring Boot para consultar e persistir os dados do Restaurante Popular, mantendo a interface existente. Este documento define os limites da integração, os contratos HTTP de referência, a conversão entre os dados exibidos pela interface e os DTOs da API, além das decisões que precisam ser confirmadas antes de implementar comportamentos ainda indefinidos.
 
@@ -98,12 +102,23 @@ O frontend preserva os dados do formulário se a API rejeitar a gravação.
 O frontend deve tratar, no mínimo, os seguintes resultados sem perder dados digitados:
 
 - `400 Bad Request`: entrada rejeitada pelo backend; quando houver `ApiErrorDTO`, ler `code` e `message`;
+- `409 Conflict`: e-mail de login já utilizado; associar `EMAIL_IN_USE` ao campo de e-mail e manter os valores digitados;
 - `401 Unauthorized`: autenticação ausente ou inválida, quando aplicável ao contrato confirmado;
 - `403 Forbidden`: perfil sem permissão, quando aplicável ao contrato confirmado;
 - `404 Not Found`: recurso ou usuário relacionado inexistente, conforme endpoint;
 - falha de rede ou indisponibilidade: manter os dados do formulário e informar que a operação não foi concluída.
 
 A forma genérica do erro deve seguir a resposta já definida pelo backend; o frontend não deve exibir stack traces ou detalhes internos.
+
+### RF008 — Meu Perfil integrado
+
+A tela consulta `GET /api/usuarios/me` e exibe nome, e-mail e nível de acesso da própria conta. O nível é somente leitura. Nutricionista/Gestor usam a navbar completa; Caixa usa “Painel do Caixa” com somente “Sair”. Os dados fictícios são removidos e as chamadas ficam em `perfilService.js`.
+
+“Salvar Informações” envia `PerfilUpdateRequestDTO(nome, emailRecuperacao, senhaAtual)` a `PUT /api/usuarios/me` e recebe `PerfilUpdateResponseDTO(usuario, requerNovoLogin)`. Nome/e-mail são obrigatórios, recebem trim e aceitam até 255 caracteres Unicode; e-mail deve ter conteúdo antes/depois de `@`, sem espaços. A senha atual é exigida quando o e-mail mudar. Nome apenas atualiza os dados da sessão sem renovar token ou `expiresAt`; mudança de e-mail limpa a sessão e abre o login com confirmação da alteração.
+
+“Atualizar Senha” envia `SenhaUpdateRequestDTO(senhaAtual, novaSenha, confirmacaoSenha)` a `PUT /api/usuarios/me/senha`. A nova senha exige pelo menos seis pontos de código Unicode, no máximo 72 bytes UTF-8 e confirmação igual; sucesso `204` limpa a sessão e exige novo login. O backend valida a propriedade da conta e revoga todos os tokens anteriores após e-mail/senha alterados. Senhas incorretas e entradas inválidas retornam `400`; e-mail em uso retorna `409`; sessão inválida retorna `401`.
+
+Carregamento, falha com repetição, salvamento e sucesso devem ter estados explícitos. Erros ficam próximos ao campo/formulário, mantendo os dados digitados. Nenhuma resposta de perfil contém senha, hash, salt, token ou versão de credenciais.
 
 ## Regras de negócio e integração
 
@@ -121,6 +136,10 @@ A forma genérica do erro deve seguir a resposta já definida pelo backend; o fr
 
 - **RN11 — Navegação autenticada do dashboard:** os botões de perfil e edição do cardápio usam `router.push()` para conservar a sessão JWT em memória durante a navegação. O perfil abre `/meuPerfil`; editar cardápio conserva a rota `/painel-nutricionista-cardapio/gerenciar/{dataIso}`, com a lista de cardápios como fallback quando não houver data. “Publicar Nova Notícia” abre `/painel-nutricionista-noticias` e “Atualizar Estoque” abre `/painel-nutricionista-estoque`. Registrar desperdício continua abrindo o diálogo existente. A correção foi solicitada em 03/11/2026.
 
+- **RN12 — Navbar do Caixa:** `/painel-caixa` reutiliza a navbar compartilhada, seus ícones e estilos, com título “Painel do Caixa” e somente “Sair” no dropdown. Sair executa o encerramento de sessão existente antes de navegar a `/mainPage`. O conteúdo fica abaixo da barra fixa de 64 px, mantendo o espaço original de 28 px. O acesso à página continua restrito ao perfil Caixa.
+
+- **RN13 — Identidade e sessão no perfil:** a conta é resolvida pelo JWT validado, sem ID ou papel escolhido no formulário. O backend revalida `tokenVersion` após bloquear a conta para atualização. E-mail/senha alterados invalidam todos os tokens anteriores; nome apenas mantém token e expiração. A apresentação distingue Caixa de Nutricionista/Gestor, mantendo o nível somente leitura.
+
 ## Contratos HTTP de referência
 
 Os caminhos e os formatos de sucesso abaixo refletem `backend/specs/DTOs/requirements.md` e os controllers existentes. Os campos detalhados de cada DTO permanecem definidos naquela especificação.
@@ -129,7 +148,10 @@ Os caminhos e os formatos de sucesso abaixo refletem `backend/specs/DTOs/require
 |---|---|---|
 | `POST /api/auth/login` | Login | `200`, JWT Bearer com validade de 3600 segundos e perfil; `401` JSON para credenciais inválidas |
 | `GET /api/usuarios` | Consulta administrativa de usuários | `200`, lista de `UsuarioResponseDTO` |
-| `POST /api/usuarios` | Cadastro de usuário | `200`, `UsuarioResponseDTO` |
+| `POST /api/usuarios` | Cadastro de usuário | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso |
+| `GET /api/usuarios/me` | Consulta da própria conta | `200`, `UsuarioResponseDTO`; identidade do JWT |
+| `PUT /api/usuarios/me` | Salvar nome/e-mail próprios | `200`, `PerfilUpdateResponseDTO`; `400` inválido/senha atual; `409` e-mail em uso |
+| `PUT /api/usuarios/me/senha` | Alterar a própria senha | `204`, sem corpo; `400` inválido/senha atual |
 | `GET /api/semanas` | Consulta de cardápios semanais | `200`, lista de `SemanaResponseDTO` |
 | `POST /api/semanas` | Criação de semana/cardápio | `200`, `SemanaResponseDTO` |
 | `PUT /api/semanas/{data}` | Atualização de semana | `200`, `SemanaResponseDTO`; `404` se não existir |
@@ -228,6 +250,14 @@ O serviço de cardápio converte nomes como `pratoProteico`/`sucoNatural` para `
 **Quando** os dados passam a vir do backend  
 **Então** a integração mantém o visual sempre que possível e aplica as mudanças de autenticação/autorização aprovadas  
 **E** mantém CORS do backend inalterado.
+
+### Cenário 9 — Perfil do usuário autenticado
+
+**Dado que** Nutricionista, Gestor ou Caixa acessa `/meuPerfil` autenticado, **quando** os dados são carregados, **então** a tela mostra a própria conta e o nível somente leitura. Caixa vê sua navbar reduzida, enquanto Nutricionista/Gestor veem o menu completo.
+
+### Cenário 10 — Atualização e nova autenticação
+
+**Dado que** o formulário é válido e, quando necessário, a senha atual foi confirmada, **quando** a API confirma a gravação, **então** alterar apenas o nome mantém a sessão/expiração. Alterar e-mail/senha exige novo login e invalida todos os tokens anteriores; falhas de entrada/conflito preservam os valores e exibem o erro sem anunciar sucesso.
 
 ## Decisões pendentes e verificações
 

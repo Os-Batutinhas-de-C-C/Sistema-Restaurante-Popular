@@ -6,6 +6,8 @@ Este aditivo atualiza as restrições anteriores de escopo, incluindo RN05/RN06:
 
 ## Objetivo
 
+**Aditivo de perfil aprovado — 03/11/2026:** conectar “Meu Perfil” à própria conta autenticada, com identidade obtida do `userId` do JWT e nível de acesso somente leitura. O solicitante aprovou os endpoints de consulta/atualização pessoal, exigência da senha atual para alterar e-mail ou senha, e-mail de login único, nova senha de pelo menos seis caracteres Unicode e no máximo 72 bytes UTF-8, e invalidação de todos os tokens anteriores após mudança de e-mail/senha por uma versão persistida nas credenciais. A comparação de e-mail permanece sensível a maiúsculas/minúsculas, conforme o contrato existente de login. Alteração somente de nome mantém token e expiração da sessão.
+
 Definir DTOs de requisição e resposta para a API, separando os contratos HTTP das entidades JPA. O aditivo de integração aprovado amplia o escopo para incluir autenticação JWT, permissões, persistência semanal e operações consumidas pelo frontend.
 
 Esta especificação trata do contrato do backend e do contrato necessário à integração frontend/backend.
@@ -37,11 +39,14 @@ Aplicar DTOs aos endpoints atualmente definidos em `controller/`:
 
 - **RN01 — Contratos separados:** os corpos de requisição e resposta de todos os endpoints neste escopo usam DTOs próprios. Parâmetros escalares de rota/consulta e respostas sem corpo, como `204 No Content`, não precisam ser DTOs.
 - **RN02 — Mapeamento no service:** o service converte DTOs de entrada em entidades antes de salvar e converte entidades em DTOs de resposta antes de retornar dados ao controller. O controller não faz esse mapeamento.
-- **RN03 — Proteção de dados:** DTOs de resposta seguem lista explícita de campos permitidos. Nunca incluir senha em texto puro, hash, salt, token, tentativas de autenticação ou a entidade `CredencialAutenticacao`. O DTO de cadastro pode receber `senhaPura` para a operação de registro, mas nenhum DTO de resposta pode devolvê-la. `emailRecuperacao` permanece na resposta de usuário para preservar o contrato atual, conforme decisão do solicitante.
+- **RN03 — Proteção de dados:** DTOs de resposta seguem lista explícita de campos permitidos. DTOs de domínio/perfil nunca incluem senha em texto puro, hash, salt, token, versão de credenciais, tentativas de autenticação ou a entidade `CredencialAutenticacao`. A exceção explícita de token é o `accessToken` do contrato de login. O DTO de cadastro pode receber `senhaPura` para a operação de registro, mas nenhum DTO de resposta pode devolvê-la. `emailRecuperacao` permanece na resposta de usuário para preservar o contrato atual, conforme decisão do solicitante.
 - **RN04 — Compatibilidade da API:** preservar caminhos, verbos, nomes JSON já consumidos, efeitos da operação, códigos de status e tratamento de recurso inexistente, exceto pelas mudanças explicitamente aprovadas no aditivo de integração. Aplicar as permissões definidas na tabela abaixo.
 - **RN05 — Integração frontend:** mudanças frontend necessárias para consumir os contratos desta spec são permitidas pelo aditivo aprovado; preservar os fluxos e o visual existentes sempre que possível.
 - **RN06 — Models e schema autorizados:** alterações necessárias nos models e no schema PostgreSQL para cumprir os contratos confirmados estão autorizadas. Registrar cada alteração e sua razão no change log da integração.
 - **RN07 — Escopo de persistência:** DTOs não devem permitir que o cliente escolha ou altere identificadores gerados ou propriedades internas. `idRefeicao` pode ser enviado apenas como referência para associar uma refeição já existente a uma semana; não pode ser usado para criar ou alterar essa refeição.
+- **RN08 — Perfil próprio:** as rotas `/api/usuarios/me` resolvem a identidade exclusivamente pelo JWT validado. Seus DTOs não recebem `idUsuario` nem `tipo`; o usuário não escolhe outra conta nem altera seu papel. Nome e e-mail são obrigatórios, recebem trim e aceitam até 255 caracteres Unicode; e-mail deve ter conteúdo antes/depois de `@` e não conter espaços. A alteração de e-mail exige senha atual válida e rejeita e-mail em uso com `409 EMAIL_IN_USE`. Cadastro de usuário duplicado também recebe `409`.
+- **RN09 — Troca de senha:** a senha atual é conferida pelo `PasswordEncoder` existente. A nova senha deve ser não vazia, conter pelo menos seis pontos de código Unicode, ocupar no máximo 72 bytes UTF-8 e coincidir com a confirmação. Somente o novo hash BCrypt é persistido. Falhas de validação ou senha atual retornam `400` sem alterar a conta.
+- **RN10 — Revogação e sessão:** `credenciais_autenticacao.versao_token` inicia em `0`. Os JWTs recebem o claim numérico `tokenVersion`; o decoder exige `userId` inteiro positivo, versão inteira não negativa, conta/credencial existentes, versão atual e subject igual ao e-mail atual. O service revalida a versão depois de bloquear a conta para atualização, evitando usar uma sessão revogada durante uma operação concorrente. Alterar e-mail/senha incrementa a versão, tornando todos os tokens anteriores inválidos (`401`), mesmo antes de completar uma hora. Tokens antigos sem versão também exigem novo login. Alteração apenas do nome não incrementa a versão.
 
 ## Contrato por endpoint
 
@@ -51,7 +56,10 @@ Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode 
 |---|---|---|---|
 | `POST /api/auth/login` | `LoginDTO` (`email`, `senha`) | `200`, token Bearer/profile; `401` para credenciais inválidas | Público |
 | `GET /api/usuarios` | Sem corpo | `200`, lista de `UsuarioResponseDTO` | Usuário autenticado |
-| `POST /api/usuarios` | `UsuarioCreateRequestDTO` | `200`, `UsuarioResponseDTO` | Usuário autenticado |
+| `POST /api/usuarios` | `UsuarioCreateRequestDTO` | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso | Usuário autenticado |
+| `GET /api/usuarios/me` | Sem corpo | `200`, `UsuarioResponseDTO` da própria conta | Usuário autenticado, identidade do JWT |
+| `PUT /api/usuarios/me` | `PerfilUpdateRequestDTO` | `200`, `PerfilUpdateResponseDTO`; `400` inválido/senha atual; `409` e-mail em uso | Usuário autenticado, própria conta |
+| `PUT /api/usuarios/me/senha` | `SenhaUpdateRequestDTO` | `204`, sem corpo; `400` inválido/senha atual | Usuário autenticado, própria conta |
 | `GET /api/semanas` | Sem corpo | `200`, lista de `SemanaResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
 | `POST /api/semanas` | `SemanaCreateRequestDTO` | `200`, `SemanaResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
 | `PUT /api/semanas/{data}` | `data` como segunda-feira (`LocalDate`); corpo `SemanaUpdateRequestDTO` | `200`, `SemanaResponseDTO`; `404` se a semana não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
@@ -88,6 +96,9 @@ Os campos abaixo definem o contrato base a partir dos modelos e operações atua
 |---|---|
 | `UsuarioCreateRequestDTO` | `nome`, `emailRecuperacao`, `tipo`, `senhaPura` |
 | `UsuarioResponseDTO` | `idUsuario`, `nome`, `emailRecuperacao`, `tipo`. Nunca incluir credenciais ou mensagens aninhadas. |
+| `PerfilUpdateRequestDTO` | `nome`, `emailRecuperacao`, `senhaAtual`. Nome/e-mail obrigatórios; senha atual obrigatória somente quando o e-mail mudar. Não recebe ID nem papel. |
+| `PerfilUpdateResponseDTO` | `usuario` (`UsuarioResponseDTO`) e `requerNovoLogin` (`true` após alterar o e-mail; `false` quando o e-mail é mantido). |
+| `SenhaUpdateRequestDTO` | `senhaAtual`, `novaSenha`, `confirmacaoSenha`, todos obrigatórios. Regras de RN09; nenhum campo é devolvido. |
 | `SemanaCreateRequestDTO` | `data` (segunda-feira), `desperdicio`, `fichasVendidas`, `cardapio` com exatamente cinco posições; `null` indica dia vazio |
 | `SemanaUpdateRequestDTO` | `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições; a data da rota deve ser segunda-feira. |
 | `SemanaResponseDTO` | `idSemana`, `data`, `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições de `RefeicaoResponseDTO` ou `null` |
@@ -148,7 +159,7 @@ Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `sen
 
 ### Cenário 6 — Ausência de dados sensíveis
 
-**Dado que** qualquer endpoint de resposta retorna um DTO  
+**Dado que** um endpoint de domínio/perfil retorna um DTO
 **Quando** o JSON é serializado  
 **Então** não deve conter senha em texto puro, hash, salt, token, tentativas de autenticação ou a entidade `CredencialAutenticacao`.
 
@@ -167,10 +178,22 @@ Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `sen
 **Então** as mudanças limitam-se à integração aprovada no aditivo  
 **E** cada mudança de model, schema, segurança ou frontend tem sua razão registrada no change log.
 
+### Cenário 9 — Perfil e identidade
+
+**Dado que** Nutricionista, Gestor ou Caixa está autenticado, **quando** consulta ou atualiza `/api/usuarios/me`, **então** apenas sua conta é consultada/alterada, independentemente de IDs ou papéis extras enviados pelo cliente. O DTO retorna somente os campos públicos de usuário e o nível de acesso permanece inalterado.
+
+### Cenário 10 — Revogação após mudar dados de acesso
+
+**Dado que** a senha atual foi validada e a nova entrada atende às regras, **quando** o usuário muda o e-mail de login ou a senha, **então** a alteração é persistida atomicamente e a versão das credenciais aumenta. Todos os JWTs de versões anteriores passam a receber `401`, e o novo login usa o e-mail/senha atualizados. Alterar somente o nome mantém a versão vigente.
+
+### Cenário 11 — Perfil inválido ou conflitante
+
+**Dado que** a senha atual está incorreta, a confirmação diverge, a nova senha viola RN09 ou o e-mail pertence a outra conta, **quando** a atualização é solicitada, **então** a API responde `400` ou `409`, conforme o contrato, sem alteração parcial da conta/credenciais.
+
 ## Restrições de implementação
 
 - As alterações de frontend, backend, schema e segurança explicitamente listadas no aditivo estão autorizadas; qualquer mudança fora desse escopo exige nova definição.
-- Aplicar a matriz de acesso da tabela, JWT stateless com validade de uma hora, respostas JSON `401`/`403`, e seed de contas somente no perfil local com credenciais de ambiente.
+- Aplicar a matriz de acesso da tabela, JWT de uma hora sem sessão HTTP e com versão validada contra o banco, respostas JSON `401`/`403`, e seed de contas somente no perfil local com credenciais de ambiente.
 - Não alterar CORS.
 - Aplicar somente as validações explicitamente definidas nesta especificação ou existentes no domínio; não impor limites de 120/500 caracteres que aparecem como suposições na spec visual de notícias.
 - Criar `design.md` e `tasks.md` da funcionalidade antes da implementação, seguindo o fluxo Spec-Driven Development do backend.

@@ -7,6 +7,8 @@ import { Alert, Box, Button, IconButton, InputAdornment, Paper, Snackbar, Stack,
 import PasswordRecoveryDialog from "./PasswordRecoveryDialog.jsx";
 import { useAuthService } from "../../services/authService";
 import { useRouter } from "next/navigation";
+import { Suspense } from "react";
+import LoginNotice from "./LoginNotice";
 
 export default function LoginForm() {
     const auth = useAuthService(useRouter());
@@ -21,6 +23,7 @@ export default function LoginForm() {
                             <Typography color="text.secondary" sx={{ fontSize: 11.5 }}>Acesso restrito para funcionários</Typography>
                         </Stack>
                     </Stack>
+                    <Suspense fallback={null}><LoginNotice /></Suspense>
                     <Box component="form" onSubmit={auth.submit}>
                         <Stack spacing={1.5}>
                             <TextField required fullWidth type="email" label="E-mail" placeholder="Digite seu e-mail" value={auth.email} onChange={(event) => { auth.setEmail(event.target.value); }} size="small" autoComplete="username" slotProps={{ htmlInput: { "aria-label": "E-mail" } }} />

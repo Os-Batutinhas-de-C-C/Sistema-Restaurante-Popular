@@ -154,3 +154,43 @@ O formulário aceitava `1000` kcal e emitia a requisição de gravação, mas o 
 - O backend corrigido foi iniciado somente para diagnóstico em `18080`, usando PostgreSQL e `ddl-auto=validate`. O cadastro retornou `200`, criou uma semana, uma refeição e cinco posições; `GET /api/semanas` retornou a mesma refeição com `1000` kcal e os quatro dias restantes nulos.
 - A limpeza removeu apenas as linhas da semana/refeição marcadas para diagnóstico. As contagens finais de `semanas`, `refeicoes` e slots voltaram a zero; as tabelas legadas `semana` e `refeicao` mantiveram 20 registros cada. A instância `18080` foi encerrada. Nenhuma credencial ou JWT foi registrado nos documentos.
 - Os serviços do usuário em `3000` e `8080` permaneceram em execução. A instância `8080` precisa ser reiniciada na mesma sessão PowerShell configurada para carregar o código corrigido. Nenhum model, schema ou regra de segurança foi alterado.
+
+## Navbar do painel do Caixa — 03/11/2026
+
+O solicitante pediu uma navbar no mesmo modelo visual do painel da nutricionista, com reutilização dos assets existentes, título “Painel do Caixa” e apenas “Sair” no dropdown.
+
+| Arquivo | Alteração | Razão |
+|---|---|---|
+| `frontend/src/components/NavbarPainel/NavbarPainel.jsx` | Adicionar variante `caixa` ao componente compartilhado, com título específico e filtro do menu para “Sair”; calcular divisores pelo menu visível. | Reutilizar SVGs, estilos, avatar e handlers, conservando o comportamento padrão das telas da nutricionista. |
+| `frontend/src/app/painel-caixa/page.js` | Compor a navbar na variante Caixa junto ao conteúdo, dentro do `ProtectedRoute` existente. | Mostrar a barra somente na página autenticada do Caixa. |
+| `frontend/src/components/painelCaixa/style.module.css` | Somar a altura de 64 px da barra aos 28 px de padding superior existentes. | Evitar que o cabeçalho fixo cubra o conteúdo. |
+| `requirements.md`, `design.md`, `tasks.md` desta especificação | Registrar o pedido visual autorizado, RN12 e T16. | Manter rastreabilidade da alteração. |
+
+O item “Sair” reutiliza `encerrarSessao()` seguido de `router.push('/mainPage')`; nenhuma regra de acesso ou endpoint foi alterado.
+
+- O lint de `NavbarPainel.jsx` e da página do Caixa e `npm.cmd run build` passaram.
+- Edge headless verificou a navbar em `360×844` e `1440×900`, com título “Painel do Caixa”, um único item “Sair”, os mesmos três SVGs do cabeçalho, barra de 64 px e espaço de 28 px antes do conteúdo. A navbar e o perfil ficaram dentro da viewport.
+- Sair levou a `/mainPage` por navegação cliente, preservando um marcador no documento. Voltar à página protegida levou a `/login`, confirmando que a sessão da interface foi limpa.
+- A variante padrão para Gestor/Nutricionista manteve “Painel Nutricionista” e seus sete itens. Nenhum dos três cenários apresentou exceção JavaScript.
+- A verificação de UI utilizou respostas de API de teste injetadas somente em contextos isolados do navegador. Não houve execução de backend, credenciais reais ou acesso ao banco. O servidor frontend temporário em `127.0.0.1:3100` e o navegador foram encerrados após os testes. T16 concluída.
+
+## Integração de Meu Perfil — 03/11/2026
+
+O solicitante pediu dados reais da própria conta e diferenciação por login Nutricionista/Caixa. Aprovou os endpoints pessoais e seus testes, senha atual para alterar e-mail/senha, nova senha com mínimo de seis caracteres Unicode e máximo de 72 bytes UTF-8, e revogação imediata de todos os tokens anteriores após e-mail/senha alterados. O papel permanece somente leitura; Gestor conserva a apresentação da Nutricionista. E-mail continua sendo o login e passa a ter unicidade sensível a maiúsculas/minúsculas.
+
+| Arquivos | Alteração e motivo |
+|---|---|
+| `backend/.../controller/PerfilController.java`, `service/PerfilService.java`, DTOs `PerfilUpdateRequestDTO`, `PerfilUpdateResponseDTO`, `SenhaUpdateRequestDTO`, `exception/PerfilException.java`, `config/ApiExceptionHandler.java` | Implementar consulta e atualização da própria conta por identidade do JWT, sem aceitar ID/papel; validações, persistência transacional e erros `400`/`409`/`401`. Evita que a interface escolha outra conta ou anuncie sucesso sem gravação. |
+| `backend/.../model/Usuario.java`, `repository/UsuarioRepository.java`, `service/UsuarioService.java` | Garantir e-mail único, bloquear a conta nas atualizações e devolver `409 EMAIL_IN_USE` também no cadastro duplicado. Preserva a identidade de login e serializa alterações concorrentes. |
+| `backend/.../model/CredencialAutenticacao.java`, `service/JwtTokenService.java`, `config/JwtConfig.java`, novo `JwtTokenVersionValidator.java` | Persistir `versao_token`, emitir claim numérico `tokenVersion` e validar usuário, e-mail e versão em cada JWT. Alterar e-mail/senha invalida todos os tokens anteriores; nome apenas mantém a versão. Assinatura HS256, duração de uma hora e matriz de papéis são preservadas. |
+| `backend/database/migrations/V20261103__perfil_usuario.sql` | Adicionar versão `BIGINT NOT NULL DEFAULT 0` e `uk_usuarios_email_recuperacao`, interrompendo em duplicatas existentes. Alinha o schema ao contrato sem importar/reescrever contas. |
+| `frontend/src/components/meuPerfil/index.jsx`, `useMeuPerfil.js`, `perfilFields.js`, `style.module.css`, `services/perfilService.js`; remoção de `meuPerfilMock.js` | Carregar e salvar os dados reais, mostrar nível somente leitura, navbar por papel, estados assíncronos e erros inline; pedir senha atual quando o e-mail mudar. Remove dados fictícios e conserva valores após erro. |
+| `frontend/src/services/authSession.js`, `components/login/LoginNotice.jsx`, `LoginForm.jsx` | Atualizar dados de nome preservando token/expiração; encerrar a sessão após operações sensíveis e explicar o novo login. |
+| `backend/src/test/java/.../PerfilApiIntegrationTests.java`, `JwtSecurityIntegrationTests.java` | Cobrir propriedade da conta, validação, duplicatas e revogação; o fixture expirado contém identidade/versão válidas para testar a expiração. |
+| Specs DTO/integração, `backend.md`, `README.md` | Registrar contratos, decisões, migração, verificações e necessidade de reinício/novo login. |
+
+- **Contratos:** `GET /api/usuarios/me` retorna `UsuarioResponseDTO`; `PUT` recebe `(nome,emailRecuperacao,senhaAtual)` e retorna `(usuario,requerNovoLogin)`; `PUT /api/usuarios/me/senha` recebe `(senhaAtual,novaSenha,confirmacaoSenha)` e retorna `204`. Senha atual/entrada inválida recebe `400`; e-mail em uso recebe `409`; JWT inválido/revogado recebe `401`. Nenhuma resposta de perfil contém credenciais ou versão.
+- **Verificação backend/frontend:** 12 testes focados H2 passaram, com zero falhas; lint e build frontend passaram. No PostgreSQL, a migração foi aplicada, versão inicial/unicidade foram verificadas e os valores existentes de usuários/credenciais foram preservados. Startup com `ddl-auto=validate`, GET próprio, gravação sem mudança de nome e guards de senha incorreta/e-mail duplicado passaram para Gestor e Caixa.
+- **Navegador real com Next.js → Spring/H2:** Caixa em `360×844` mostrou dados próprios, nível somente leitura e apenas “Sair” na navbar, sem overflow e com folga do cabeçalho. Nome salvo foi relido após remontar a rota mantendo a sessão; senha atual incorreta produziu erro inline e preservou o e-mail digitado; mudar e-mail corretamente exigiu novo login e o novo e-mail funcionou. Nutricionista em `1440×900` mostrou dados próprios e os sete itens da navbar; senha de cinco caracteres foi bloqueada sem chamada, e troca válida retornou `204`, exigiu novo login e aceitou a nova senha. Capturas dos dois tamanhos foram inspecionadas.
+- As mudanças sensíveis dos testes de navegador ocorreram apenas em H2 isolado. Os servidores temporários `3100`/`18080` foram encerrados e o build normal foi restaurado com destino `http://localhost:8080`. T17 concluída.
+- **Operação:** aplicar a migração antes de iniciar o novo código com `validate`; ela já foi aplicada neste ambiente local. Reiniciar o backend e fazer novo login: tokens antigos sem `tokenVersion` são rejeitados, e cada mudança posterior de e-mail/senha revoga todos os tokens anteriores da conta.

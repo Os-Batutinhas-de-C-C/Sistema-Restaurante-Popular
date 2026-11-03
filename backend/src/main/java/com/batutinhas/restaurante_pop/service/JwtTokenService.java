@@ -36,6 +36,7 @@ public class JwtTokenService {
                 .subject(usuario.getEmailRecuperacao())
                 .claim("roles", List.of(role))
                 .claim("userId", usuario.getIdUsuario())
+                .claim("tokenVersion", usuario.getCredencialAutenticacao().getVersaoToken())
                 .claim("name", usuario.getNome())
                 .build();
 

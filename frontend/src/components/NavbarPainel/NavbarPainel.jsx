@@ -31,15 +31,19 @@ const menuItems = [
 ];
 
 /**
- * Navbar compartilhada do painel da nutricionista.
+ * Navbar compartilhada dos painéis administrativos.
  *
  * Responsabilidades:
  * - Exibir a identidade visual do painel.
  * - Controlar a abertura e o fechamento do menu.
- * - Redirecionar o item "Início" para o dashboard.
+ * - Exibir as opções da variante do painel.
  */
-export default function NavbarNutricionista({ onProfileClick }) {
+export default function NavbarPainel({ onProfileClick, variant = "nutricionista" }) {
     const router = useRouter();
+    const isCaixa = variant === "caixa";
+    const visibleMenuItems = isCaixa
+        ? menuItems.filter(({ label }) => label === "Sair")
+        : menuItems;
     // Referência do botão que abriu o menu, usada pelo MUI para posicioná-lo.
     const [menuAnchor, setMenuAnchor] = useState(null);
     const isMenuOpen = Boolean(menuAnchor);
@@ -102,7 +106,7 @@ export default function NavbarNutricionista({ onProfileClick }) {
                     variant="body1"
                     className={styles.title}
                 >
-                    Painel Nutricionista
+                    {isCaixa ? "Painel do Caixa" : "Painel Nutricionista"}
                 </Typography>
                     <Box className={styles.spacer} />
                     <ButtonBase
@@ -146,11 +150,11 @@ export default function NavbarNutricionista({ onProfileClick }) {
                     },
                 }}
             >
-                {menuItems.map(({ label, icon, href }, index) => (
+                {visibleMenuItems.map(({ label, icon, href }, index) => (
                     <MenuItem
                         key={label}
                         onClick={() => handleMenuItemClick(label, href)}
-                        divider={index < menuItems.length - 1}
+                        divider={index < visibleMenuItems.length - 1}
                         sx={{
                             minHeight: 48,
                             px: 2,
