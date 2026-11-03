@@ -7,9 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import java.util.Optional;
-import com.batutinhas.restaurante_pop.model.CredencialAutenticacao;
-
 import java.util.Collections;
 
 @Service
@@ -26,16 +23,9 @@ public class AutenticacaoService implements UserDetailsService {
         Usuario usuario = usuarioRepository.findByEmailRecuperacao(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado."));
 
-        String nomeCargo = "";
-        if (usuario.getTipo() == 'N') {
-            nomeCargo = "ROLE_NUTRICIONISTA";
-        } else if (usuario.getTipo() == 'C') {
-            nomeCargo = "ROLE_CAIXA";
-        } else {
-            nomeCargo = "ROLE_USUARIO_COMUM";
-        }
-
-        SimpleGrantedAuthority permissao = new SimpleGrantedAuthority(nomeCargo);
+        SimpleGrantedAuthority permissao = new SimpleGrantedAuthority(
+                "ROLE_" + UsuarioPapel.role(usuario.getTipo())
+        );
 
         return new org.springframework.security.core.userdetails.User(
                 usuario.getEmailRecuperacao(),

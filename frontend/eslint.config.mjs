@@ -6,7 +6,8 @@ import reactHooksPlugin from "eslint-plugin-react-hooks";
 import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import importPlugin from "eslint-plugin-import";
 
-export default [
+const eslintConfig = [
+  { ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"] },
   js.configs.recommended,
   {
     files: ["**/*.{js,jsx,mjs,cjs}"],
@@ -47,6 +48,18 @@ export default [
       react: {
         version: "detect",
       },
+      "import/resolver": {
+        alias: {
+          map: [["@", "./src"]],
+          extensions: [".js", ".jsx", ".mjs", ".cjs", ".css"],
+        },
+        node: {
+          extensions: [".js", ".jsx", ".mjs", ".cjs", ".json", ".css"],
+        },
+      },
+      "import/ignore": ["\\.css$"],
     },
   },
 ];
+
+export default eslintConfig;

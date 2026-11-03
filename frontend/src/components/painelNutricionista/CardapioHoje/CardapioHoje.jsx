@@ -23,8 +23,7 @@ const menuFields = [
 /**
  * Cardápio do dia.
  *
- * Recebe o cardápio por props e não conhece a origem dos dados, facilitando
- * a substituição do mock por uma resposta da API.
+ * Recebe os dados do cardápio diário já convertidos pelo serviço da API.
  */
 export default function CardapioHoje({ dadosDashboard }) {
     // O fallback permite renderizar o card mesmo durante carregamentos parciais.
@@ -56,7 +55,7 @@ export default function CardapioHoje({ dadosDashboard }) {
                             />
                         }
                         className={styles.editButton}
-                        href='/painel-nutricionista-cardapio/gerenciar/2026-10-26'
+                        href={dadosDashboard.dataIso ? `/painel-nutricionista-cardapio/gerenciar/${dadosDashboard.dataIso}` : "/painel-nutricionista-cardapio"}
                     >
                         Editar Cardápio
                     </Button>
@@ -90,7 +89,7 @@ export default function CardapioHoje({ dadosDashboard }) {
                             Valor Calórico Estimado:
                         </Typography>
                         <Typography variant="caption" className={styles.caloriesValue}>
-                            {cardapio.valorCaloricoEstimado || "Sem informação"}
+                            {cardapio.valorCalorico ? `${cardapio.valorCalorico} kcal` : "Sem informação"}
                         </Typography>
                     </Box>
                 </Stack>

@@ -1,6 +1,6 @@
 package com.batutinhas.restaurante_pop;
 
-import com.batutinhas.restaurante_pop.factory.UsuarioFactory;
+import com.batutinhas.restaurante_pop.model.CredencialAutenticacao;
 import com.batutinhas.restaurante_pop.model.Usuario;
 import com.batutinhas.restaurante_pop.repository.EstoqueRepository;
 import com.batutinhas.restaurante_pop.repository.MensagemRepository;
@@ -13,13 +13,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +39,7 @@ class DtoApiIntegrationTests {
     @Autowired private MensagemRepository mensagemRepository;
     @Autowired private NoticiaRepository noticiaRepository;
     @Autowired private EstoqueRepository estoqueRepository;
+    @Autowired private PasswordEncoder passwordEncoder;
     private Usuario nutricionista;
     private Usuario caixa;
 
@@ -93,7 +93,7 @@ class DtoApiIntegrationTests {
         assertTrue(weekTwo.body().contains("\"idRefeicao\":" + mealId));
 
         HttpResponse<String> inlineWeek = request("POST", "/api/semanas", nutricionista,
-                "{\"data\":\"2026-10-26\",\"cardapio\":[{\"proteina\":\"Carne\",\"calorias\":500}]}");
+                "{\"data\":\"2026-10-26\",\"cardapio\":[{\"proteina\":\"Carne\",\"calorias\":500},null,null,null,null]}");
         assertEquals(200, inlineWeek.statusCode());
         assertTrue(inlineWeek.body().contains("\"proteina\":\"Carne\""));
         HttpResponse<String> weekList = request("GET", "/api/semanas", nutricionista, null);
@@ -101,7 +101,7 @@ class DtoApiIntegrationTests {
         assertTrue(weekList.body().contains("2026-10-26"));
 
         HttpResponse<String> update = request("PUT", "/api/semanas/2026-10-12", nutricionista,
-                "{\"desperdicio\":[2.0],\"fichasVendidas\":[20],\"cardapio\":[{\"idRefeicao\":" + mealId + "}]}");
+                "{\"desperdicio\":[2.0],\"fichasVendidas\":[20],\"cardapio\":[{\"idRefeicao\":" + mealId + "},null,null,null,null]}");
         assertEquals(200, update.statusCode());
         assertTrue(update.body().contains("\"desperdicio\":[2.0]"));
 
@@ -197,7 +197,15 @@ class DtoApiIntegrationTests {
     }
 
     private Usuario createUser(String email, char role) {
-                return usuarioRepository.save(UsuarioFactory.criarUsuarioEntidadeValido(email, role));
+        Usuario usuario = new Usuario();
+        usuario.setNome("Usuário de teste");
+        usuario.setEmailRecuperacao(email);
+        usuario.setTipo(role);
+        CredencialAutenticacao credential = new CredencialAutenticacao();
+        credential.setPasswordHash(passwordEncoder.encode(PASSWORD));
+        credential.setUsuario(usuario);
+        usuario.setCredencialAutenticacao(credential);
+        return usuarioRepository.save(usuario);
     }
 
     private HttpResponse<String> request(String method, String path, Usuario user, String jsonBody) throws Exception {
@@ -205,9 +213,7 @@ class DtoApiIntegrationTests {
                 .uri(URI.create("http://localhost:" + port + path))
                 .header("Accept", "application/json");
         if (user != null) {
-            String raw = user.getEmailRecuperacao() + ":" + PASSWORD;
-            String credentials = Base64.getEncoder().encodeToString(raw.getBytes(StandardCharsets.UTF_8));
-            builder.header("Authorization", "Basic " + credentials);
+            builder.header("Authorization", "Bearer " + tokenFor(user));
         }
         if (jsonBody != null) {
             builder.header("Content-Type", "application/json");
@@ -219,7 +225,22 @@ class DtoApiIntegrationTests {
     }
 
     private String weekJson(String date, long mealId) {
-        return "{\"data\":\"" + date + "\",\"desperdicio\":[1.5],\"fichasVendidas\":[10],\"cardapio\":[{\"idRefeicao\":" + mealId + "}]}";
+        return "{\"data\":\"" + date + "\",\"desperdicio\":[1.5],\"fichasVendidas\":[10],\"cardapio\":[{\"idRefeicao\":" + mealId + "},null,null,null,null]}";
+    }
+
+    private String tokenFor(Usuario user) throws Exception {
+        String body = "{\"email\":\"" + user.getEmailRecuperacao() + "\",\"senha\":\"" + PASSWORD + "\"}";
+        HttpRequest login = HttpRequest.newBuilder()
+                .uri(URI.create("http://localhost:" + port + "/api/auth/login"))
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .build();
+        HttpResponse<String> response = client.send(login, HttpResponse.BodyHandlers.ofString());
+        assertEquals(200, response.statusCode(), response.body());
+        Matcher matcher = Pattern.compile("\\\"accessToken\\\"\\s*:\\s*\\\"([^\\\"]+)\\\"").matcher(response.body());
+        assertTrue(matcher.find(), "Login response should include an access token");
+        return matcher.group(1);
     }
 
     private long longField(String json, String field) {

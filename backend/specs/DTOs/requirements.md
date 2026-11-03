@@ -1,10 +1,14 @@
 # Requisitos — DTOs nos contratos HTTP da API
 
+## Aditivo de integração aprovado — 02/11/2026
+
+Este aditivo atualiza as restrições anteriores de escopo, incluindo RN05/RN06: o solicitante autorizou alterações necessárias no frontend, backend e PostgreSQL para concluir a integração. Login usa e-mail/senha com JWT Bearer de uma hora, mantido em memória no frontend. As permissões originais desta spec são aplicadas; `GESTOR` recebe as mesmas permissões que `NUTRICIONISTA`. O menu público terá rota somente leitura separada que não retorna métricas administrativas. Mensagens públicas não coletam nome nem contato. Estoque deriva validade: “Vence em breve” nos sete dias anteriores e “Vencido” a partir do dia seguinte. O change log de `frontend/specs/008-integracao-frontend-backend` registra as decisões e razões.
+
 ## Objetivo
 
-Definir DTOs de requisição e resposta para os endpoints existentes do backend, separando os contratos HTTP das entidades JPA. A implementação deve tornar os payloads explícitos, impedir a exposição de dados internos e preservar as regras de negócio, os caminhos, os códigos de status e as permissões existentes.
+Definir DTOs de requisição e resposta para a API, separando os contratos HTTP das entidades JPA. O aditivo de integração aprovado amplia o escopo para incluir autenticação JWT, permissões, persistência semanal e operações consumidas pelo frontend.
 
-Esta especificação trata do contrato do backend. A integração real com o frontend será feita posteriormente.
+Esta especificação trata do contrato do backend e do contrato necessário à integração frontend/backend.
 
 ## Escopo
 
@@ -17,7 +21,7 @@ Aplicar DTOs aos endpoints atualmente definidos em `controller/`:
 - mensagens (`Mensagem`);
 - estoque (`Estoque`).
 
-`CredencialAutenticacao` é um detalhe interno de autenticação e não deve ser exposto por nenhum DTO de resposta. Rotas sem controller correspondente no código atual, como vendas e autenticação, não fazem parte deste escopo até serem explicitamente incluídas.
+`CredencialAutenticacao` é um detalhe interno de autenticação e não deve ser exposto por nenhum DTO de resposta. O aditivo inclui `POST /api/auth/login`; rotas sem controller correspondente, como vendas, permanecem fora do escopo.
 
 ## Convenções dos DTOs
 
@@ -34,37 +38,47 @@ Aplicar DTOs aos endpoints atualmente definidos em `controller/`:
 - **RN01 — Contratos separados:** os corpos de requisição e resposta de todos os endpoints neste escopo usam DTOs próprios. Parâmetros escalares de rota/consulta e respostas sem corpo, como `204 No Content`, não precisam ser DTOs.
 - **RN02 — Mapeamento no service:** o service converte DTOs de entrada em entidades antes de salvar e converte entidades em DTOs de resposta antes de retornar dados ao controller. O controller não faz esse mapeamento.
 - **RN03 — Proteção de dados:** DTOs de resposta seguem lista explícita de campos permitidos. Nunca incluir senha em texto puro, hash, salt, token, tentativas de autenticação ou a entidade `CredencialAutenticacao`. O DTO de cadastro pode receber `senhaPura` para a operação de registro, mas nenhum DTO de resposta pode devolvê-la. `emailRecuperacao` permanece na resposta de usuário para preservar o contrato atual, conforme decisão do solicitante.
-- **RN04 — Compatibilidade da API:** preservar caminhos, verbos, nomes JSON já consumidos, efeitos da operação, códigos de status, tratamento de recurso inexistente e regras de autenticação/autorização existentes. Não remover campos do contrato atual como efeito implícito da criação de DTOs; alterações a esse comportamento precisam de requisito explícito próprio.
-- **RN05 — Sem alterações no frontend:** não alterar nenhum arquivo ou pasta dentro de `frontend/`. Esta restrição permanece válida mesmo que a integração frontend/backend ainda não exista.
-- **RN06 — Sem alterações nos models sem autorização:** evitar mudanças em `model/`. Se o mapeamento de DTO exigir alteração em um model, interromper essa parte e pedir autorização antes de editar qualquer model.
+- **RN04 — Compatibilidade da API:** preservar caminhos, verbos, nomes JSON já consumidos, efeitos da operação, códigos de status e tratamento de recurso inexistente, exceto pelas mudanças explicitamente aprovadas no aditivo de integração. Aplicar as permissões definidas na tabela abaixo.
+- **RN05 — Integração frontend:** mudanças frontend necessárias para consumir os contratos desta spec são permitidas pelo aditivo aprovado; preservar os fluxos e o visual existentes sempre que possível.
+- **RN06 — Models e schema autorizados:** alterações necessárias nos models e no schema PostgreSQL para cumprir os contratos confirmados estão autorizadas. Registrar cada alteração e sua razão no change log da integração.
 - **RN07 — Escopo de persistência:** DTOs não devem permitir que o cliente escolha ou altere identificadores gerados ou propriedades internas. `idRefeicao` pode ser enviado apenas como referência para associar uma refeição já existente a uma semana; não pode ser usado para criar ou alterar essa refeição.
 
 ## Contrato por endpoint
 
-Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode ajustar o nome Java mantendo a distinção entre request e response. Os códigos e permissões indicados refletem o comportamento atualmente implementado e devem ser preservados nesta alteração.
+Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode ajustar o nome Java mantendo a distinção entre request e response. Os acessos refletem o contrato aprovado no aditivo, não o comportamento histórico do `SecurityConfig`.
 
-| Método e caminho | Request | Response de sucesso | Acesso atual |
+| Método e caminho | Request | Response de sucesso | Acesso contratado |
 |---|---|---|---|
+| `POST /api/auth/login` | `LoginDTO` (`email`, `senha`) | `200`, token Bearer/profile; `401` para credenciais inválidas | Público |
 | `GET /api/usuarios` | Sem corpo | `200`, lista de `UsuarioResponseDTO` | Usuário autenticado |
 | `POST /api/usuarios` | `UsuarioCreateRequestDTO` | `200`, `UsuarioResponseDTO` | Usuário autenticado |
-| `GET /api/semanas` | Sem corpo | `200`, lista de `SemanaResponseDTO` | Papel `NUTRICIONISTA` |
-| `POST /api/semanas` | `SemanaCreateRequestDTO` | `200`, `SemanaResponseDTO` | Papel `NUTRICIONISTA` |
-| `PUT /api/semanas/{data}` | `data` como `LocalDate`; corpo `SemanaUpdateRequestDTO` | `200`, `SemanaResponseDTO`; `404` se a semana não existir | Papel `NUTRICIONISTA` |
-| `GET /api/refeicoes` | Sem corpo | `200`, lista de `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` |
-| `POST /api/refeicoes` | `RefeicaoCreateRequestDTO` | `200`, `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` |
+| `GET /api/semanas` | Sem corpo | `200`, lista de `SemanaResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `POST /api/semanas` | `SemanaCreateRequestDTO` | `200`, `SemanaResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `PUT /api/semanas/{data}` | `data` como segunda-feira (`LocalDate`); corpo `SemanaUpdateRequestDTO` | `200`, `SemanaResponseDTO`; `404` se a semana não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `GET /api/cardapios/publicos` | Sem corpo | `200`, lista de datas e refeições; sem métricas administrativas | Público |
+| `GET /api/refeicoes` | Sem corpo | `200`, lista de `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `POST /api/refeicoes` | `RefeicaoCreateRequestDTO` | `200`, `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
 | `GET /api/noticias` | Sem corpo | `200`, lista de `NoticiaResponseDTO` | Público |
 | `POST /api/noticias` | `NoticiaCreateRequestDTO` | `200`, `NoticiaResponseDTO` | Usuário autenticado |
-| `GET /api/mensagens` | Sem corpo | `200`, lista de `MensagemResponseDTO` | Papel `NUTRICIONISTA` ou `CAIXA` |
-| `GET /api/mensagens/{id}` | `id` como parâmetro de rota | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
-| `POST /api/mensagens/usuario/{usuarioId}` | `usuarioId` como parâmetro de rota; corpo `MensagemCreateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se o usuário não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
-| `PUT /api/mensagens/{id}` | `id` como parâmetro de rota; corpo `MensagemUpdateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
-| `DELETE /api/mensagens/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
-| `GET /api/estoque` | Sem corpo | `200`, lista de `EstoqueResponseDTO` | Papel `NUTRICIONISTA` |
-| `POST /api/estoque` | `EstoqueCreateRequestDTO` | `200`, `EstoqueResponseDTO` | Papel `NUTRICIONISTA` |
+| `DELETE /api/noticias/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `GET /api/mensagens` | Sem corpo | `200`, lista de `MensagemResponseDTO` | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
+| `GET /api/mensagens/{id}` | `id` como parâmetro de rota | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
+| `POST /api/mensagens/usuario/{usuarioId}` | `usuarioId` como parâmetro de rota; corpo `MensagemCreateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se o usuário não existir | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
+| `POST /api/mensagens/publicas` | `MensagemPublicaCreateRequestDTO` | `200`, `MensagemResponseDTO`; usuário nulo | Público |
+| `PUT /api/mensagens/{id}` | `id` como parâmetro de rota; corpo `MensagemUpdateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
+| `DELETE /api/mensagens/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir ou se for notícia | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
+| `GET /api/estoque` | Sem corpo | `200`, lista de `EstoqueResponseDTO` com status calculado | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `POST /api/estoque` | `EstoqueCreateRequestDTO` | `200`, `EstoqueResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `PUT /api/estoque/{idMaterial}` | `EstoqueUpdateRequestDTO` | `200`, `EstoqueResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `DELETE /api/estoque/{idMaterial}` | Sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
 
-O relacionamento de cardápios é muitos-para-muitos: uma semana contém zero ou mais refeições, uma refeição pode estar em zero ou mais semanas e uma refeição pode ser criada sem pertencer a uma semana. O DTO de refeição não contém `semanaId`. Para compartilhar uma refeição existente, o item correspondente de `cardapio` em uma requisição de semana usa somente `idRefeicao` como referência; para criar uma refeição inline, o item contém seus dados e não contém `idRefeicao`. `POST /api/noticias` associa a notícia ao usuário autenticado; o cliente não escolhe o autor no corpo.
+O relacionamento de cardápios é muitos-para-muitos: uma semana contém cinco posições de segunda a sexta; cada posição recebe uma refeição ou `null`, e a refeição pode estar associada a semanas diferentes ou a nenhuma. `Semana.data` deve ser a segunda-feira. O DTO de refeição não contém `semanaId`. Referências existentes usam somente `idRefeicao`; criação inline envia os campos da refeição sem ID. Dados legados sem posição são migrados em ordem crescente de `refeicao_id`, conforme decisão aprovada, mesmo que os dias resultantes possam estar incorretos. `POST /api/noticias` associa a notícia ao usuário autenticado; o cliente não escolhe o autor no corpo.
 
-Uma requisição sem autenticação deve continuar recebendo `401`; usuário autenticado sem o papel exigido deve continuar recebendo `403`. Não tornar endpoints públicos como parte da conversão para DTO.
+As linhas legadas de desperdício e fichas também não tinham dia/posição persistidos. A migração atribui posições pela ordem física atual das linhas PostgreSQL, decisão aprovada pelo solicitante; os dias históricos podem ficar incorretos.
+
+`GET /api/cardapios/publicos` é uma rota somente leitura que retorna datas e refeições sem desperdício nem fichas vendidas. `/api/mensagens/publicas` aceita assunto e texto sem usuário, nome ou contato.
+
+Uma requisição protegida sem autenticação deve receber `401`; usuário autenticado sem o papel exigido deve receber `403`. As exceções públicas são as rotas marcadas como públicas na tabela de endpoints.
 
 ## Campos dos DTOs
 
@@ -74,23 +88,25 @@ Os campos abaixo definem o contrato base a partir dos modelos e operações atua
 |---|---|
 | `UsuarioCreateRequestDTO` | `nome`, `emailRecuperacao`, `tipo`, `senhaPura` |
 | `UsuarioResponseDTO` | `idUsuario`, `nome`, `emailRecuperacao`, `tipo`. Nunca incluir credenciais ou mensagens aninhadas. |
-| `SemanaCreateRequestDTO` | `data`, `desperdicio`, `fichasVendidas`, `cardapio` como lista de DTOs de refeição |
-| `SemanaUpdateRequestDTO` | `desperdicio`, `fichasVendidas`, `cardapio`; a data vem do parâmetro de rota. Preservar os campos que a operação atual atualiza. |
-| `SemanaResponseDTO` | `idSemana`, `data`, `desperdicio`, `fichasVendidas`, `cardapio` como lista de `RefeicaoResponseDTO` |
-| `RefeicaoCreateRequestDTO` | `proteina`, `guarnicao`, `acompanhamento1`, `acompanhamento2`, `suco`, `sobremesa`, `opcaoProteica`, `calorias`. Não recebe `semanaId`; a refeição pode permanecer sem associação. |
-| `RefeicaoRequestDTO` | Para um item de `cardapio` em request de semana: `idRefeicao` para referenciar uma refeição existente, ou os campos de refeição acima para criar uma refeição inline. Não aceitar ambos no mesmo item. |
-| `RefeicaoResponseDTO` | `idRefeicao`, `proteina`, `guarnicao`, `acompanhamento1`, `acompanhamento2`, `suco`, `sobremesa`, `opcaoProteica`, `calorias`. Não incluir `Semana` nem `semanaId`. |
+| `SemanaCreateRequestDTO` | `data` (segunda-feira), `desperdicio`, `fichasVendidas`, `cardapio` com exatamente cinco posições; `null` indica dia vazio |
+| `SemanaUpdateRequestDTO` | `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições; a data da rota deve ser segunda-feira. |
+| `SemanaResponseDTO` | `idSemana`, `data`, `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições de `RefeicaoResponseDTO` ou `null` |
+| `RefeicaoCreateRequestDTO` | `proteina`, `guarnicao`, `acompanhamento1`, `acompanhamento2`, `suco`, `sobremesa`, `opcaoProteica`, `calorias`, `saladaDoDia`. Não recebe `semanaId`; a refeição pode permanecer sem associação. |
+| `RefeicaoRequestDTO` | Para item de `cardapio`: `idRefeicao` para referência existente, ou os campos de refeição acima para criação inline. Não aceitar ambos no mesmo item. |
+| `RefeicaoResponseDTO` | `idRefeicao`, `proteina`, `guarnicao`, `acompanhamento1`, `acompanhamento2`, `suco`, `sobremesa`, `opcaoProteica`, `calorias`, `saladaDoDia`. Não incluir `Semana` nem `semanaId`. |
+| `MensagemPublicaCreateRequestDTO` | `assunto`, `texto`; o servidor define data/horário e não associa usuário, nome ou contato. |
 | `MensagemCreateRequestDTO` | `assunto`, `texto`, `horario`, `data`. O autor é informado por `usuarioId` na rota, não por uma entidade `Usuario` no corpo. |
 | `MensagemUpdateRequestDTO` | `texto`, `horario`, `data`, correspondentes aos campos atualizados atualmente pelo endpoint. |
 | `MensagemResponseDTO` | `idMensagem`, `assunto`, `texto`, `horario`, `data`, `usuarioId` quando houver autor. Não incluir o objeto `Usuario`. |
 | `NoticiaCreateRequestDTO` | `assunto`, `texto`, `horario`, `data`, `duracao` em horas. `assunto` e `texto` são obrigatórios, não vazios e limitados a 255 caracteres conforme as colunas JPA atuais. `duracao` é inteiro obrigatório entre 1 e 72. `horario` e `data` permanecem opcionais; o usuário autenticado é associado pelo backend. |
 | `NoticiaResponseDTO` | `idMensagem`, `assunto`, `texto`, `horario`, `data`, `duracao` |
 | `EstoqueCreateRequestDTO` | `nome`, `quantidade`, `unidade`, `lote`, `dataDeRecebimento`, `dataDeValidade`, `observacoes` |
-| `EstoqueResponseDTO` | `idMaterial`, `nome`, `quantidade`, `unidade`, `lote`, `dataDeRecebimento`, `dataDeValidade`, `observacoes` |
+| `EstoqueUpdateRequestDTO` | `nome`, `quantidade`, `unidade`, `lote`, `dataDeRecebimento`, `dataDeValidade`, `observacoes` |
+| `EstoqueResponseDTO` | `idMaterial`, `nome`, `quantidade`, `unidade`, `lote`, `dataDeRecebimento`, `dataDeValidade`, `observacoes`, `status` calculado |
 
 Campos de ID gerados (`idUsuario`, `idSemana`, `idRefeicao`, `idMensagem` e `idMaterial`) são somente de resposta, exceto `idRefeicao` usado como referência de associação em `RefeicaoRequestDTO`. O DTO de atualização de mensagem não deve passar a atualizar `assunto` implicitamente; isso exigiria mudança explícita do comportamento contratado.
 
-Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `senhaPura`) são obrigatórios. Em `MensagemCreateRequestDTO`, `texto` é obrigatório e não vazio; `assunto`, `horario` e `data` podem ser nulos conforme o model atual. Os demais campos mantêm a nulabilidade dos models atuais; não adicionar validações de domínio além das especificadas aqui. Valores textuais não nulos devem respeitar o limite de 255 caracteres das colunas JPA atuais. Listas de cardápio, desperdício e fichas ausentes ou nulas são tratadas como vazias. A unidade de `Noticia.duracao` é hora, com valor inteiro de 1 a 72; não aplicar os limites de 120/500 caracteres que aparecem como suposições na spec visual de notícias.
+Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `senhaPura`) são obrigatórios. Em `MensagemCreateRequestDTO`, `texto` é obrigatório e não vazio; `assunto`, `horario` e `data` podem ser nulos conforme o model atual. `MensagemPublicaCreateRequestDTO` exige `assunto` (até 100 caracteres) e `texto` (até 1000 caracteres); o servidor define data e horário. Os demais campos mantêm a nulabilidade dos models atuais, salvo as validações descritas aqui. Listas de cardápio ausentes ou nulas são convertidas em cinco posições nulas; desperdício e fichas ausentes ou nulos são tratados como vazios. Os valores das listas de desperdício e fichas mantêm sua posição. A unidade de `Noticia.duracao` é hora, com valor inteiro de 1 a 72.
 
 ## Critérios de aceitação
 
@@ -144,18 +160,18 @@ Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `sen
 **E** não deve persistir a operação inválida  
 **E** a resposta de erro não deve expor entidade, credencial, stack trace ou detalhes internos.
 
-### Cenário 8 — Restrição de escopo
+### Cenário 8 — Escopo aprovado
 
 **Dado que** esta especificação está sendo implementada  
 **Quando** forem feitas alterações para atender aos critérios  
-**Então** nenhum arquivo sob `frontend/` deve ser alterado  
-**E** alterações em `model/` devem aguardar autorização explícita, caso se tornem necessárias.
+**Então** as mudanças limitam-se à integração aprovada no aditivo  
+**E** cada mudança de model, schema, segurança ou frontend tem sua razão registrada no change log.
 
-## Restrições e decisões pendentes
+## Restrições de implementação
 
-- Não alterar arquivos ou pastas de `frontend/`.
-- Não remover nem ignorar verificações, regras de negócio, códigos de status ou restrições de acesso já existentes nos controllers e em `SecurityConfig`.
-- Não alterar models sem autorização explícita. Se um model atual não permitir o mapeamento necessário, registrar a limitação e pedir autorização antes de continuar com essa alteração.
+- As alterações de frontend, backend, schema e segurança explicitamente listadas no aditivo estão autorizadas; qualquer mudança fora desse escopo exige nova definição.
+- Aplicar a matriz de acesso da tabela, JWT stateless com validade de uma hora, respostas JSON `401`/`403`, e seed de contas somente no perfil local com credenciais de ambiente.
+- Não alterar CORS.
 - Aplicar somente as validações explicitamente definidas nesta especificação ou existentes no domínio; não impor limites de 120/500 caracteres que aparecem como suposições na spec visual de notícias.
 - Criar `design.md` e `tasks.md` da funcionalidade antes da implementação, seguindo o fluxo Spec-Driven Development do backend.
 
@@ -164,4 +180,4 @@ Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `sen
 - Testar cada rota da tabela com os acessos autorizados e não autorizados, verificando método, status e formato JSON.
 - Testar conversões request DTO → entidade e entidade → response DTO, incluindo listas vazias e associações por ID.
 - Confirmar que os campos internos e sensíveis não aparecem nas respostas e que falhas não persistem alterações parciais.
-- Confirmar que `frontend/` e `model/` não foram alterados sem autorização explícita.
+- Revisar migração PostgreSQL e confirmar que os campos internos não aparecem em respostas.

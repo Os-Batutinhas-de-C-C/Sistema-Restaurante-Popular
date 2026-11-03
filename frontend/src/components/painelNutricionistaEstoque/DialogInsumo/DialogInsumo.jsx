@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Stack, TextField } from "@mui/material";
-import { statusEstoque } from "../../../services/estoqueService";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField } from "@mui/material";
 import SeletorDataEstoque from "../SeletorDataEstoque/SeletorDataEstoque";
 
 const emptyValues = {
@@ -11,7 +10,6 @@ const emptyValues = {
     dataEntrega: "",
     dataValidade: "",
     observacao: "",
-    status: "No prazo",
 };
 
 export default function DialogInsumo({ open, item, onClose, onSave }) {
@@ -44,9 +42,6 @@ export default function DialogInsumo({ open, item, onClose, onSave }) {
                         <SeletorDataEstoque label="Data de validade" value={values.dataValidade} onChange={(value) => setValues((current) => ({ ...current, dataValidade: value }))} />
                     </Stack>
                     <TextField label="Observações" value={values.observacao} onChange={handleChange("observacao")} multiline minRows={2} fullWidth />
-                    <TextField select label="Status" value={values.status} onChange={handleChange("status")} fullWidth>
-                        {statusEstoque.map((status) => <MenuItem key={status} value={status}>{status}</MenuItem>)}
-                    </TextField>
                 </Stack>
             </DialogContent>
             <DialogActions sx={{ px: { xs: 2, sm: 4 }, pb: 3, pt: 2, gap: 1 }}>

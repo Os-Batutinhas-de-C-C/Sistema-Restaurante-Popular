@@ -24,3 +24,22 @@
 - [x] Todos os endpoints cobertos recebem e retornam apenas DTOs nos corpos HTTP, exceto as respostas sem corpo especificadas.
 - [x] Os controllers delegam aos services e não fazem mapeamento de entidades.
 - [x] Os critérios de aceitação de `requirements.md` foram verificados e não há exposição de dados sensíveis.
+
+## Aditivo — Integração frontend/backend (02/11/2026)
+
+### Decisões e implementação aprovada
+
+- [x] Login por e-mail/senha, JWT Bearer de uma hora e validação stateless.
+- [x] Matriz de permissões DTO e papel `GESTOR` equivalente a `NUTRICIONISTA`; erros JSON `401`/`403`.
+- [x] Seed somente no perfil `local`, com credenciais de ambiente.
+- [x] Datas semanais na segunda-feira, slots de refeição posicionais de 0 a 4 e valores `null` preservados.
+- [x] Persistência ordenada para desperdício/fichas, salada no modelo/DTO/schema e migração de associações antigas por ID crescente.
+- [x] Endpoint público do cardápio sem métricas administrativas.
+- [x] Mensagem pública anônima sem nome/contato, exclusão de notícia/mensagem e CRUD necessário de estoque com status derivado.
+- [x] Remover a senha PostgreSQL versionada de `application.properties` e usar variáveis de ambiente, conforme aprovação explícita.
+
+### Verificação
+
+- [x] Executar `JwtSecurityIntegrationTests` para login, tokens ausente/malformado/expirado e matriz de acesso (3 testes passaram em 02/11/2026 com JDK 25).
+- [ ] Executar a migração contra PostgreSQL de desenvolvimento após confirmar os pré-requisitos documentados; esta etapa não foi executada.
+- [ ] Outros testes DTO/API não foram executados nesta tarefa; testes frontend e validação no navegador permanecem fora da verificação autorizada.

@@ -2,5 +2,5 @@ import PainelNutricionistaNoticias from "../../components/painelNutricionistaNot
 import ProtectedRoute from "../../components/login/ProtectedRoute";
 
 export default function NoticiasPage() {
-    return <ProtectedRoute><PainelNutricionistaNoticias /></ProtectedRoute>;
+    return <ProtectedRoute allowedProfiles={["Nutricionista", "Gestor"]}><PainelNutricionistaNoticias /></ProtectedRoute>;
 }

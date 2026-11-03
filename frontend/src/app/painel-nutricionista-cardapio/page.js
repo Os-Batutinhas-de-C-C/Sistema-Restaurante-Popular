@@ -2,5 +2,5 @@ import PainelNutricionistaCardapio from "../../components/painelNutricionistaCar
 import ProtectedRoute from "../../components/login/ProtectedRoute";
 
 export default function PainelNutricionistaCardapioPage() {
-    return <ProtectedRoute><PainelNutricionistaCardapio /></ProtectedRoute>;
+    return <ProtectedRoute allowedProfiles={["Nutricionista", "Gestor"]}><PainelNutricionistaCardapio /></ProtectedRoute>;
 }

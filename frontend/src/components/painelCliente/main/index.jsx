@@ -34,6 +34,7 @@ export default function Main({ onEnviar }) {
         setStatus("enviando");
         try {
             if (!onEnviar) throw new Error("Passe a prop onEnviar com a chamada à sua API.");
+            await onEnviar({ assunto: form.assunto.trim(), mensagem: form.mensagem.trim() });
             setForm(VAZIO);
             setStatus("ok");
         } catch (err) {

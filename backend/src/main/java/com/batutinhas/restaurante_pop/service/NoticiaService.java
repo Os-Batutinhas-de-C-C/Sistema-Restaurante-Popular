@@ -51,6 +51,13 @@ public class NoticiaService {
         return toResponseDTO(noticiaRepository.save(noticia));
     }
 
+    @Transactional
+    public boolean delete(Long id) {
+        if (!noticiaRepository.existsById(id)) return false;
+        noticiaRepository.deleteById(id);
+        return true;
+    }
+
     private NoticiaResponseDTO toResponseDTO(Noticia noticia) {
         return new NoticiaResponseDTO(
                 noticia.getIdMensagem(),

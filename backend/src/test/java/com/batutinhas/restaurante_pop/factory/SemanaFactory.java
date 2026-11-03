@@ -7,6 +7,7 @@ import com.batutinhas.restaurante_pop.model.Semana;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public final class SemanaFactory {
@@ -14,8 +15,8 @@ public final class SemanaFactory {
     }
 
     public static SemanaCreateRequestDTO criarSemanaCreateRequestDTO() {
-        List<RefeicaoRequestDTO> cardapio = new ArrayList<>();
-        cardapio.add(RefeicaoFactory.criarRefeicaoRequestDTO());
+        List<RefeicaoRequestDTO> cardapio = new ArrayList<>(Collections.nCopies(Semana.QUANTIDADE_DIAS_UTEIS, null));
+        cardapio.set(0, RefeicaoFactory.criarRefeicaoRequestDTO());
         return new SemanaCreateRequestDTO(
                 LocalDate.of(2026, 10, 12),
                 new ArrayList<>(List.of(1.5)),
@@ -39,8 +40,8 @@ public final class SemanaFactory {
         semana.setData(LocalDate.of(2026, 10, 12));
         semana.setDesperdicio(new ArrayList<>(List.of(1.5)));
         semana.setFichasVendidas(new ArrayList<>(List.of(10)));
-        List<Refeicao> cardapio = new ArrayList<>();
-        cardapio.add(RefeicaoFactory.criarRefeicaoEntidadeValida());
+        List<Refeicao> cardapio = new ArrayList<>(Collections.nCopies(Semana.QUANTIDADE_DIAS_UTEIS, null));
+        cardapio.set(0, RefeicaoFactory.criarRefeicaoEntidadeValida());
         semana.setCardapio(cardapio);
         return semana;
     }

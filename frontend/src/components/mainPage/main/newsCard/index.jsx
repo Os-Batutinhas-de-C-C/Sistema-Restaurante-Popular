@@ -1,29 +1,77 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import "@fontsource/plus-jakarta-sans/400.css";
 import "@fontsource/plus-jakarta-sans/500.css";
 import "@fontsource/plus-jakarta-sans/700.css";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./style.css";
-import { NOTICIAS } from "./noticiasMock";
+import { listarNoticiasPorPeriodo } from "../../../../services/noticiasService";
 
 export default function NewsCard({ id }) {
   const [i, setI] = useState(0);
-  const total = NOTICIAS.length;
-  
+  const [noticias, setNoticias] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [tentativa, setTentativa] = useState(0);
   const lastClickTime = useRef(0);
 
-  if (total === 0) return null;
+  useEffect(() => {
+    let ativo = true;
+
+    listarNoticiasPorPeriodo()
+      .then((resultado) => {
+        if (ativo) setNoticias(resultado);
+      })
+      .catch((erro) => {
+        if (ativo) setError(erro?.message || "Não foi possível carregar as notícias.");
+      })
+      .finally(() => {
+        if (ativo) setLoading(false);
+      });
+
+    return () => {
+      ativo = false;
+    };
+  }, [tentativa]);
+
+  const total = noticias.length;
+  const indiceAtual = total ? i % total : 0;
 
   const handleNavigation = (direction) => {
+    if (!total) return;
     const now = Date.now();
     if (now - lastClickTime.current < 150) return;
     lastClickTime.current = now;
 
     setI((prevI) => (prevI + direction + total) % total);
   };
+
+  if (loading || error || total === 0) {
+    return (
+      <section id={id} className="newsBoxes">
+        <div className="newsBoxBorder">
+          <span className="tag"><span className="dot" />Notícias</span>
+          <hr className="divider" />
+          <div className="slides">
+            <p className="article">
+              {loading ? "Carregando notícias…" : error || "Nenhuma notícia disponível."}
+            </p>
+            {error && (
+              <button type="button" className="retry" onClick={() => {
+                setLoading(true);
+                setError("");
+                setTentativa((atual) => atual + 1);
+              }}>
+                Tentar novamente
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id={id} className="newsBoxes">
@@ -32,10 +80,10 @@ export default function NewsCard({ id }) {
         <hr className="divider" />
         
         <div className="slides">
-          {NOTICIAS.map((n, k) => (
+          {noticias.map((n, k) => (
             <div 
               key={n.id || k} 
-              className={`slide ${k === i ? "active" : ""}`}
+              className={`slide ${k === indiceAtual ? "active" : ""}`}
               aria-hidden={k !== i}
             >
               <p className="title">{n.titulo}</p>
@@ -48,10 +96,10 @@ export default function NewsCard({ id }) {
 
         <div className="controls">
           <div className="indicators">
-            {NOTICIAS.map((n, k) => (
+            {noticias.map((n, k) => (
               <button
                 key={n.id || k}
-                className={`pill ${k === i ? "active" : ""}`}
+                className={`pill ${k === indiceAtual ? "active" : ""}`}
                 onClick={() => {
                   const now = Date.now();
                   if (now - lastClickTime.current < 300) return;

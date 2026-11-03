@@ -3,60 +3,68 @@ package com.batutinhas.restaurante_pop.config;
 import com.batutinhas.restaurante_pop.model.CredencialAutenticacao;
 import com.batutinhas.restaurante_pop.model.Usuario;
 import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
+@Profile("local")
 public class DataInitializer implements CommandLineRunner {
-
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final List<BootstrapAccount> accounts;
 
-    public DataInitializer(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public DataInitializer(
+            UsuarioRepository usuarioRepository,
+            PasswordEncoder passwordEncoder,
+            @Value("${app.bootstrap.nutricionista.email:}") String nutricionistaEmail,
+            @Value("${app.bootstrap.nutricionista.password:}") String nutricionistaPassword,
+            @Value("${app.bootstrap.caixa.email:}") String caixaEmail,
+            @Value("${app.bootstrap.caixa.password:}") String caixaPassword,
+            @Value("${app.bootstrap.gestor.email:}") String gestorEmail,
+            @Value("${app.bootstrap.gestor.password:}") String gestorPassword
+    ) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.accounts = List.of(
+                new BootstrapAccount("Nutricionista", 'N', nutricionistaEmail, nutricionistaPassword),
+                new BootstrapAccount("Caixa", 'C', caixaEmail, caixaPassword),
+                new BootstrapAccount("Gestor", 'G', gestorEmail, gestorPassword)
+        );
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        
-        if (usuarioRepository.findByEmailRecuperacao("marlianne@restaurante.com").isEmpty()) {
-            Usuario nutri = new Usuario();
-            nutri.setNome("Marlianne Nutricionista");
-            nutri.setEmailRecuperacao("marlianne@restaurante.com");
-            nutri.setTipo('N'); // Tipo Nutricionista
+    public void run(String... args) {
+        for (BootstrapAccount account : accounts) {
+            boolean hasEmail = account.email() != null && !account.email().isBlank();
+            boolean hasPassword = account.password() != null && !account.password().isBlank();
+            if (!hasEmail && !hasPassword) continue;
+            if (hasEmail != hasPassword) {
+                throw new IllegalStateException("Both bootstrap email and password must be configured for " + account.label() + ".");
+            }
+            if (usuarioRepository.findByEmailRecuperacao(account.email()).isPresent()) continue;
 
-            CredencialAutenticacao credNutri = new CredencialAutenticacao();
-            credNutri.setPasswordHash(passwordEncoder.encode("senhaNutri123")); // Troque pela senha real depois
-            credNutri.setDataCriacao(LocalDate.now());
-            credNutri.setTentativasFalhas(0);
+            Usuario usuario = new Usuario();
+            usuario.setNome(account.label());
+            usuario.setEmailRecuperacao(account.email().trim());
+            usuario.setTipo(account.tipo());
 
-            credNutri.setUsuario(nutri);
-            nutri.setCredencialAutenticacao(credNutri);
+            CredencialAutenticacao credencial = new CredencialAutenticacao();
+            credencial.setPasswordHash(passwordEncoder.encode(account.password()));
+            credencial.setDataCriacao(LocalDate.now());
+            credencial.setTentativasFalhas(0);
+            credencial.setUsuario(usuario);
+            usuario.setCredencialAutenticacao(credencial);
 
-            usuarioRepository.save(nutri);
-            System.out.println("Usuário Nutricionista criado com sucesso!");
+            usuarioRepository.save(usuario);
         }
+    }
 
-        if (usuarioRepository.findByEmailRecuperacao("caixa@restaurante.com").isEmpty()) {
-            Usuario caixa = new Usuario();
-            caixa.setNome("Operador de Caixa");
-            caixa.setEmailRecuperacao("caixa@restaurante.com");
-            caixa.setTipo('C'); // Tipo Caixa
-
-            CredencialAutenticacao credCaixa = new CredencialAutenticacao();
-            credCaixa.setPasswordHash(passwordEncoder.encode("senhaCaixa123")); // Troque pela senha real depois
-            credCaixa.setDataCriacao(LocalDate.now());
-            credCaixa.setTentativasFalhas(0);
-
-            credCaixa.setUsuario(caixa);
-            caixa.setCredencialAutenticacao(credCaixa);
-
-            usuarioRepository.save(caixa);
-            System.out.println("Usuário Caixa criado com sucesso!");
-        }
+    private record BootstrapAccount(String label, char tipo, String email, String password) {
     }
 }

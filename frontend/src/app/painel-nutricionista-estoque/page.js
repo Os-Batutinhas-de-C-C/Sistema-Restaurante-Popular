@@ -2,5 +2,5 @@ import PainelNutricionistaEstoque from "../../components/painelNutricionistaEsto
 import ProtectedRoute from "../../components/login/ProtectedRoute";
 
 export default function EstoquePage() {
-    return <ProtectedRoute><PainelNutricionistaEstoque /></ProtectedRoute>;
+    return <ProtectedRoute allowedProfiles={["Nutricionista", "Gestor"]}><PainelNutricionistaEstoque /></ProtectedRoute>;
 }

@@ -1,4 +1,4 @@
-import { Box, Stack, Typography } from "@mui/material";
+import { Alert, Box, CircularProgress, Stack, Typography } from "@mui/material";
 import NavbarPainel from "../../NavbarPainel/NavbarPainel";
 import AcoesRapidas from "../AcoesRapidas/AcoesRapidas";
 import CardapioHoje from "../CardapioHoje/CardapioHoje";
@@ -15,6 +15,8 @@ export default function DashboardNutricionista({
     dadosDashboard,
     onWasteClick,
     onRefresh,
+    error,
+    loading,
 }) {
     return (
         <Box className={styles.page}>
@@ -52,6 +54,8 @@ export default function DashboardNutricionista({
                 </Stack>
                 {/* Seções independentes que compõem o conteúdo do dashboard. */}
                 <Stack className={styles.sections}>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    {loading && <CircularProgress size={24} aria-label="Carregando dados do painel" />}
                     <AcoesRapidas onWasteClick={onWasteClick} />
                     <ResumoMetricas dadosDashboard={dadosDashboard} />
                     <CardapioHoje dadosDashboard={dadosDashboard} />
@@ -60,24 +64,3 @@ export default function DashboardNutricionista({
         </Box>
     );
 }
-
-// Mock temporário para validar o layout enquanto a API ainda não está disponível.
-export const mockDadosDashboard = {
-    titulo: "Resumo de Hoje",
-    data: "Segunda-Feira, 26 de Outubro",
-    atualizadoEm: "Atualizado às 11:42",
-    fichasConsumidas: 155,
-    fichasTotais: 300,
-    desperdicioKg: null,
-    cardapio: {
-        pratoProteico: "Suíno com Legumes",
-        opcaoProteica: "Omelete",
-        acompanhamento1: "Arroz Branco",
-        acompanhamento2: "Feijão Carioca",
-        guarnicao: "Farofa de Cuscuz",
-        saladaDoDia: "Salada Crua",
-        sobremesa: "Doce",
-        sucoNatural: "Suco de Polpa de Cajá",
-        valorCaloricoEstimado: "~ 950 kcal",
-    },
-};

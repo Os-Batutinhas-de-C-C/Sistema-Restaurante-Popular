@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, Box, Snackbar, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
 import BarraNoticias from "./BarraNoticias/BarraNoticias";
 import ListaNoticias from "./ListaNoticias/ListaNoticias";
@@ -21,44 +21,80 @@ export default function PainelNutricionistaNoticias() {
     const [noticiaVisualizada, setNoticiaVisualizada] = useState(null);
     const [noticiaParaRemover, setNoticiaParaRemover] = useState(null);
     const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const loadSequence = useRef(0);
 
-    const carregarNoticias = useCallback(() => {
-        setLoading(true);
-        setError("");
+    const carregarNoticias = useCallback(async () => {
+        const sequence = ++loadSequence.current;
         try {
-            setNoticias(listarNoticiasPorPeriodo(periodo));
-        } catch {
-            setNoticias([]);
-            setError("Não foi possível carregar as notícias.");
+            const resultado = await listarNoticiasPorPeriodo(periodo);
+            if (sequence === loadSequence.current) setNoticias(resultado);
+        } catch (erro) {
+            if (sequence === loadSequence.current) {
+                setError(erro?.message || "Não foi possível carregar as notícias.");
+            }
         } finally {
-            setLoading(false);
+            if (sequence === loadSequence.current) setLoading(false);
         }
     }, [periodo]);
 
-    useEffect(() => {
-        carregarNoticias();
-    }, [carregarNoticias]);
+    const recarregarNoticias = () => {
+        setLoading(true);
+        setError("");
+        return carregarNoticias();
+    };
 
-    const publicar = (dados) => {
+    useEffect(() => {
+        const sequence = ++loadSequence.current;
+        let ativo = true;
+        listarNoticiasPorPeriodo(periodo)
+            .then((resultado) => {
+                if (ativo && sequence === loadSequence.current) {
+                    setNoticias(resultado);
+                    setError("");
+                }
+            })
+            .catch((erro) => {
+                if (ativo && sequence === loadSequence.current) {
+                    setError(erro?.message || "Não foi possível carregar as notícias.");
+                }
+            })
+            .finally(() => {
+                if (ativo && sequence === loadSequence.current) setLoading(false);
+            });
+        return () => {
+            ativo = false;
+            loadSequence.current += 1;
+        };
+    }, [periodo]);
+
+    const publicar = async (dados) => {
         try {
-            const noticia = publicarNoticia({ ...dados, data: new Date(), hora: new Date() });
-            setNoticias(listarNoticiasPorPeriodo(periodo));
+            const noticia = await publicarNoticia({ ...dados, data: new Date(), hora: new Date() });
             setModalPublicarAberto(false);
             setError("");
             setSnackbar({ open: true, message: "Notícia publicada: " + noticia.titulo, severity: "success" });
+            await recarregarNoticias();
             return true;
-        } catch {
-            setError("Não foi possível publicar a notícia.");
+        } catch (erro) {
+            setSnackbar({
+                open: true,
+                message: erro?.message || "Não foi possível publicar a notícia.",
+                severity: "error",
+            });
             return false;
         }
     };
 
-    const confirmarRemocao = () => {
+    const confirmarRemocao = async () => {
         if (!noticiaParaRemover) return;
-        removerNoticia(noticiaParaRemover.id);
-        setNoticias(listarNoticiasPorPeriodo(periodo));
-        setSnackbar({ open: true, message: "Notícia removida: " + noticiaParaRemover.titulo, severity: "success" });
-        setNoticiaParaRemover(null);
+        try {
+            await removerNoticia(noticiaParaRemover.id);
+            setSnackbar({ open: true, message: "Notícia removida: " + noticiaParaRemover.titulo, severity: "success" });
+            setNoticiaParaRemover(null);
+            await recarregarNoticias();
+        } catch (erro) {
+            setSnackbar({ open: true, message: erro?.message || "Operação indisponível.", severity: "error" });
+        }
     };
 
     return (
@@ -81,14 +117,18 @@ export default function PainelNutricionistaNoticias() {
                 <Box sx={{ display: "grid", gap: 1.5 }}>
                     <BarraNoticias
                         periodo={periodo}
-                        onPeriodoChange={(value) => setPeriodo(value || obterPeriodoPadrao())}
+                        onPeriodoChange={(value) => {
+                            setLoading(true);
+                            setError("");
+                            setPeriodo(value || obterPeriodoPadrao());
+                        }}
                         onPublicar={() => setModalPublicarAberto(true)}
                     />
                     <ListaNoticias
                         noticias={noticias}
                         loading={loading}
                         error={error}
-                        onRetry={carregarNoticias}
+                        onRetry={recarregarNoticias}
                         onVisualizar={setNoticiaVisualizada}
                         onExcluir={setNoticiaParaRemover}
                         isMobile={isMobile}

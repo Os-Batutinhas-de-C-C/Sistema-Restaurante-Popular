@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { encerrarSessao } from "../../services/authService";
 import styles from "./navbarPainel.module.css";
 
 // Itens do menu principal. Os ícones são assets do Figma para manter a
@@ -54,8 +55,9 @@ export default function NavbarNutricionista({ onProfileClick }) {
     };
 
     // Navega quando o item possui uma rota e sempre fecha o menu.
-    const handleMenuItemClick = (href) => {
+    const handleMenuItemClick = (label, href) => {
         handleMenuClose();
+        if (label === "Sair") encerrarSessao();
         if (href) {
             router.push(href);
         }
@@ -143,7 +145,7 @@ export default function NavbarNutricionista({ onProfileClick }) {
                 {menuItems.map(({ label, icon, href }, index) => (
                     <MenuItem
                         key={label}
-                        onClick={() => handleMenuItemClick(href)}
+                        onClick={() => handleMenuItemClick(label, href)}
                         divider={index < menuItems.length - 1}
                         sx={{
                             minHeight: 48,

@@ -1,14 +1,15 @@
 "use client";
 
 import { Alert, Box, Snackbar, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
 import FiltroPeriodoPainel from "../painelCompartilhado/FiltroPeriodoPainel";
 import ListaMensagens from "./ListaMensagens/ListaMensagens";
-import ModalRemoverMensagem from "./ModalRemoverMensagem/ModalRemoverMensagem";
 import ModalVisualizarMensagem from "./ModalVisualizarMensagem/ModalVisualizarMensagem";
+import ModalRemoverMensagem from "./ModalRemoverMensagem/ModalRemoverMensagem";
 import { listarMensagensPorPeriodo, obterPeriodoPadrao, removerMensagem } from "../../services/mensagensService";
+import { obterSessao } from "../../services/authService";
 
 export default function PainelNutricionistaMensagens() {
     const router = useRouter();
@@ -21,49 +22,74 @@ export default function PainelNutricionistaMensagens() {
     const [acessoVerificado, setAcessoVerificado] = useState(false);
     const [mensagemVisualizada, setMensagemVisualizada] = useState(null);
     const [mensagemParaRemover, setMensagemParaRemover] = useState(null);
-    const [snackbar, setSnackbar] = useState("");
+    const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
+    const loadSequence = useRef(0);
 
     useEffect(() => {
-        let autorizado = false;
-        try {
-            const usuario = JSON.parse(window.localStorage.getItem("usuarioRestaurantePopular") || "null");
-            autorizado = Boolean(usuario && ["Nutricionista", "Gestor"].includes(usuario.perfil));
-        } catch {
-            autorizado = false;
-        }
+        const usuario = obterSessao()?.usuario;
+        const autorizado = Boolean(usuario && ["Nutricionista", "Gestor", "Caixa"].includes(usuario.perfil));
 
         if (!autorizado) {
             router.replace("/login");
             return;
         }
 
-        setAcessoVerificado(true);
+        const timeout = window.setTimeout(() => setAcessoVerificado(true), 0);
+        return () => window.clearTimeout(timeout);
     }, [router]);
 
-    const carregarMensagens = useCallback(() => {
-        setLoading(true);
-        setError("");
+    const carregarMensagens = useCallback(async () => {
+        const sequence = ++loadSequence.current;
         try {
-            setMensagens(listarMensagensPorPeriodo(periodo));
-        } catch {
-            setMensagens([]);
-            setError("Não foi possível carregar as mensagens.");
+            const resultado = await listarMensagensPorPeriodo(periodo);
+            if (sequence === loadSequence.current) setMensagens(resultado);
+        } catch (erro) {
+            if (sequence === loadSequence.current) setError(erro?.message || "Não foi possível carregar as mensagens.");
         } finally {
-            setLoading(false);
+            if (sequence === loadSequence.current) setLoading(false);
         }
     }, [periodo]);
 
-    useEffect(() => {
-        if (acessoVerificado) carregarMensagens();
-    }, [acessoVerificado, carregarMensagens]);
-
-    const confirmarRemocao = () => {
-        if (!mensagemParaRemover) return;
-        removerMensagem(mensagemParaRemover.id);
-        setMensagens(listarMensagensPorPeriodo(periodo));
-        setSnackbar("Mensagem apagada.");
-        setMensagemParaRemover(null);
+    const recarregarMensagens = () => {
+        setLoading(true);
+        setError("");
+        return carregarMensagens();
     };
+
+    const confirmarExclusao = async () => {
+        if (!mensagemParaRemover) return;
+        try {
+            await removerMensagem(mensagemParaRemover.id);
+            setMensagemParaRemover(null);
+            setSnackbar({ open: true, message: "Mensagem removida com sucesso.", severity: "success" });
+            await recarregarMensagens();
+        } catch (erro) {
+            setSnackbar({ open: true, message: erro?.message || "Não foi possível remover a mensagem.", severity: "error" });
+        }
+    };
+
+    useEffect(() => {
+        if (!acessoVerificado) return undefined;
+        const sequence = ++loadSequence.current;
+        let ativo = true;
+        listarMensagensPorPeriodo(periodo)
+            .then((resultado) => {
+                if (ativo && sequence === loadSequence.current) {
+                    setMensagens(resultado);
+                    setError("");
+                }
+            })
+            .catch((erro) => {
+                if (ativo && sequence === loadSequence.current) setError(erro?.message || "Não foi possível carregar as mensagens.");
+            })
+            .finally(() => {
+                if (ativo && sequence === loadSequence.current) setLoading(false);
+            });
+        return () => {
+            ativo = false;
+            loadSequence.current += 1;
+        };
+    }, [acessoVerificado, periodo]);
 
     return (
         <>
@@ -85,14 +111,18 @@ export default function PainelNutricionistaMensagens() {
                 <Box sx={{ display: "grid", gap: 1.5 }}>
                     <FiltroPeriodoPainel
                         value={periodo}
-                        onChange={(value) => setPeriodo(value || obterPeriodoPadrao())}
+                        onChange={(value) => {
+                            setLoading(true);
+                            setError("");
+                            setPeriodo(value || obterPeriodoPadrao());
+                        }}
                         label="Filtro de período"
                     />
                     <ListaMensagens
                         mensagens={mensagens}
                         loading={loading || !acessoVerificado}
                         error={error}
-                        onRetry={carregarMensagens}
+                        onRetry={recarregarMensagens}
                         onVisualizar={setMensagemVisualizada}
                         onExcluir={setMensagemParaRemover}
                         isMobile={isMobile}
@@ -107,17 +137,16 @@ export default function PainelNutricionistaMensagens() {
             <ModalRemoverMensagem
                 mensagem={mensagemParaRemover}
                 onClose={() => setMensagemParaRemover(null)}
-                onConfirmar={confirmarRemocao}
+                onConfirmar={confirmarExclusao}
             />
-
             <Snackbar
-                open={Boolean(snackbar)}
+                open={snackbar.open}
                 autoHideDuration={3000}
-                onClose={() => setSnackbar("")}
+                onClose={() => setSnackbar((atual) => ({ ...atual, open: false }))}
                 anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
             >
-                <Alert severity="success" variant="filled" onClose={() => setSnackbar("")}>
-                    {snackbar}
+                <Alert severity={snackbar.severity} variant="filled" onClose={() => setSnackbar((atual) => ({ ...atual, open: false }))}>
+                    {snackbar.message}
                 </Alert>
             </Snackbar>
         </>
