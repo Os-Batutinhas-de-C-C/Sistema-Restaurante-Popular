@@ -1,7 +1,7 @@
 .main {
   box-sizing: border-box;
   min-height: 741px;
-  padding: 28px 16px 32px;
+  padding: calc(64px + 28px) 16px 32px;
 }
 
 .container {
@@ -21,12 +21,15 @@
   width: 100%;
   max-width: 808px;
   min-height: 62px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 }
 
 .titleGroup {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .titleGroup .title {
@@ -135,6 +138,8 @@
 .progressLabels {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 4px 8px;
 }
 
 .progressLabels .capacity {

@@ -1,4 +1,4 @@
-import { Box, Card, LinearProgress, Stack, Typography } from "@mui/material";
+import { Box, Card, Stack, Typography } from "@mui/material";
 import styles from "./resumoMetricas.module.css";
 
 // Subcomponente de apresentação usado para manter o padrão entre as métricas.
@@ -37,10 +37,8 @@ function Metric({ title, value, suffix, children, borderLeft = false }) {
  */
 export default function ResumoMetricas({ dadosDashboard }) {
     // Normaliza valores ausentes para evitar resultados inválidos na interface.
-    const fichasConsumidas = Number(dadosDashboard?.fichasConsumidas) || 0;
-    const fichasTotais = Number(dadosDashboard?.fichasTotais) || 0;
-    const progresso =
-        fichasTotais > 0 ? (fichasConsumidas / fichasTotais) * 100 : 0;
+    const fichasDisponiveis = Number.isSafeInteger(dadosDashboard?.fichasEntregues);
+    const fichasEntregues = fichasDisponiveis ? dadosDashboard.fichasEntregues : "—";
     const desperdicioExiste =
         dadosDashboard?.desperdicioKg !== null &&
         dadosDashboard?.desperdicioKg !== undefined &&
@@ -53,23 +51,21 @@ export default function ResumoMetricas({ dadosDashboard }) {
         >
             <Box className={styles.metrics}>
                 <Metric
-                    title="FICHAS CONSUMIDAS"
-                    value={fichasConsumidas}
-                    suffix={`/ ${fichasTotais}`}
+                    title="FICHAS ENTREGUES"
+                    value={<span data-testid="fichas-entregues">{fichasEntregues}</span>}
+                    suffix={fichasDisponiveis ? "fichas" : ""}
                 >
-                    {/* A barra e os textos auxiliares usam o mesmo percentual. */}
                     <Stack spacing={0.75} className={styles.details}>
-                            <Typography variant="caption" className={styles.blueText}>
-                                {Math.round(progresso)}% da capacidade diária
-                            </Typography>
-                            <Typography variant="caption" className={styles.grayText}>
-                                Restam {Math.max(fichasTotais - fichasConsumidas, 0)}
-                            </Typography>
-                        <LinearProgress
-                            variant="determinate"
-                            value={progresso}
-                            className={styles.progress}
-                        />
+                        <Typography variant="caption" className={styles.blueText}>
+                            {fichasDisponiveis
+                                ? <>Capacidade diária: <span data-testid="fichas-capacidade">{dadosDashboard.fichasTotais}</span></>
+                                : dadosDashboard?.fichasCarregando ? "Carregando contagem..." : "Sem dado disponível"}
+                        </Typography>
+                        <Typography variant="caption" className={styles.grayText}>
+                            {fichasDisponiveis
+                                ? dadosDashboard.fichasDiaUtil ? `Restam ${dadosDashboard.fichasRestantes} fichas hoje` : "Entregas de segunda a sexta-feira"
+                                : "Atualize os dados do painel"}
+                        </Typography>
                     </Stack>
                 </Metric>
                 <Metric

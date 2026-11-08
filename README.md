@@ -34,22 +34,111 @@ O sistema foi arquitetado com uma separação clara entre as camadas de apresent
 
 ---
 
-## ⚙️ Como Executar o Projeto (Primeiros Passos - Frontend)
+## ⚙️ Como executar backend e frontend
 
-Siga os passos abaixo no seu terminal para rodar o projeto localmente em sua máquina:
+Os comandos abaixo usam **Windows PowerShell**. Mantenha dois terminais abertos: um para o Spring Boot e outro para o Next.js.
 
-1. Clonar o repositório:
-   git clone https://github.com/Os-Batutinhas-de-C-C/Sistema-Restaurante-Popular.git
-   
-   cd frontend
-3. Instalar as dependências do projeto:
-   npm install
-4. Iniciar o servidor de desenvolvimento:
-   npm run dev
-5. Acessar a aplicação:
-   Após o comando finalizar, abra o seu navegador e acesse http://localhost:3000
+### Pré-requisitos
 
-> 💡 Dicas para a equipe:
->
-> - Sempre que você baixar atualizações do projeto, rode o comando npm install novamente para garantir que nenhuma dependência nova fique de fora da sua máquina.
-> - Para parar o servidor de desenvolvimento no terminal, pressione Ctrl + C.
+- JDK **25** instalado.
+- Maven instalado e disponível no `PATH` para usar o iniciador Windows; o Maven Wrapper do projeto é uma alternativa.
+- Node.js e npm instalados; esta execução foi validada com Node.js 24.15.0 e npm 11.12.1.
+- PostgreSQL em execução, com acesso ao banco `restaurante_popular` e ao schema JPA atual.
+
+Para obter o projeto:
+
+```powershell
+git clone https://github.com/Os-Batutinhas-de-C-C/Sistema-Restaurante-Popular.git
+Set-Location .\Sistema-Restaurante-Popular
+```
+
+O banco local deste ambiente já foi inicializado e recebeu a migração de integração. As tabelas JPA atuais foram criadas sem importar as tabelas legadas; desde então, contas de desenvolvimento autorizadas foram registradas no banco local. Use `validate` nas próximas inicializações. Para preparar outro banco, consulte [backend.md](./backend.md); os scripts antigos de `database/` não correspondem ao modelo JPA atual.
+
+Os arquivos locais `backend/src/main/resources/application.properties` e `frontend/.env.local` são ignorados pelo Git e não aparecem em um clone novo. Neste computador eles já existem. Em outra instalação, configure as variáveis de conexão do PostgreSQL e `JWT_SECRET_BASE64` no terminal do backend, configure `BACKEND_API_BASE_URL` no terminal do frontend e prepare o schema conforme [backend.md](./backend.md). `ddl-auto=validate` exige que as tabelas JPA já existam; o comando de inicialização não cria nem migra o schema.
+
+O código de Meu Perfil também exige a migração [V20261103__perfil_usuario.sql](./backend/database/migrations/V20261103__perfil_usuario.sql), aplicada antes de iniciar com `validate`: ela adiciona a versão de tokens e o e-mail de login único. Neste banco local, essa migração já foi aplicada e os dados existentes foram preservados. Depois de atualizar o código, reinicie o backend e faça novo login; tokens emitidos sem a nova versão deixam de ser aceitos. Consulte [backend.md](./backend.md) para preparar outro banco.
+
+Os comandos de inicialização abaixo são servidores em primeiro plano e **não devolvem o prompt do PowerShell enquanto estiverem funcionando**. Isso é esperado: deixe o primeiro terminal aberto, espere a mensagem de inicialização e abra um segundo terminal para iniciar o outro serviço. O backend confirma a inicialização com `Started RestaurantePopApplication`; o frontend mostra `Ready` e `http://localhost:3000`. Fechar um terminal ou pressionar `Ctrl+C` encerra aquele serviço.
+
+### Terminal 1 — backend
+
+Comece na raiz do repositório:
+
+```powershell
+Set-Location .\backend
+$env:SPRING_JPA_HIBERNATE_DDL_AUTO = "validate"
+```
+
+Se a conexão já estiver configurada no arquivo local ignorado `backend/src/main/resources/application.properties`, mantenha essa configuração. Caso precise defini-la pelo terminal, use:
+
+```powershell
+$env:SPRING_DATASOURCE_URL = "jdbc:postgresql://localhost:5432/restaurante_popular"
+$env:SPRING_DATASOURCE_USERNAME = Read-Host "Usuário do PostgreSQL"
+$senhaBanco = Read-Host "Senha do PostgreSQL" -AsSecureString
+$env:SPRING_DATASOURCE_PASSWORD = [System.Net.NetworkCredential]::new("", $senhaBanco).Password
+```
+
+O backend também exige `JWT_SECRET_BASE64`, uma chave Base64 com pelo menos 32 bytes aleatórios. Se ela ainda não estiver configurada, gere uma chave para este terminal, sem exibi-la:
+
+```powershell
+if (-not $env:JWT_SECRET_BASE64) {
+    $jwtBytes = New-Object byte[] 32
+    $jwtRng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    try {
+        $jwtRng.GetBytes($jwtBytes)
+        $env:JWT_SECRET_BASE64 = [Convert]::ToBase64String($jwtBytes)
+    } finally {
+        $jwtRng.Dispose()
+        [Array]::Clear($jwtBytes, 0, $jwtBytes.Length)
+    }
+}
+```
+
+Essa chave fica no ambiente do terminal. Uma chave nova invalida os tokens emitidos pela anterior. Mantenha credenciais e chaves fora dos arquivos versionados.
+
+Na instalação Windows utilizada neste ambiente, o iniciador seleciona o JDK 25 em `%USERPROFILE%\jdks\temurin-25.0.5.8` e usa o Maven instalado:
+
+```powershell
+.\run-with-java25.cmd
+```
+
+Com todas as dependências já instaladas, o mesmo iniciador pode usar o Maven offline: `.\run-with-java25.cmd -o`.
+
+Se o JDK estiver em outro caminho, configure `JAVA_HOME` e inicie pelo Maven Wrapper ou pelo Maven instalado:
+
+```powershell
+$env:JAVA_HOME = Read-Host "Caminho da instalação do JDK 25"
+$env:PATH = "$env:JAVA_HOME\bin;$env:PATH"
+java -version
+.\mvnw.cmd spring-boot:run
+# Alternativa com Maven instalado: mvn.cmd spring-boot:run
+```
+
+Aguarde a mensagem de inicialização do Spring Boot. A API fica em **http://localhost:8080**.
+
+Em um banco novo, as tabelas de usuários e credenciais ficam vazias. Para criar contas de desenvolvimento, configure opcionalmente o perfil `local` e os pares de variáveis `BOOTSTRAP_NUTRICIONISTA_EMAIL`/`BOOTSTRAP_NUTRICIONISTA_PASSWORD`, `BOOTSTRAP_CAIXA_EMAIL`/`BOOTSTRAP_CAIXA_PASSWORD` ou `BOOTSTRAP_GESTOR_EMAIL`/`BOOTSTRAP_GESTOR_PASSWORD` antes de iniciar o backend, conforme [backend.md](./backend.md). Não existem credenciais padrão.
+
+### Terminal 2 — frontend
+
+Em outro terminal, comece novamente na raiz do repositório:
+
+```powershell
+Set-Location .\frontend
+```
+
+Instale as dependências na primeira execução ou após alterações em `package-lock.json`:
+
+```powershell
+npm.cmd ci
+```
+
+Inicie o servidor de desenvolvimento:
+
+```powershell
+$env:BACKEND_API_BASE_URL = "http://localhost:8080"
+npm.cmd run dev
+```
+
+Abra **http://localhost:3000/mainPage**; o login fica em **http://localhost:3000/login**. O Next.js encaminha as chamadas `/api` ao backend pela mesma origem do frontend. `BACKEND_API_BASE_URL` pode também ficar no arquivo local ignorado `frontend/.env.local`.
+
+Para encerrar o sistema, pressione **Ctrl+C em cada terminal**. No Windows, usar `npm.cmd` evita a dependência da política de execução do script `npm.ps1`.

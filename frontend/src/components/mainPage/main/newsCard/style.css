@@ -64,6 +64,16 @@
 	color: #475569;
 }
 
+.retry {
+	align-self: flex-start;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #1D4ED8;
+	font: inherit;
+	cursor: pointer;
+}
+
 .title {
 	margin: 0 0 0.5rem;
 	font-size: 1.05rem;

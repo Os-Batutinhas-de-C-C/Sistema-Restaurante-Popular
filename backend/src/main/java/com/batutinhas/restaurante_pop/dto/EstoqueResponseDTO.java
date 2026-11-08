@@ -10,6 +10,7 @@ public record EstoqueResponseDTO(
         String lote,
         LocalDate dataDeRecebimento,
         LocalDate dataDeValidade,
-        String observacoes
+        String observacoes,
+        String status
 ) {
 }

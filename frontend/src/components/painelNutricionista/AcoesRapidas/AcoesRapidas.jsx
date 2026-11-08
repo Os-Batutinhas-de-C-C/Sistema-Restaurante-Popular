@@ -1,13 +1,16 @@
+"use client";
+
 import { Box, Button, Card, CardContent, Stack, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
 import styles from "./acoesRapidas.module.css";
 
-// Configuração visual das ações. O callback só é acionado para a ação que
-// já possui comportamento implementado nesta tela.
+// Configuração visual e destinos das ações rápidas do dashboard.
 const actions = [
     {
         label: "Publicar Nova Notícia",
         color: "#A5243D",
         icon: "/icons/action-news.svg",
+        path: "/painel-nutricionista-noticias",
     },
     {
         label: "Registrar Desperdício do Dia",
@@ -18,6 +21,7 @@ const actions = [
         label: "Atualizar Estoque",
         color: "#0288D1",
         icon: "/icons/action-stock.svg",
+        path: "/painel-nutricionista-estoque",
     },
 ];
 
@@ -27,6 +31,8 @@ const actions = [
  * Mantém a apresentação dos botões independente das regras da página pai.
  */
 export default function AcoesRapidas({ onWasteClick }) {
+    const router = useRouter();
+
     return (
         <Card
             className={styles.card}
@@ -45,7 +51,6 @@ export default function AcoesRapidas({ onWasteClick }) {
                     sx={{ justifyContent: "center" }}
                 >
                     {/* O layout muda para coluna em telas pequenas. */}
-                    {/* As outras ações permanecem visuais até seus fluxos serem implementados. */}
                     {actions.map((action) => (
                         <Button
                             key={action.label}
@@ -59,9 +64,9 @@ export default function AcoesRapidas({ onWasteClick }) {
                                 />
                             }
                             onClick={
-                                action.label === "Registrar Desperdício do Dia"
-                                    ? onWasteClick
-                                    : undefined
+                                action.path
+                                    ? () => router.push(action.path)
+                                    : onWasteClick
                             }
                             className={styles.button}
                             sx={{ backgroundColor: action.color, "&:hover": { backgroundColor: action.color } }}

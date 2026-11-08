@@ -2,5 +2,5 @@ import PainelNutricionistaMensagens from "../../components/painelNutricionistaMe
 import ProtectedRoute from "../../components/login/ProtectedRoute";
 
 export default function MensagensPage() {
-    return <ProtectedRoute><PainelNutricionistaMensagens /></ProtectedRoute>;
+    return <ProtectedRoute allowedProfiles={["Nutricionista", "Gestor", "Caixa"]}><PainelNutricionistaMensagens /></ProtectedRoute>;
 }

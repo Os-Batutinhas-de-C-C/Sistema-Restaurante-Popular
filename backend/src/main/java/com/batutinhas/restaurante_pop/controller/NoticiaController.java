@@ -6,6 +6,8 @@ import com.batutinhas.restaurante_pop.service.NoticiaService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +35,12 @@ public class NoticiaController {
             Authentication authentication
     ) {
         return ResponseEntity.ok(noticiaService.create(request, authentication.getName()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNoticia(@PathVariable Long id) {
+        return noticiaService.delete(id)
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
 }

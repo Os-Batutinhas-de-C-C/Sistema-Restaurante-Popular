@@ -50,7 +50,7 @@ export default function ListaEstoque({ itens, onEdit, onDelete }) {
                                         <Typography variant="body2" sx={{ whiteSpace: "nowrap" }}>Validade: {formatarDataEstoque(item.dataValidade)}</Typography>
                                     </Stack>
                                 </TableCell>
-                                <TableCell sx={{ minWidth: 160 }}><Chip size="small" label={item.status} color={chipColor[item.status] ?? "default"} sx={{ maxWidth: "none", whiteSpace: "nowrap" }} /></TableCell>
+                                <TableCell sx={{ minWidth: 160 }}><Chip size="small" label={item.status || "—"} color={chipColor[item.status] ?? "default"} sx={{ maxWidth: "none", whiteSpace: "nowrap" }} /></TableCell>
                                 <TableCell><Typography variant="caption">{item.observacao || "—"}</Typography></TableCell>
                                 <TableCell>
                                     <Stack direction="row" spacing={1} sx={{ width: "100%", justifyContent: "center", alignItems: "center" }}>

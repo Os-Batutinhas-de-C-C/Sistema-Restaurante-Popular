@@ -1,6 +1,7 @@
 package com.batutinhas.restaurante_pop.service;
 
 import com.batutinhas.restaurante_pop.dto.MensagemCreateRequestDTO;
+import com.batutinhas.restaurante_pop.dto.MensagemPublicaCreateRequestDTO;
 import com.batutinhas.restaurante_pop.dto.MensagemResponseDTO;
 import com.batutinhas.restaurante_pop.dto.MensagemUpdateRequestDTO;
 import com.batutinhas.restaurante_pop.model.Mensagem;
@@ -13,9 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
 
 @Service
 public class MensagemService {
+    private static final ZoneId ZONA_NEGOCIO = ZoneId.of("America/Fortaleza");
     private final MensagemRepository mensagemRepository;
     private final UsuarioRepository usuarioRepository;
 
@@ -27,20 +32,23 @@ public class MensagemService {
     @Transactional(readOnly = true)
     public List<MensagemResponseDTO> findAll() {
         return mensagemRepository.findAll().stream()
+                .filter(mensagem -> mensagem.getClass() == Mensagem.class)
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public Optional<MensagemResponseDTO> findById(Long id) {
-        return mensagemRepository.findById(id).map(this::toResponseDTO);
+        return mensagemRepository.findById(id)
+                .filter(mensagem -> mensagem.getClass() == Mensagem.class)
+                .map(this::toResponseDTO);
     }
 
     @Transactional
     public Optional<MensagemResponseDTO> create(Long usuarioId, MensagemCreateRequestDTO request) {
         return usuarioRepository.findById(usuarioId).map(usuario -> {
             RequestValidation.text(request.assunto(), "assunto", 255);
-            RequestValidation.requiredText(request.texto(), "texto", 255);
+            RequestValidation.requiredText(request.texto(), "texto", 1000);
 
             Mensagem mensagem = new Mensagem();
             mensagem.setAssunto(request.assunto());
@@ -53,9 +61,22 @@ public class MensagemService {
     }
 
     @Transactional
+    public MensagemResponseDTO createPublic(MensagemPublicaCreateRequestDTO request) {
+        String assunto = RequestValidation.requiredText(request.assunto(), "assunto", 100);
+        String texto = RequestValidation.requiredText(request.texto(), "texto", 1000);
+
+        Mensagem mensagem = new Mensagem();
+        mensagem.setAssunto(assunto);
+        mensagem.setTexto(texto);
+        mensagem.setData(LocalDate.now(ZONA_NEGOCIO));
+        mensagem.setHorario(LocalTime.now(ZONA_NEGOCIO).withNano(0));
+        return toResponseDTO(mensagemRepository.save(mensagem));
+    }
+
+    @Transactional
     public Optional<MensagemResponseDTO> update(Long id, MensagemUpdateRequestDTO request) {
         return mensagemRepository.findById(id).map(mensagem -> {
-            RequestValidation.requiredText(request.texto(), "texto", 255);
+            RequestValidation.requiredText(request.texto(), "texto", 1000);
             mensagem.setTexto(request.texto());
             mensagem.setHorario(request.horario());
             mensagem.setData(request.data());
@@ -65,10 +86,13 @@ public class MensagemService {
 
     @Transactional
     public boolean delete(Long id) {
-        if (!mensagemRepository.existsById(id)) {
+        Mensagem mensagem = mensagemRepository.findById(id)
+                .filter(item -> item.getClass() == Mensagem.class)
+                .orElse(null);
+        if (mensagem == null) {
             return false;
         }
-        mensagemRepository.deleteById(id);
+        mensagemRepository.delete(mensagem);
         return true;
     }
 

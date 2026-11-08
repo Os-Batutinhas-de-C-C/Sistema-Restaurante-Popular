@@ -31,7 +31,7 @@ export default function ItemEstoqueMobile({ item, onEdit, onDelete }) {
                     <Typography variant="body2" className={styles.quantity}>{formatarQuantidade(item.quantidade)} {item.unidade}</Typography>
                 </Campo>
                 <Campo label="Status">
-                    <Chip size="small" label={item.status} color={chipColor[item.status] ?? "default"} className={styles.status} />
+                    <Chip size="small" label={item.status || "—"} color={chipColor[item.status] ?? "default"} className={styles.status} />
                 </Campo>
                 <Box className={styles.observation}>
                     <Campo label="Observação">

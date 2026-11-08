@@ -2,6 +2,7 @@ package com.batutinhas.restaurante_pop.service;
 
 import com.batutinhas.restaurante_pop.dto.RefeicaoRequestDTO;
 import com.batutinhas.restaurante_pop.dto.RefeicaoResponseDTO;
+import com.batutinhas.restaurante_pop.dto.CardapioPublicoResponseDTO;
 import com.batutinhas.restaurante_pop.dto.SemanaCreateRequestDTO;
 import com.batutinhas.restaurante_pop.dto.SemanaResponseDTO;
 import com.batutinhas.restaurante_pop.dto.SemanaUpdateRequestDTO;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,44 +34,65 @@ public class SemanaService {
 
     @Transactional(readOnly = true)
     public List<SemanaResponseDTO> findAll() {
-        return semanaRepository.findAll().stream()
+        return semanaRepository.findAllByOrderByDataAsc().stream()
                 .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CardapioPublicoResponseDTO> findAllPublic() {
+        return semanaRepository.findAllByOrderByDataAsc().stream()
+                .map(semana -> new CardapioPublicoResponseDTO(
+                        semana.getData(),
+                        toMealResponseList(semana.getCardapio())
+                ))
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public SemanaResponseDTO create(SemanaCreateRequestDTO request) {
+        requireMonday(request.data());
+        if (semanaRepository.findByData(request.data()).isPresent()) {
+            throw new IllegalArgumentException("J\u00e1 existe um card\u00e1pio cadastrado para esta semana.");
+        }
         Semana semana = new Semana();
         semana.setData(request.data());
         semana.setDesperdicio(copyList(request.desperdicio()));
-        semana.setFichasVendidas(copyList(request.fichasVendidas()));
         replaceCardapio(semana, request.cardapio());
         return toResponseDTO(semanaRepository.save(semana));
     }
 
     @Transactional
     public Optional<SemanaResponseDTO> update(LocalDate data, SemanaUpdateRequestDTO request) {
-        return semanaRepository.findByData(data).map(semana -> {
+        requireMonday(data);
+        return semanaRepository.findByDataForUpdate(data).map(semana -> {
             semana.setDesperdicio(copyList(request.desperdicio()));
-            semana.setFichasVendidas(copyList(request.fichasVendidas()));
             replaceCardapio(semana, request.cardapio());
             return toResponseDTO(semanaRepository.save(semana));
         });
     }
 
     private void replaceCardapio(Semana semana, List<RefeicaoRequestDTO> requestItems) {
-        for (Refeicao refeicao : new ArrayList<>(semana.getCardapio())) {
-            semana.removeRefeicao(refeicao);
+        List<RefeicaoRequestDTO> items = requestItems == null
+                ? new ArrayList<>(Collections.nCopies(Semana.QUANTIDADE_DIAS_UTEIS, null))
+                : requestItems;
+        if (items.size() != Semana.QUANTIDADE_DIAS_UTEIS) {
+            throw new IllegalArgumentException("O cardápio semanal deve ter exatamente cinco posições.");
         }
-        if (requestItems == null) {
-            return;
+
+        List<Refeicao> refeicoes = new ArrayList<>(Collections.nCopies(Semana.QUANTIDADE_DIAS_UTEIS, null));
+        for (int posicao = 0; posicao < items.size(); posicao++) {
+            RefeicaoRequestDTO item = items.get(posicao);
+            if (item != null) refeicoes.set(posicao, resolveRefeicao(item));
         }
-        for (RefeicaoRequestDTO item : requestItems) {
-            if (item == null) {
-                throw new IllegalArgumentException("O cardápio contém uma refeição inválida.");
+        List<Refeicao> mealsWithoutDuplicates = new ArrayList<>();
+        for (Refeicao refeicao : refeicoes) {
+            if (refeicao != null && mealsWithoutDuplicates.contains(refeicao)) {
+                throw new IllegalArgumentException("A mesma refeição não pode ocupar mais de uma posição na semana.");
             }
-            semana.addRefeicao(resolveRefeicao(item));
+            if (refeicao != null) mealsWithoutDuplicates.add(refeicao);
         }
+        semana.setCardapio(refeicoes);
     }
 
     private Refeicao resolveRefeicao(RefeicaoRequestDTO item) {
@@ -83,6 +107,7 @@ public class SemanaService {
         Refeicao refeicao = new Refeicao();
         refeicao.setProteina(RequestValidation.text(item.proteina(), "proteina", 255));
         refeicao.setGuarnicao(RequestValidation.text(item.guarnicao(), "guarnicao", 255));
+        refeicao.setSaladaDoDia(RequestValidation.text(item.saladaDoDia(), "saladaDoDia", 255));
         refeicao.setAcompanhamento1(RequestValidation.text(item.acompanhamento1(), "acompanhamento1", 255));
         refeicao.setAcompanhamento2(RequestValidation.text(item.acompanhamento2(), "acompanhamento2", 255));
         refeicao.setSuco(RequestValidation.text(item.suco(), "suco", 255));
@@ -93,9 +118,7 @@ public class SemanaService {
     }
 
     private SemanaResponseDTO toResponseDTO(Semana semana) {
-        List<RefeicaoResponseDTO> cardapio = semana.getCardapio() == null
-                ? List.of()
-                : semana.getCardapio().stream().map(this::toResponseDTO).collect(Collectors.toList());
+        List<RefeicaoResponseDTO> cardapio = toMealResponseList(semana.getCardapio());
 
         return new SemanaResponseDTO(
                 semana.getIdSemana(),
@@ -116,8 +139,23 @@ public class SemanaService {
                 refeicao.getSuco(),
                 refeicao.getSobremesa(),
                 refeicao.getOpcaoProteica(),
-                refeicao.getCalorias()
+                refeicao.getCalorias(),
+                refeicao.getSaladaDoDia()
         );
+    }
+
+    private List<RefeicaoResponseDTO> toMealResponseList(List<Refeicao> refeicoes) {
+        List<RefeicaoResponseDTO> result = new ArrayList<>(Semana.QUANTIDADE_DIAS_UTEIS);
+        for (Refeicao refeicao : refeicoes) {
+            result.add(refeicao == null ? null : toResponseDTO(refeicao));
+        }
+        return result;
+    }
+
+    private void requireMonday(LocalDate data) {
+        if (data == null || data.getDayOfWeek() != DayOfWeek.MONDAY) {
+            throw new IllegalArgumentException("A data da semana deve ser uma segunda-feira.");
+        }
     }
 
     private static <T> List<T> copyList(List<T> values) {
@@ -125,6 +163,6 @@ public class SemanaService {
     }
 
     private static <T> List<T> safeList(List<T> values) {
-        return values == null ? List.of() : List.copyOf(values);
+        return values == null ? List.of() : new ArrayList<>(values);
     }
 }

@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { encerrarSessao } from "../../services/authService";
 import styles from "./navbarPainel.module.css";
 
 // Itens do menu principal. Os ícones são assets do Figma para manter a
@@ -30,15 +31,19 @@ const menuItems = [
 ];
 
 /**
- * Navbar compartilhada do painel da nutricionista.
+ * Navbar compartilhada dos painéis administrativos.
  *
  * Responsabilidades:
  * - Exibir a identidade visual do painel.
  * - Controlar a abertura e o fechamento do menu.
- * - Redirecionar o item "Início" para o dashboard.
+ * - Exibir as opções da variante do painel.
  */
-export default function NavbarNutricionista({ onProfileClick }) {
+export default function NavbarPainel({ onProfileClick, variant = "nutricionista" }) {
     const router = useRouter();
+    const isCaixa = variant === "caixa";
+    const visibleMenuItems = isCaixa
+        ? menuItems.filter(({ label }) => label === "Sair")
+        : menuItems;
     // Referência do botão que abriu o menu, usada pelo MUI para posicioná-lo.
     const [menuAnchor, setMenuAnchor] = useState(null);
     const isMenuOpen = Boolean(menuAnchor);
@@ -53,9 +58,15 @@ export default function NavbarNutricionista({ onProfileClick }) {
         setMenuAnchor(null);
     };
 
+    const handleProfileClick = (event) => {
+        onProfileClick?.(event);
+        if (!event.defaultPrevented) router.push("/meuPerfil");
+    };
+
     // Navega quando o item possui uma rota e sempre fecha o menu.
-    const handleMenuItemClick = (href) => {
+    const handleMenuItemClick = (label, href) => {
         handleMenuClose();
+        if (label === "Sair") encerrarSessao();
         if (href) {
             router.push(href);
         }
@@ -95,14 +106,13 @@ export default function NavbarNutricionista({ onProfileClick }) {
                     variant="body1"
                     className={styles.title}
                 >
-                    Painel Nutricionista
+                    {isCaixa ? "Painel do Caixa" : "Painel Nutricionista"}
                 </Typography>
                     <Box className={styles.spacer} />
                     <ButtonBase
                         aria-label="Abrir perfil do usuário"
-                        onClick={onProfileClick}
+                        onClick={handleProfileClick}
                         className={styles.profileButton}
-                        href='/meuPerfil'
                     >
                         <Avatar className={styles.avatar}>
                             <Box
@@ -140,11 +150,11 @@ export default function NavbarNutricionista({ onProfileClick }) {
                     },
                 }}
             >
-                {menuItems.map(({ label, icon, href }, index) => (
+                {visibleMenuItems.map(({ label, icon, href }, index) => (
                     <MenuItem
                         key={label}
-                        onClick={() => handleMenuItemClick(href)}
-                        divider={index < menuItems.length - 1}
+                        onClick={() => handleMenuItemClick(label, href)}
+                        divider={index < visibleMenuItems.length - 1}
                         sx={{
                             minHeight: 48,
                             px: 2,

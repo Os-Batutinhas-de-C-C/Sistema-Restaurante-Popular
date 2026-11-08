@@ -30,6 +30,7 @@ public class RefeicaoService {
         Refeicao refeicao = new Refeicao();
         refeicao.setProteina(RequestValidation.text(request.proteina(), "proteina", 255));
         refeicao.setGuarnicao(RequestValidation.text(request.guarnicao(), "guarnicao", 255));
+        refeicao.setSaladaDoDia(RequestValidation.text(request.saladaDoDia(), "saladaDoDia", 255));
         refeicao.setAcompanhamento1(RequestValidation.text(request.acompanhamento1(), "acompanhamento1", 255));
         refeicao.setAcompanhamento2(RequestValidation.text(request.acompanhamento2(), "acompanhamento2", 255));
         refeicao.setSuco(RequestValidation.text(request.suco(), "suco", 255));
@@ -49,7 +50,8 @@ public class RefeicaoService {
                 refeicao.getSuco(),
                 refeicao.getSobremesa(),
                 refeicao.getOpcaoProteica(),
-                refeicao.getCalorias()
+                refeicao.getCalorias(),
+                refeicao.getSaladaDoDia()
         );
     }
 }

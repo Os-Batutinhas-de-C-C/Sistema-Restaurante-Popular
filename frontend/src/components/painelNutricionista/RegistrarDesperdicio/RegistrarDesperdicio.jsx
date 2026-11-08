@@ -2,137 +2,90 @@
 
 import { useState } from "react";
 import {
-    Box,
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Stack,
-    TextField,
-    Typography,
+    Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle,
+    Stack, TextField, Typography,
 } from "@mui/material";
 import styles from "./registrarDesperdicio.module.css";
 
-/**
- * Dialog para registrar o desperdício do dia.
- *
- * O componente controla apenas o formulário. A persistência e a atualização
- * do dashboard ficam sob responsabilidade da página pai via callbacks.
- */
-export default function RegistrarDesperdicio({
-    open,
-    onClose,
-    onSubmit,
-}) {
-    // Estado local evita acoplamento do formulário ao estado do dashboard.
+function formatarData(iso) {
+    const [year, month, day] = iso.split("-").map(Number);
+    return new Intl.DateTimeFormat("pt-BR", {
+        weekday: "long", day: "2-digit", month: "2-digit", year: "numeric",
+    }).format(new Date(year, month - 1, day));
+}
+
+export default function RegistrarDesperdicio({ open, onClose, onSubmit, dataIso, disabled = false }) {
     const [waste, setWaste] = useState("");
     const [error, setError] = useState("");
+    const [saving, setSaving] = useState(false);
 
-    // Aceita vírgula decimal e impede o envio de valores inválidos ou negativos.
-    const handleSubmit = () => {
-        const value = Number(waste.replace(",", "."));
-
-        if (!waste || Number.isNaN(value) || value < 0) {
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const value = Number(waste.trim().replace(",", "."));
+        if (!waste.trim() || !Number.isFinite(value) || value < 0) {
             setError("Informe um peso válido em kg.");
             return;
         }
-
-        onSubmit?.(value);
-        setWaste("");
+        setSaving(true);
         setError("");
-        onClose();
+        try {
+            await onSubmit?.(value);
+            setWaste("");
+            setError("");
+            onClose();
+        } catch (submitError) {
+            setError(submitError?.message || "Não foi possível registrar o desperdício. Tente novamente.");
+        } finally {
+            setSaving(false);
+        }
     };
 
-    // Limpa o formulário tanto no cancelamento quanto no fechamento externo.
     const handleClose = () => {
-        setWaste("");
-        setError("");
-        onClose();
+        if (!saving) {
+            setWaste("");
+            setError("");
+            onClose();
+        }
     };
 
     return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            fullWidth
-            maxWidth="sm"
-            slotProps={{
-                paper: {
-                    className: styles.paper,
-                },
-            }}
-        >
-            <DialogTitle component="div" className={styles.title}>
-                <Typography variant="h6" className={styles.heading}>
-                    Registrar Desperdício do Dia
-                </Typography>
-                <Typography
-                    variant="body2"
-                    className={styles.description}
-                >
-                    Informe o peso das Desperdício de hoje.
-                </Typography>
-            </DialogTitle>
-
-            <DialogContent className={styles.content}>
-                <Stack spacing={3}>
-                    <Box
-                        className={styles.dayData}
-                    >
-                        <Typography
-                            variant="subtitle2"
-                            className={styles.dayTitle}
-                        >
-                            Dados do dia
-                        </Typography>
-                        <Typography
-                            variant="body1"
-                            className={styles.dayValue}
-                        >
-                            Hoje • Quarta-feira, 23/09/2026
-                        </Typography>
-                    </Box>
-
-                    <TextField
-                        fullWidth
-                        label="Desperdício (kg)"
-                        type="number"
-                        value={waste}
-                        onChange={(event) => {
-                            setWaste(event.target.value);
-                            if (error) {
-                                setError("");
-                            }
-                        }}
-                        error={Boolean(error)}
-                        helperText={
-                            error ||
-                            "Informe o peso em kg. Aceita decimais (ex.: 2,5)."
-                        }
-                        slotProps={{ htmlInput: { min: 0, step: "any" } }}
-                        className={styles.field}
-                    />
-                </Stack>
-            </DialogContent>
-
-            <DialogActions
-                className={styles.actions}
-            >
-                <Button
-                    onClick={handleClose}
-                    className={styles.cancel}
-                >
-                    Cancelar
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={handleSubmit}
-                    className={styles.submit}
-                >
-                    Registrar Desperdício
-                </Button>
-            </DialogActions>
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" slotProps={{ paper: { className: styles.paper } }}>
+            <Box component="form" onSubmit={handleSubmit}>
+                <DialogTitle component="div" className={styles.title}>
+                    <Typography variant="h6" className={styles.heading}>Registrar Desperdício do Dia</Typography>
+                    <Typography variant="body2" className={styles.description}>Informe o peso do desperdício registrado para hoje.</Typography>
+                </DialogTitle>
+                <DialogContent className={styles.content}>
+                    <Stack spacing={3}>
+                        <Box className={styles.dayData}>
+                            <Typography variant="subtitle2" className={styles.dayTitle}>Dados do dia</Typography>
+                            <Typography variant="body1" className={styles.dayValue}>{formatarData(dataIso)}</Typography>
+                        </Box>
+                        {disabled && <Alert severity="info">O registro de desperdício está disponível de segunda a sexta-feira.</Alert>}
+                        <TextField
+                            fullWidth
+                            label="Desperdício (kg)"
+                            type="text"
+                            value={waste}
+                            onChange={(event) => {
+                                setWaste(event.target.value);
+                                if (error) setError("");
+                            }}
+                            error={Boolean(error)}
+                            helperText={error || "Informe o peso em kg. Aceita decimais (ex.: 2,5)."}
+                            slotProps={{ htmlInput: { inputMode: "decimal" } }}
+                            className={styles.field}
+                            disabled={disabled || saving}
+                        />
+                    </Stack>
+                </DialogContent>
+                <DialogActions className={styles.actions}>
+                    <Button onClick={handleClose} disabled={saving} className={styles.cancel}>Cancelar</Button>
+                    <Button type="submit" variant="contained" disabled={disabled || saving} className={styles.submit}>
+                        {saving ? "Salvando..." : "Registrar Desperdício"}
+                    </Button>
+                </DialogActions>
+            </Box>
         </Dialog>
     );
 }

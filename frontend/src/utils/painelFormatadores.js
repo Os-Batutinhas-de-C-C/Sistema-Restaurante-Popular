@@ -1,4 +1,5 @@
 export function formatarData(data) {
+    if (typeof data !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(data)) return "—";
     const [ano, mes, dia] = data.split("-").map(Number);
     return new Intl.DateTimeFormat("pt-BR", {
         day: "2-digit",

@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Box,
     Button,
@@ -6,6 +8,7 @@ import {
     Stack,
     Typography,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 import styles from "./cardapioHoje.module.css";
 
 // Define a ordem, o campo de origem e a cor de cada item do cardápio.
@@ -23,10 +26,10 @@ const menuFields = [
 /**
  * Cardápio do dia.
  *
- * Recebe o cardápio por props e não conhece a origem dos dados, facilitando
- * a substituição do mock por uma resposta da API.
+ * Recebe os dados do cardápio diário já convertidos pelo serviço da API.
  */
 export default function CardapioHoje({ dadosDashboard }) {
+    const router = useRouter();
     // O fallback permite renderizar o card mesmo durante carregamentos parciais.
     const cardapio = dadosDashboard?.cardapio || {};
 
@@ -34,7 +37,6 @@ export default function CardapioHoje({ dadosDashboard }) {
         <Card
             className={styles.card}
         >
-            {/* A ação de edição fica pronta para receber um callback futuro. */}
             <CardContent className={styles.content}>
                 <Stack
                     direction="row"
@@ -56,7 +58,7 @@ export default function CardapioHoje({ dadosDashboard }) {
                             />
                         }
                         className={styles.editButton}
-                        href='/painel-nutricionista-cardapio/gerenciar/2026-10-26'
+                        onClick={() => router.push(dadosDashboard.dataIso ? `/painel-nutricionista-cardapio/gerenciar/${dadosDashboard.dataIso}` : "/painel-nutricionista-cardapio")}
                     >
                         Editar Cardápio
                     </Button>
@@ -90,7 +92,7 @@ export default function CardapioHoje({ dadosDashboard }) {
                             Valor Calórico Estimado:
                         </Typography>
                         <Typography variant="caption" className={styles.caloriesValue}>
-                            {cardapio.valorCaloricoEstimado || "Sem informação"}
+                            {cardapio.valorCalorico ? `${cardapio.valorCalorico} kcal` : "Sem informação"}
                         </Typography>
                     </Box>
                 </Stack>

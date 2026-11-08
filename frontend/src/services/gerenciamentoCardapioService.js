@@ -1,83 +1,18 @@
-export const camposCardapio = [
-    { key: "pratoProteico", label: "Prato Proteico" },
-    { key: "opcaoProteica", label: "Opção Proteica" },
-    { key: "acompanhamento1", label: "Acompanhamento 1" },
-    { key: "acompanhamento2", label: "Acompanhamento 2" },
-    { key: "guarnicao", label: "Guarnição" },
-    { key: "saladaDoDia", label: "Salada do Dia" },
-    { key: "sobremesa", label: "Sobremesa" },
-    { key: "sucoNatural", label: "Suco Natural" },
-    { key: "valorCalorico", label: "Valor Calórico Estimado (kcal)" },
-];
-
-export const cardapioVazio = Object.fromEntries(camposCardapio.map(({ key }) => [key, ""]));
-
-export const historicoCardapiosMockados = [
-    {
-        dia: "Segunda-feira",
-        data: "2026-09-21",
-        pratoProteico: "Gado com Legumes",
-        opcaoProteica: "Omelete",
-        acompanhamento1: "Arroz à Grega",
-        acompanhamento2: "Feijão de Corda",
-        guarnicao: "Farofa de Cuscuz",
-        saladaDoDia: "Salada Crua",
-        sobremesa: "Doce",
-        sucoNatural: "Suco de Polpa de Cajá",
-        valorCalorico: "930",
-    },
-    {
-        dia: "Terça-feira",
-        data: "2026-09-22",
-        pratoProteico: "Suíno ao Molho",
-        opcaoProteica: "Frango Cozido",
-        acompanhamento1: "Arroz Branco",
-        acompanhamento2: "Feijão Carioca",
-        guarnicao: "Macarrão",
-        saladaDoDia: "Salada da Estação",
-        sobremesa: "Fruta da Estação",
-        sucoNatural: "Suco de Polpa de Acerola",
-        valorCalorico: "890",
-    },
-    {
-        dia: "Quarta-feira",
-        data: "2026-09-23",
-        pratoProteico: "Suíno com Legumes",
-        opcaoProteica: "Omelete",
-        acompanhamento1: "Arroz Branco",
-        acompanhamento2: "Feijão Carioca",
-        guarnicao: "Farofa de Cuscuz",
-        saladaDoDia: "Salada Crua",
-        sobremesa: "Doce",
-        sucoNatural: "Suco de Polpa de Cajá",
-        valorCalorico: "950",
-    },
-];
+import {
+    dataDeIsoLocal,
+    dataIsoLocal,
+    listarSemanasApi,
+    obterSegundaIso,
+    salvarRefeicaoDiaApi,
+    transformarHistorico,
+} from "./cardapiosApiService";
 
 const diasUteis = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira"];
 
-function inicioDaSemana(data) {
-    const inicio = new Date(data);
-    inicio.setHours(0, 0, 0, 0);
-    const deslocamento = (inicio.getDay() + 6) % 7;
-    inicio.setDate(inicio.getDate() - deslocamento);
-    return inicio;
-}
-
-export function dataIsoLocal(data) {
-    const ano = data.getFullYear();
-    const mes = String(data.getMonth() + 1).padStart(2, "0");
-    const dia = String(data.getDate()).padStart(2, "0");
-    return `${ano}-${mes}-${dia}`;
-}
-
-export function dataDeIsoLocal(iso) {
-    const [ano, mes, dia] = iso.split("-").map(Number);
-    return new Date(ano, mes - 1, dia);
-}
+export { dataIsoLocal, dataDeIsoLocal };
 
 export function obterDiasUteisDaSemana(dataBase = new Date()) {
-    const segunda = inicioDaSemana(dataBase);
+    const segunda = dataDeIsoLocal(obterSegundaIso(dataBase));
     return diasUteis.map((nome, indice) => {
         const data = new Date(segunda);
         data.setDate(segunda.getDate() + indice);
@@ -123,3 +58,27 @@ export function resumirCardapio(cardapio) {
         cardapio.acompanhamento2, cardapio.guarnicao, cardapio.saladaDoDia,
         cardapio.sobremesa, cardapio.sucoNatural].filter(Boolean).join(", ");
 }
+
+export async function listarHistoricoCardapios(options = {}) {
+    const semanas = await listarSemanasApi(options);
+    return semanas.flatMap(transformarHistorico)
+        .filter((cardapio) => camposCardapio.some(({ key }) => String(cardapio[key] ?? "").trim()));
+}
+
+export async function salvarCardapioDia(data, valores, options = {}) {
+    return salvarRefeicaoDiaApi(data, valores, options);
+}
+
+export const camposCardapio = [
+    { key: "pratoProteico", label: "Prato Proteico" },
+    { key: "opcaoProteica", label: "Opção Proteica" },
+    { key: "acompanhamento1", label: "Acompanhamento 1" },
+    { key: "acompanhamento2", label: "Acompanhamento 2" },
+    { key: "guarnicao", label: "Guarnição" },
+    { key: "saladaDoDia", label: "Salada do Dia" },
+    { key: "sobremesa", label: "Sobremesa" },
+    { key: "sucoNatural", label: "Suco Natural" },
+    { key: "valorCalorico", label: "Valor Calórico Estimado (kcal)" },
+];
+
+export const cardapioVazio = Object.fromEntries(camposCardapio.map(({ key }) => [key, ""]));

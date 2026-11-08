@@ -1,6 +1,7 @@
 package com.batutinhas.restaurante_pop.controller;
 
 import com.batutinhas.restaurante_pop.dto.MensagemCreateRequestDTO;
+import com.batutinhas.restaurante_pop.dto.MensagemPublicaCreateRequestDTO;
 import com.batutinhas.restaurante_pop.dto.MensagemResponseDTO;
 import com.batutinhas.restaurante_pop.dto.MensagemUpdateRequestDTO;
 import com.batutinhas.restaurante_pop.service.MensagemService;
@@ -28,6 +29,13 @@ public class MensagemController {
     @GetMapping
     public ResponseEntity<List<MensagemResponseDTO>> getAllMensagens() {
         return ResponseEntity.ok(mensagemService.findAll());
+    }
+
+    @PostMapping("/publicas")
+    public ResponseEntity<MensagemResponseDTO> createMensagemPublica(
+            @RequestBody MensagemPublicaCreateRequestDTO request
+    ) {
+        return ResponseEntity.ok(mensagemService.createPublic(request));
     }
 
     @GetMapping("/{id}")

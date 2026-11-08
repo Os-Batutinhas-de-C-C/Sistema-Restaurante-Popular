@@ -9,6 +9,7 @@ const FORMULARIO_INICIAL = { titulo: "", texto: "", duracaoHoras: "12" };
 export default function ModalPublicarNoticia({ open, onClose, onPublicar }) {
     const [form, setForm] = useState(FORMULARIO_INICIAL);
     const [erros, setErros] = useState({});
+    const [enviando, setEnviando] = useState(false);
 
     const fechar = () => {
         setForm(FORMULARIO_INICIAL);
@@ -34,13 +35,18 @@ export default function ModalPublicarNoticia({ open, onClose, onPublicar }) {
         return Object.keys(novosErros).length === 0;
     };
 
-    const enviar = (event) => {
+    const enviar = async (event) => {
         event.preventDefault();
-        if (!validar()) return;
-        const publicado = onPublicar({ ...form, duracaoHoras: Number(form.duracaoHoras) });
-        if (publicado) {
-            setForm(FORMULARIO_INICIAL);
-            setErros({});
+        if (!validar() || enviando) return;
+        setEnviando(true);
+        try {
+            const publicado = await onPublicar({ ...form, duracaoHoras: Number(form.duracaoHoras) });
+            if (publicado) {
+                setForm(FORMULARIO_INICIAL);
+                setErros({});
+            }
+        } finally {
+            setEnviando(false);
         }
     };
 
@@ -54,14 +60,13 @@ export default function ModalPublicarNoticia({ open, onClose, onPublicar }) {
             <DialogContent>
                 <Stack component="form" id="form-publicar-noticia" onSubmit={enviar} spacing={2} sx={{ pt: 1 }}>
                     <TextField
-                        autoFocus
                         label="Título do aviso"
                         fullWidth
                         value={form.titulo}
                         onChange={atualizar("titulo")}
                         error={Boolean(erros.titulo)}
-                        helperText={erros.titulo || (form.titulo.length + "/120")}
-                        slotProps={{ htmlInput: { maxLength: 120 } }}
+                        helperText={erros.titulo || (form.titulo.length + "/255")}
+                        slotProps={{ htmlInput: { maxLength: 255 } }}
                     />
                     <TextField
                         label="Texto do aviso"
@@ -71,8 +76,8 @@ export default function ModalPublicarNoticia({ open, onClose, onPublicar }) {
                         value={form.texto}
                         onChange={atualizar("texto")}
                         error={Boolean(erros.texto)}
-                        helperText={erros.texto || (form.texto.length + "/500")}
-                        slotProps={{ htmlInput: { maxLength: 500 } }}
+                        helperText={erros.texto || (form.texto.length + "/255")}
+                        slotProps={{ htmlInput: { maxLength: 255 } }}
                     />
                     <TextField
                         label="Duração (horas)"
@@ -93,7 +98,7 @@ export default function ModalPublicarNoticia({ open, onClose, onPublicar }) {
                     type="submit"
                     variant="contained"
                     startIcon={<AddIcon />}
-                    disabled={!form.titulo.trim() || !form.texto.trim() || !duracaoValida}
+                    disabled={enviando || !form.titulo.trim() || !form.texto.trim() || !duracaoValida}
                     sx={{ bgcolor: "#008fd3", "&:hover": { bgcolor: "#007fbc" } }}
                 >
                     Publicar notícia
