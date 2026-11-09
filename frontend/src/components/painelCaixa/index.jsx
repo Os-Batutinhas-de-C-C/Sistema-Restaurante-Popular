@@ -60,9 +60,6 @@ const ConteudoDoPainel = () => {
                     <span className={styles.capacity}>
                       {dados ? `${Math.round(percentualFichas(dados))}% da capacidade diária` : "Contagem indisponível"}
                     </span>
-                    <span className={styles.remaining}>
-                      {dados ? `Restam ${dados.restantes}` : "Atualize a contagem"}
-                    </span>
                   </div>
                   <LinearProgress
                     variant="determinate"

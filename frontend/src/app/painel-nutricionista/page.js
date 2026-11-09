@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import RegistrarDesperdicio from "../../components/PainelNutricionista/RegistrarDesperdicio/RegistrarDesperdicio";
-import DashboardNutricionista from "../../components/PainelNutricionista/DashboardNutricionista/DashboardNutricionista";
+import RegistrarDesperdicio from "../../components/painelNutricionista/RegistrarDesperdicio/RegistrarDesperdicio";
+import DashboardNutricionista from "../../components/painelNutricionista/DashboardNutricionista/DashboardNutricionista";
 import ProtectedRoute from "../../components/login/ProtectedRoute";
 import useFichasDia from "../../services/useFichasDia";
 import {

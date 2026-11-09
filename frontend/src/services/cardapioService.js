@@ -1,4 +1,11 @@
-import { listarSemanasApi, mapearSemanaParaDias, dataDeIsoLocal } from "./cardapiosApiService";
+import {
+    DIAS_UTEIS,
+    dataDeIsoLocal,
+    dataIsoLocal,
+    listarSemanasApi,
+    mapearRefeicao,
+    mapearSemanaParaDias,
+} from "./cardapiosApiService";
 
 function inicioDaSemana(data) {
     const inicio = new Date(data);
@@ -30,10 +37,30 @@ export function filtrarCardapiosPorIntervalo(cardapios, intervalo) {
     inicio.setHours(0, 0, 0, 0);
     fim.setHours(23, 59, 59, 999);
 
-    return cardapios.filter(({ dia }) => {
+    const filtrados = cardapios.filter(({ dia }) => {
         const dataDoCardapio = dataDeIsoLocal(dia);
         return dataDoCardapio >= inicio && dataDoCardapio <= fim;
     });
+
+    if (filtrados.length > 0) return filtrados;
+
+    const diasPendentes = [];
+    for (let index = 0; index < 5; index += 1) {
+        const date = new Date(inicio);
+        date.setDate(date.getDate() + index);
+        diasPendentes.push({
+            dia: dataIsoLocal(date),
+            nome: DIAS_UTEIS[index],
+            data: new Intl.DateTimeFormat("pt-BR", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+            }).format(date),
+            refeicao: mapearRefeicao(null),
+            idRefeicao: null,
+        });
+    }
+    return diasPendentes;
 }
 
 export function obterGraficosSemana(semanas, intervalo, fichasDia = null, dataReferencia = fichasDia?.data) {
