@@ -9,6 +9,7 @@ import com.batutinhas.restaurante_pop.repository.RefeicaoRepository;
 import com.batutinhas.restaurante_pop.repository.SemanaRepository;
 import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -165,6 +166,70 @@ class DtoApiIntegrationTests {
         HttpResponse<String> list = request("GET", "/api/noticias", null, null);
         assertEquals(200, list.statusCode());
         assertTrue(list.body().contains("\"duracao\":24"));
+    }
+
+    @Test
+    @DisplayName("ID de notícia retorna 404 nas rotas de mensagem e preserva a notícia persistida")
+    void newsCannotBeModifiedThroughMessageRoutes() throws Exception {
+        var created = request("POST", "/api/noticias", nutricionista,
+                "{\"assunto\":\"Aviso\",\"texto\":\"Texto original\",\"data\":\"2026-11-02\",\"horario\":\"08:30:00\",\"duracao\":24}");
+        assertEquals(200, created.statusCode(), created.body());
+        long id = longField(created.body(), "idMensagem");
+
+        assertEquals(404, request("GET", "/api/mensagens/" + id, caixa, null).statusCode());
+        assertEquals(404, request("PUT", "/api/mensagens/" + id, caixa,
+                "{\"texto\":\"Alteracao indevida\"}").statusCode());
+        assertEquals(404, request("DELETE", "/api/mensagens/" + id, caixa, null).statusCode());
+
+        var persisted = noticiaRepository.findById(id).orElseThrow();
+        assertEquals("Texto original", persisted.getTexto());
+        assertEquals("Aviso", persisted.getAssunto());
+        assertEquals("2026-11-02", persisted.getData().toString());
+        assertEquals("08:30", persisted.getHorario().toString());
+        assertEquals(24, persisted.getDuracao());
+        assertEquals(1, noticiaRepository.count());
+    }
+
+    @Test
+    @DisplayName("Criação rejeita ingredientes duplicados com calorias diferentes sem persistir parcialmente")
+    void duplicateMealIngredientsRejectWeekCreationWithoutSaving() throws Exception {
+        String body = """
+                {"data":"2026-11-02","cardapio":[
+                 {"proteina":"Lentilha","calorias":450},
+                 {"proteina":"Lentilha","calorias":700},null,null,null]}
+                """;
+
+        var response = request("POST", "/api/semanas", nutricionista, body);
+
+        assertEquals(400, response.statusCode(), response.body());
+        assertTrue(response.body().contains("BAD_REQUEST"));
+        assertEquals(0, semanaRepository.count());
+        assertEquals(0, refeicaoRepository.count());
+    }
+
+    @Test
+    @DisplayName("Atualização com ingredientes duplicados faz rollback e preserva o cardápio anterior")
+    void duplicateMealIngredientsPreserveExistingWeek() throws Exception {
+        var created = request("POST", "/api/semanas", nutricionista, """
+                {"data":"2026-11-02","desperdicio":[1.5],
+                 "cardapio":[{"proteina":"Frango","calorias":450},null,null,null,null]}
+                """);
+        assertEquals(200, created.statusCode(), created.body());
+
+        var rejected = request("PUT", "/api/semanas/2026-11-02", nutricionista, """
+                {"desperdicio":[9.0],"cardapio":[
+                 {"proteina":"Lentilha","calorias":450},
+                 {"proteina":"Lentilha","calorias":700},null,null,null]}
+                """);
+
+        assertEquals(400, rejected.statusCode(), rejected.body());
+        var listed = request("GET", "/api/semanas", nutricionista, null);
+        assertEquals(200, listed.statusCode(), listed.body());
+        assertTrue(listed.body().contains("\"proteina\":\"Frango\""));
+        assertTrue(listed.body().contains("\"desperdicio\":[1.5]"));
+        assertFalse(listed.body().contains("Lentilha"));
+        assertEquals(1, semanaRepository.count());
+        assertEquals(1, refeicaoRepository.count());
     }
 
     @Test

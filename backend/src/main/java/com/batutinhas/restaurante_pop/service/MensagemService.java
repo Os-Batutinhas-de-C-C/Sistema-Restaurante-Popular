@@ -14,8 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 @Service
@@ -68,20 +67,23 @@ public class MensagemService {
         Mensagem mensagem = new Mensagem();
         mensagem.setAssunto(assunto);
         mensagem.setTexto(texto);
-        mensagem.setData(LocalDate.now(ZONA_NEGOCIO));
-        mensagem.setHorario(LocalTime.now(ZONA_NEGOCIO).withNano(0));
+        LocalDateTime agora = LocalDateTime.now(ZONA_NEGOCIO);
+        mensagem.setData(agora.toLocalDate());
+        mensagem.setHorario(agora.toLocalTime().withNano(0));
         return toResponseDTO(mensagemRepository.save(mensagem));
     }
 
     @Transactional
     public Optional<MensagemResponseDTO> update(Long id, MensagemUpdateRequestDTO request) {
-        return mensagemRepository.findById(id).map(mensagem -> {
-            RequestValidation.requiredText(request.texto(), "texto", 1000);
-            mensagem.setTexto(request.texto());
-            mensagem.setHorario(request.horario());
-            mensagem.setData(request.data());
-            return toResponseDTO(mensagemRepository.save(mensagem));
-        });
+        return mensagemRepository.findById(id)
+                .filter(mensagem -> mensagem.getClass() == Mensagem.class)
+                .map(mensagem -> {
+                    RequestValidation.requiredText(request.texto(), "texto", 1000);
+                    mensagem.setTexto(request.texto());
+                    mensagem.setHorario(request.horario());
+                    mensagem.setData(request.data());
+                    return toResponseDTO(mensagemRepository.save(mensagem));
+                });
     }
 
     @Transactional
