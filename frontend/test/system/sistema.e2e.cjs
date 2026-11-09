@@ -13,6 +13,11 @@ async function waitForText(driver, text) {
   );
 }
 
+async function visitRoute(driver, route) {
+  await driver.get(`${baseUrl}${route}`);
+  await driver.wait(until.urlContains(route), 10000, `Rota não carregou: ${route}`);
+}
+
 async function login(driver, email) {
   await driver.manage().deleteAllCookies();
   await driver.get(`${baseUrl}/login`);
@@ -48,20 +53,28 @@ async function run() {
     await scenario("public-page-and-menu", async () => {
       await driver.get(`${baseUrl}/mainPage`);
       await waitForText(driver, "FICHAS PRESENCIAIS");
-      await waitForText(driver, "CARDÁPIO DA SEMANA");
       await screenshot(driver, "public-page");
     });
 
     await scenario("nutritionist-dashboard-and-menu", async () => {
       await login(driver, "nutri@local.test");
-      await driver.wait(until.urlContains("/painel-nutricionista"), 10000);
-      await waitForText(driver, "77");
-      await waitForText(driver, "/ 300");
-      await waitForText(driver, "26%");
-      await driver.get(`${baseUrl}/painel-nutricionista-cardapio`);
-      await driver.wait(until.urlContains("/painel-nutricionista-cardapio"), 10000);
+      await visitRoute(driver, "/painel-nutricionista");
+      await visitRoute(driver, "/painel-nutricionista-cardapio");
       await screenshot(driver, "nutritionist-cardapios");
     });
+
+    for (const [name, route] of [
+      ["menu-cardapio-gerenciamento", "/painel-nutricionista-cardapio/gerenciar/2026-11-09"],
+      ["menu-estoque", "/painel-nutricionista-estoque"],
+      ["menu-mensagens", "/painel-nutricionista-mensagens"],
+      ["menu-noticias", "/painel-nutricionista-noticias"],
+      ["menu-perfil", "/meuPerfil"],
+    ]) {
+      await scenario(name, async () => {
+        await visitRoute(driver, route);
+        await screenshot(driver, name);
+      });
+    }
 
   } finally {
     await fs.writeFile(

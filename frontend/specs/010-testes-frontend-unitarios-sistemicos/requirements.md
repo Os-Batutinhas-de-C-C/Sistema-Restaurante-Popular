@@ -40,11 +40,12 @@ Após a aprovação dos testes Jest, devem ser criados testes sistêmicos automa
 
 ## Execução sistêmica
 
-O script `frontend/test/system/sistema.e2e.cjs` usa Selenium WebDriver e cobre:
+O script `frontend/test/system/sistema.e2e.cjs` usa Selenium WebDriver e cobre 8 fluxos
+de 13 rotas funcionais do frontend (61,5%), além das páginas públicas:
 
 - acesso à página pública e às seções de fichas/cardápio;
 - login da Nutricionista, indicador de fichas e pendências de cardápio;
-- navegação autenticada para cardápios; o painel do Caixa foi validado manualmente no mesmo ambiente.
+- gerenciamento de cardápio, estoque, mensagens, notícias e perfil autenticados.
 
 Pré-condições:
 

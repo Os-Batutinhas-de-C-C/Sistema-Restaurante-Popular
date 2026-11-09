@@ -10,6 +10,7 @@
     "test": "jest --runInBand",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage --runInBand",
+    "test:report": "jest --coverage --runInBand --json --outputFile=reports/jest/results.json",
     "test:system": "node test/system/sistema.e2e.cjs"
   },
   "dependencies": {

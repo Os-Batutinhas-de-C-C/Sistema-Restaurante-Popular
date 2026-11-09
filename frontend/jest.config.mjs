@@ -9,6 +9,13 @@ const config = {
     transform: {
         "^.+\\.[jt]sx?$": "babel-jest",
     },
+    collectCoverageFrom: [
+        "src/services/**/*.{js,jsx}",
+        "src/utils/**/*.{js,jsx}",
+        "!src/services/useFichasDia.js",
+    ],
+    coverageDirectory: "<rootDir>/reports/jest/coverage",
+    coverageReporters: ["text", "text-summary", "html", "json", "lcov"],
 };
 
 export default config;

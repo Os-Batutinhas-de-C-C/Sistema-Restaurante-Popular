@@ -11,7 +11,7 @@
 
 ## Etapa 2 — Selenium
 
-- [x] **T07 — Definir os requisitos sistêmicos:** cobrir página pública, autenticação, painel Nutricionista, pendências de cardápio e painel Caixa.
+- [x] **T07 — Definir os requisitos sistêmicos:** cobrir 8 de 13 rotas funcionais (61,5%), incluindo página pública, autenticação, painel Nutricionista, cardápio, gerenciamento, estoque, mensagens, notícias e perfil.
 - [x] **T08 — Preparar ambiente isolado:** documentar inicialização do frontend, backend, banco e navegador de teste.
 - [x] **T09 — Criar scripts Selenium:** automatizar os fluxos aprovados em `frontend/test/system/sistema.e2e.cjs`.
 - [x] **T10 — Executar e corrigir:** validar os fluxos no navegador integrado; a execução literal do WebDriver depende de Chrome/ChromeDriver instalados.
@@ -21,4 +21,4 @@
 - [x] O Jest executa sem falhas.
 - [x] Os testes das correções de fichas e cardápios estão automatizados.
 - [x] Lint e build do frontend passam.
-- [x] A etapa Selenium cobre os fluxos principais de autenticação, painéis e cardápio e possui relatório JSON.
+- [x] A etapa Selenium cobre 61,5% das rotas funcionais e possui relatório JSON e screenshots.
