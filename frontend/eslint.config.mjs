@@ -7,7 +7,7 @@ import jsxA11yPlugin from "eslint-plugin-jsx-a11y";
 import importPlugin from "eslint-plugin-import";
 
 const eslintConfig = [
-  { ignores: [".next/**", "out/**", "build/**", "next-env.d.ts"] },
+  { ignores: [".next/**", "out/**", "build/**", "coverage/**", "next-env.d.ts"] },
   js.configs.recommended,
   {
     files: ["**/*.{js,jsx,mjs,cjs}"],
