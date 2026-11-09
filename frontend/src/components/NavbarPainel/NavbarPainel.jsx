@@ -42,7 +42,9 @@ export default function NavbarPainel({ onProfileClick, variant = "nutricionista"
     const router = useRouter();
     const isCaixa = variant === "caixa";
     const visibleMenuItems = isCaixa
-        ? menuItems.filter(({ label }) => label === "Sair")
+        ? menuItems
+            .filter(({ label }) => label === "Início" || label === "Sair")
+            .map((item) => item.label === "Início" ? { ...item, href: "/painel-caixa" } : item)
         : menuItems;
     // Referência do botão que abriu o menu, usada pelo MUI para posicioná-lo.
     const [menuAnchor, setMenuAnchor] = useState(null);

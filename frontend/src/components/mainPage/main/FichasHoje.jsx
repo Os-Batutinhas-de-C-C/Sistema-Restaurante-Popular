@@ -25,10 +25,9 @@ export default function FichasHoje() {
                 sx={{ "& .MuiLinearProgress-bar": { backgroundColor: "#1D4ED8", borderRadius: "999px" } }}
             />
             <div id="progressText">
-                <span className="paddingTextBlack">{dados ? `${dados.entregues} entregues` : "Aguardando dados"}</span>
                 <span className="paddingTextLight">{dados ? `capacidade: ${dados.capacidade}` : ""}</span>
             </div>
-            {dados && <Typography component="p" variant="caption">{fimDeSemana ? "Entregas de segunda a sexta-feira." : `Restam ${dados.restantes} fichas.`}</Typography>}
+            {fimDeSemana && <Typography component="p" variant="caption">Entregas de segunda a sexta-feira.</Typography>}
             {dados && <Typography component="p" variant="caption" color="text.secondary">{formatarAtualizacaoFichas(fichas.atualizadoEm)}</Typography>}
             {fichas.loading && <Typography component="p" variant="caption"><CircularProgress size={12} /> Carregando contagem...</Typography>}
             {fichas.error && (
