@@ -15,6 +15,7 @@ frontend/docs/
 
 # testing
 /coverage
+/test/system/artifacts
 
 # next.js
 /.next/

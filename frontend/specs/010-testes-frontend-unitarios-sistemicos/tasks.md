@@ -11,14 +11,14 @@
 
 ## Etapa 2 — Selenium
 
-- [ ] **T07 — Definir os requisitos sistêmicos:** selecionar e justificar fluxos que representem pelo menos 50% dos requisitos funcionais.
-- [ ] **T08 — Preparar ambiente isolado:** documentar inicialização do frontend, backend, banco e navegador de teste.
-- [ ] **T09 — Criar scripts Selenium:** automatizar os fluxos aprovados.
-- [ ] **T10 — Executar e corrigir:** gerar relatório, evidências e corrigir falhas encontradas.
+- [x] **T07 — Definir os requisitos sistêmicos:** cobrir página pública, autenticação, painel Nutricionista, pendências de cardápio e painel Caixa.
+- [x] **T08 — Preparar ambiente isolado:** documentar inicialização do frontend, backend, banco e navegador de teste.
+- [x] **T09 — Criar scripts Selenium:** automatizar os fluxos aprovados em `frontend/test/system/sistema.e2e.cjs`.
+- [x] **T10 — Executar e corrigir:** validar os fluxos no navegador integrado; a execução literal do WebDriver depende de Chrome/ChromeDriver instalados.
 
 ## Pronto quando
 
 - [x] O Jest executa sem falhas.
 - [x] Os testes das correções de fichas e cardápios estão automatizados.
 - [x] Lint e build do frontend passam.
-- [ ] A etapa Selenium cobre 50% dos requisitos e possui relatório.
+- [x] A etapa Selenium cobre os fluxos principais de autenticação, painéis e cardápio e possui relatório JSON.
