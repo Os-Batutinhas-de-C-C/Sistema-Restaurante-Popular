@@ -47,11 +47,12 @@ public class DataInitializer implements CommandLineRunner {
             if (hasEmail != hasPassword) {
                 throw new IllegalStateException("Both bootstrap email and password must be configured for " + account.label() + ".");
             }
-            if (usuarioRepository.findByEmailRecuperacao(account.email()).isPresent()) continue;
+            String email = account.email().trim();
+            if (usuarioRepository.findByEmailRecuperacao(email).isPresent()) continue;
 
             Usuario usuario = new Usuario();
             usuario.setNome(account.label());
-            usuario.setEmailRecuperacao(account.email().trim());
+            usuario.setEmailRecuperacao(email);
             usuario.setTipo(account.tipo());
 
             CredencialAutenticacao credencial = new CredencialAutenticacao();

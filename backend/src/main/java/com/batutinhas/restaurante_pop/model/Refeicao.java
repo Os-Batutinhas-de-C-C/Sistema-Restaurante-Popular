@@ -101,8 +101,7 @@ public class Refeicao {
         if (o == null || getClass() != o.getClass()) return false;
         Refeicao refeicao = (Refeicao) o;
         
-        return Double.compare(refeicao.calorias, calorias) == 0 &&
-               Objects.equals(proteina, refeicao.proteina) &&
+        return Objects.equals(proteina, refeicao.proteina) &&
                Objects.equals(guarnicao, refeicao.guarnicao) &&
                Objects.equals(salada_do_dia, refeicao.salada_do_dia) &&
                Objects.equals(acompanhamento1, refeicao.acompanhamento1) &&
@@ -114,6 +113,6 @@ public class Refeicao {
 
     @Override
     public int hashCode() {
-        return Objects.hash(proteina, guarnicao, salada_do_dia, acompanhamento1, acompanhamento2, suco, sobremesa, opcao_proteica, calorias);
+        return Objects.hash(proteina, guarnicao, salada_do_dia, acompanhamento1, acompanhamento2, suco, sobremesa, opcao_proteica);
     }
 }

@@ -1,14 +1,6 @@
 # Requisitos — DTOs nos contratos HTTP da API
 
-## Aditivo de integração aprovado — 02/11/2026
-
-Este aditivo atualiza as restrições anteriores de escopo, incluindo RN05/RN06: o solicitante autorizou alterações necessárias no frontend, backend e PostgreSQL para concluir a integração. Login usa e-mail/senha com JWT Bearer de uma hora, mantido em memória no frontend. As permissões originais desta spec são aplicadas; `GESTOR` recebe as mesmas permissões que `NUTRICIONISTA`. O menu público terá rota somente leitura separada que não retorna métricas administrativas. Mensagens públicas não coletam nome nem contato. Estoque deriva validade: “Vence em breve” nos sete dias anteriores e “Vencido” a partir do dia seguinte. O change log de `frontend/specs/008-integracao-frontend-backend` registra as decisões e razões.
-
 ## Objetivo
-
-**Aditivo de fichas aprovado — 03/11/2026:** um contador de fichas entregues atende às três telas. Cada registro soma exatamente um, limitado a 300 por dia de segunda a sexta em `America/Fortaleza`, sem exigir refeição cadastrada. O total de hoje é público; somente Caixa pode incrementar. O solicitante autorizou testes focados de permissões e incrementos concorrentes.
-
-**Aditivo de perfil aprovado — 03/11/2026:** conectar “Meu Perfil” à própria conta autenticada, com identidade obtida do `userId` do JWT e nível de acesso somente leitura. O solicitante aprovou os endpoints de consulta/atualização pessoal, exigência da senha atual para alterar e-mail ou senha, e-mail de login único, nova senha de pelo menos seis caracteres Unicode e no máximo 72 bytes UTF-8, e invalidação de todos os tokens anteriores após mudança de e-mail/senha por uma versão persistida nas credenciais. A comparação de e-mail permanece sensível a maiúsculas/minúsculas, conforme o contrato existente de login. Alteração somente de nome mantém token e expiração da sessão.
 
 Definir DTOs de requisição e resposta para a API, separando os contratos HTTP das entidades JPA. O aditivo de integração aprovado amplia o escopo para incluir autenticação JWT, permissões, persistência semanal e operações consumidas pelo frontend.
 
