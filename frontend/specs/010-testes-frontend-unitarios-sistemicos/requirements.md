@@ -55,7 +55,7 @@ Pré-condições:
 4. Google Chrome e ChromeDriver disponíveis no `PATH`.
 
 Executar com `npm run test:system`. O relatório e screenshots são gerados em
-`frontend/test/system/artifacts/` e permanecem ignorados pelo Git.
+`frontend/test-reports/selenium/` e permanecem ignorados pelo Git.
 
 ## Restrições
 

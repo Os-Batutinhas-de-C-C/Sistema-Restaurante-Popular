@@ -142,3 +142,45 @@ npm.cmd run dev
 Abra **http://localhost:3000/mainPage**; o login fica em **http://localhost:3000/login**. O Next.js encaminha as chamadas `/api` ao backend pela mesma origem do frontend. `BACKEND_API_BASE_URL` pode também ficar no arquivo local ignorado `frontend/.env.local`.
 
 Para encerrar o sistema, pressione **Ctrl+C em cada terminal**. No Windows, usar `npm.cmd` evita a dependência da política de execução do script `npm.ps1`.
+
+## 🧪 Como executar os testes
+
+Os testes do frontend ficam em `frontend/test/` e usam Jest para testes unitários,
+de serviços e de componentes. Os testes sistêmicos usam Selenium WebDriver e
+validam os principais fluxos da aplicação.
+
+### Pré-requisitos dos testes
+
+- Backend disponível em `http://localhost:8080`.
+- Frontend disponível em `http://localhost:3000`.
+- Dependências instaladas com `npm.cmd ci` (Windows) ou `npm ci` (Linux/macOS).
+- Google Chrome e ChromeDriver disponíveis no `PATH` para os testes Selenium.
+
+Execute os comandos a partir da pasta `frontend`:
+
+```powershell
+Set-Location .\frontend
+
+# Testes Jest
+npm.cmd test
+
+# Testes Jest com cobertura e relatórios
+npm.cmd run test:report
+
+# Testes sistêmicos Selenium
+npm.cmd run test:system
+```
+
+No Linux/macOS, substitua `npm.cmd` por `npm`.
+
+### Relatórios e evidências
+
+Os relatórios são gerados em uma pasta visível e dedicada dentro do frontend:
+
+- **Jest — relatório visual:** [frontend/test-reports/jest/coverage/lcov-report/index.html](./frontend/test-reports/jest/coverage/lcov-report/index.html)
+- **Jest — resultados JSON:** [frontend/test-reports/jest/results.json](./frontend/test-reports/jest/results.json)
+- **Selenium — relatório dos cenários:** [frontend/test-reports/selenium/report.json](./frontend/test-reports/selenium/report.json)
+- **Selenium — screenshots:** [frontend/test-reports/selenium/](./frontend/test-reports/selenium/)
+
+Os arquivos são gerados localmente e ignorados pelo Git. Execute `test:report`
+e `test:system` para regenerá-los após cada alteração.

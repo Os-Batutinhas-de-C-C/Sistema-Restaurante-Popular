@@ -3,7 +3,7 @@ const path = require("node:path");
 const { Builder, By, until } = require("selenium-webdriver");
 
 const baseUrl = process.env.FRONTEND_BASE_URL || "http://localhost:3000";
-const outputDir = path.resolve(__dirname, "artifacts");
+const outputDir = path.resolve(__dirname, "../../test-reports/selenium");
 
 async function waitForText(driver, text) {
   await driver.wait(

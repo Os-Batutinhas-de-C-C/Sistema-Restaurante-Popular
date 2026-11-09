@@ -14,7 +14,7 @@ const config = {
         "src/utils/**/*.{js,jsx}",
         "!src/services/useFichasDia.js",
     ],
-    coverageDirectory: "<rootDir>/reports/jest/coverage",
+    coverageDirectory: "<rootDir>/test-reports/jest/coverage",
     coverageReporters: ["text", "text-summary", "html", "json", "lcov"],
 };
 
