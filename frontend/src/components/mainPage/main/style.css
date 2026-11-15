@@ -61,7 +61,7 @@
     color: #94A3B8;
 }
 
-.progress {
+#fichas .progress {
     height: 6px;
     border-radius: 999px;
     background: #BFDBFE;
@@ -69,16 +69,12 @@
     overflow: hidden;
 }
 
-.progressFill {
-    height: 100%;
-    background: #1D4ED8;
-    border-radius: 999px;
-}
-
 #progressText {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
 }
 
 .paddingTextBlack {
@@ -247,3 +243,4 @@
     }
     .boxes { width: 80%; }
 }
+

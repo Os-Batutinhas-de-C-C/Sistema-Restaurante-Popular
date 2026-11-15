@@ -69,7 +69,7 @@ export default function NavBar() {
                                 {aberto ? 'Aberto' : 'Fechado'}
                             </span>
                         )}
-                        <Button id="entrar" startIcon={<LockIcon />} href='/painel-nutricionista'>Entrar</Button>
+                        <Button id="entrar" startIcon={<LockIcon />} href='/login'>Entrar</Button>
                     </div>
                 </Toolbar>
             </Container>

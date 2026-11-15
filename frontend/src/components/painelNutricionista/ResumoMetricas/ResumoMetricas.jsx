@@ -1,4 +1,5 @@
 import { Box, Card, LinearProgress, Stack, Typography } from "@mui/material";
+import { percentualFichas } from "../../../services/fichasService";
 import styles from "./resumoMetricas.module.css";
 
 // Subcomponente de apresentação usado para manter o padrão entre as métricas.
@@ -37,15 +38,31 @@ function Metric({ title, value, suffix, children, borderLeft = false }) {
  */
 export default function ResumoMetricas({ dadosDashboard }) {
     // Normaliza valores ausentes para evitar resultados inválidos na interface.
-    const fichasConsumidas = Number(dadosDashboard?.fichasConsumidas) || 0;
-    const fichasTotais = Number(dadosDashboard?.fichasTotais) || 0;
-    const progresso =
-        fichasTotais > 0 ? (fichasConsumidas / fichasTotais) * 100 : 0;
+    const fichasDisponiveis = Number.isSafeInteger(dadosDashboard?.fichasEntregues);
+    const fichasEntregues = fichasDisponiveis ? dadosDashboard.fichasEntregues : "—";
+    const capacidadeDisponivel = Number.isSafeInteger(dadosDashboard?.fichasTotais);
+    const percentual = fichasDisponiveis && capacidadeDisponivel
+        ? percentualFichas({
+            entregues: dadosDashboard.fichasEntregues,
+            capacidade: dadosDashboard.fichasTotais,
+        })
+        : 0;
     const desperdicioExiste =
         dadosDashboard?.desperdicioKg !== null &&
         dadosDashboard?.desperdicioKg !== undefined &&
         dadosDashboard?.desperdicioKg !== "";
     const desperdicio = desperdicioExiste ? dadosDashboard.desperdicioKg : "—";
+    const fichasComCapacidade = (
+        <>
+            <span data-testid="fichas-entregues">{fichasEntregues}</span>
+            {capacidadeDisponivel && (
+                <span className={styles.capacity}>
+                    {" / "}
+                    <span data-testid="fichas-capacidade">{dadosDashboard.fichasTotais}</span>
+                </span>
+            )}
+        </>
+    );
 
     return (
         <Card
@@ -53,23 +70,29 @@ export default function ResumoMetricas({ dadosDashboard }) {
         >
             <Box className={styles.metrics}>
                 <Metric
-                    title="FICHAS CONSUMIDAS"
-                    value={fichasConsumidas}
-                    suffix={`/ ${fichasTotais}`}
+                    title="FICHAS ENTREGUES"
+                    value={fichasComCapacidade}
+                    suffix=""
                 >
-                    {/* A barra e os textos auxiliares usam o mesmo percentual. */}
                     <Stack spacing={0.75} className={styles.details}>
+                        {fichasDisponiveis && capacidadeDisponivel && (
+                            <>
+                                <Typography variant="caption" className={styles.grayText}>
+                                    {Math.round(percentual)}% da capacidade diária
+                                </Typography>
+                                <LinearProgress
+                                    variant="determinate"
+                                    value={percentual}
+                                    aria-label="Capacidade diária de fichas entregues"
+                                    className={styles.progress}
+                                />
+                            </>
+                        )}
+                        {!fichasDisponiveis && (
                             <Typography variant="caption" className={styles.blueText}>
-                                {Math.round(progresso)}% da capacidade diária
+                                {dadosDashboard?.fichasCarregando ? "Carregando contagem..." : "Sem dado disponível"}
                             </Typography>
-                            <Typography variant="caption" className={styles.grayText}>
-                                Restam {Math.max(fichasTotais - fichasConsumidas, 0)}
-                            </Typography>
-                        <LinearProgress
-                            variant="determinate"
-                            value={progresso}
-                            className={styles.progress}
-                        />
+                        )}
                     </Stack>
                 </Metric>
                 <Metric

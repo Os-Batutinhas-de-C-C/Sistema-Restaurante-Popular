@@ -1,0 +1,4 @@
+- NÃO ALTERE NADA DO VISUAL DO FRONTEND
+- NÃO MEXA NAS LÓGICAS DE SEGURANÇA E REGRAS DE NÉGOCIO DO BACKEND
+- MATENHA AS ADIÇÕES DE DEPENDÊNCIAS AO MINIMO E PERGUNTE SEMPRE ANTES DE EXECUTAR AÇÕES CRITICAS
+- Não assuma nenhuma informação dada uma ambiguidade sempre pergunte antes de prosseguir com uma decisão

@@ -17,7 +17,7 @@ public class Mensagem {
     @Column
     private String assunto;
 
-    @Column
+    @Column(length = 1000)
     private String texto;
 
     @Column 
@@ -27,7 +27,7 @@ public class Mensagem {
     private LocalDate data;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = true)
     @JsonIgnore 
     private Usuario usuario;
 

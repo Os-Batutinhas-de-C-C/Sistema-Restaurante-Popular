@@ -8,21 +8,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 @Entity 
-@Table(name = "refeicoes", uniqueConstraints = @UniqueConstraint(columnNames = {"proteina", "guarnicao", "acompanhamento1", "acompanhamento2", "suco", "sobremesa", "opcao_proteica"}))
+@Table(name = "refeicoes", uniqueConstraints = @UniqueConstraint(name = "uk_refeicoes_composicao", columnNames = {"proteina", "guarnicao", "acompanhamento1", "acompanhamento2", "suco", "sobremesa", "opcao_proteica", "salada_do_dia"}))
 public class Refeicao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id_refeicao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "semana_id")
-    @JsonIgnore
-    private Semana semana;
-
     @Column 
     private String proteina;
     @Column
     private String guarnicao;
+    @Column(name = "salada_do_dia")
+    private String salada_do_dia;
     @Column
     private String acompanhamento1;
     @Column
@@ -47,6 +44,10 @@ public class Refeicao {
 
     public String getGuarnicao() {
         return guarnicao;
+    }
+
+    public String getSaladaDoDia() {
+        return salada_do_dia;
     }
 
     public String getAcompanhamento1() {
@@ -77,6 +78,8 @@ public class Refeicao {
 
     public void setGuarnicao(String guarnicao) { this.guarnicao = guarnicao; }
 
+    public void setSaladaDoDia(String saladaDoDia) { this.salada_do_dia = saladaDoDia; }
+
     public void setAcompanhamento1(String acompanhamento1) { this.acompanhamento1 = acompanhamento1; }
 
     public void setAcompanhamento2(String acompanhamento2) { this.acompanhamento2 = acompanhamento2; }
@@ -89,7 +92,6 @@ public class Refeicao {
 
     public void setCalorias(double calorias) { this.calorias = calorias; }
     
-    public void setSemana(Semana semana) { this.semana = semana; }
 
 
 
@@ -99,9 +101,9 @@ public class Refeicao {
         if (o == null || getClass() != o.getClass()) return false;
         Refeicao refeicao = (Refeicao) o;
         
-        return Double.compare(refeicao.calorias, calorias) == 0 &&
-               Objects.equals(proteina, refeicao.proteina) &&
+        return Objects.equals(proteina, refeicao.proteina) &&
                Objects.equals(guarnicao, refeicao.guarnicao) &&
+               Objects.equals(salada_do_dia, refeicao.salada_do_dia) &&
                Objects.equals(acompanhamento1, refeicao.acompanhamento1) &&
                Objects.equals(acompanhamento2, refeicao.acompanhamento2) &&
                Objects.equals(suco, refeicao.suco) &&
@@ -111,6 +113,6 @@ public class Refeicao {
 
     @Override
     public int hashCode() {
-        return Objects.hash(proteina, guarnicao, acompanhamento1, acompanhamento2, suco, sobremesa, opcao_proteica, calorias);
+        return Objects.hash(proteina, guarnicao, salada_do_dia, acompanhamento1, acompanhamento2, suco, sobremesa, opcao_proteica);
     }
 }

@@ -6,9 +6,7 @@
     import { ORIENTACOES } from "./orientacaoItem/orientacao";
     import Cardapio from "./cardapio";
     import Localizacao from "./localizacao";
-
-    var progress = 155
-    var total = 300
+    import FichasHoje from "./FichasHoje";
 
     export default function Main() {
         return (
@@ -18,17 +16,7 @@
             </section>
             <section className="boxes">
                 <div className="boxBorder" id="indicadores">
-                    <div id="fichas" className="holders"> 
-                        <p className="tittle"> FICHAS PRESENCIAIS </p>
-                        <p className="subText"> Disponibilidade Hoje </p>
-                        <p className="mainText"> {progress} <span className="mainSub">/ {total}</span> </p>
-                        <div className="progress">
-                        <div className="progressFill" style={{ width: `${(progress / total) * 100}%` }} /></div>
-                        <div id="progressText"> 
-                            <span className="paddingTextBlack"> {progress} entregues </span>
-                            <span className="paddingTextLight"> capacidade: {total} </span> 
-                        </div>
-                    </div>
+                    <FichasHoje />
                     <div id="atendimento" className="holders">
                         <p className="tittle"> ATENDIMENTO </p>
                         <p className="subText"> Horários de Refeições </p>

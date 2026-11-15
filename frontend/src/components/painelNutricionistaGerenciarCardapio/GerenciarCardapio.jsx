@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Alert, Box, Snackbar } from "@mui/material";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
@@ -9,8 +9,9 @@ import ModalHistorico from "./ModalHistorico/ModalHistorico";
 import NavegacaoDias from "./NavegacaoDias/NavegacaoDias";
 import {
     cardapioVazio, dataDeIsoLocal, dataIsoLocal, formatarIntervaloSemana,
-    obterDiasUteisDaSemana,
+    obterDiasUteisDaSemana, salvarCardapioDia,
 } from "../../services/gerenciamentoCardapioService";
+import { mapearSemanaParaDias, obterSemanaApi } from "../../services/cardapiosApiService";
 import styles from "./gerenciarCardapio.module.css";
 
 function criarEstadoInicial(dataSolicitada) {
@@ -32,12 +33,50 @@ export default function GerenciarCardapio({ dataSolicitada }) {
     const [dataSelecionada, setDataSelecionada] = useState(estadoInicial.dataSelecionada);
     const [cardapiosSalvos, setCardapiosSalvos] = useState({});
     const [formulario, setFormulario] = useState(() => cardapioVazio);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
     const [modalAberto, setModalAberto] = useState(false);
     const [salvando, setSalvando] = useState(false);
     const [feedback, setFeedback] = useState(false);
 
     const diaSelecionado = dias.find(({ data }) => data === dataSelecionada) ?? dias[0];
     const intervalo = useMemo(() => formatarIntervaloSemana(dias), [dias]);
+
+    const carregarSemana = useCallback(async (diasSemana, dataDoFormulario) => {
+        try {
+            const semana = await obterSemanaApi(diasSemana[0].data);
+            const salvos = semana
+                ? Object.fromEntries(mapearSemanaParaDias(semana).map(({ dia, refeicao }) => [dia, refeicao ?? cardapioVazio]))
+                : {};
+            setCardapiosSalvos(salvos);
+            setFormulario(salvos[dataDoFormulario] ?? cardapioVazio);
+        } catch (erro) {
+            setError(erro?.message || "Não foi possível carregar o cardápio da semana.");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        let ativo = true;
+        obterSemanaApi(estadoInicial.dias[0].data)
+            .then((semana) => {
+                if (!ativo) return;
+                const salvos = semana
+                    ? Object.fromEntries(mapearSemanaParaDias(semana).map(({ dia, refeicao }) => [dia, refeicao ?? cardapioVazio]))
+                    : {};
+                setCardapiosSalvos(salvos);
+                setFormulario(salvos[estadoInicial.dataSelecionada] ?? cardapioVazio);
+                setError("");
+            })
+            .catch((erro) => {
+                if (ativo) setError(erro?.message || "Não foi possível carregar o cardápio da semana.");
+            })
+            .finally(() => {
+                if (ativo) setLoading(false);
+            });
+        return () => { ativo = false; };
+    }, [estadoInicial]);
 
     const selecionarDia = (data) => {
         setDataSelecionada(data);
@@ -52,17 +91,27 @@ export default function GerenciarCardapio({ dataSolicitada }) {
         const novaData = novosDias[Math.min(Math.max(indiceDia, 0), 4)].data;
         setDias(novosDias);
         setDataSelecionada(novaData);
-        setFormulario(cardapiosSalvos[novaData] ?? cardapioVazio);
+        setFormulario(cardapioVazio);
+        setLoading(true);
+        setError("");
+        carregarSemana(novosDias, novaData);
     };
 
-    const salvarCardapio = (event) => {
+    const salvarCardapio = async (event) => {
         event.preventDefault();
         setSalvando(true);
-        window.setTimeout(() => {
-            setCardapiosSalvos((atuais) => ({ ...atuais, [dataSelecionada]: { ...formulario } }));
-            setSalvando(false);
+        setError("");
+        try {
+            const semana = await salvarCardapioDia(dataSelecionada, formulario);
+            const salvos = Object.fromEntries(mapearSemanaParaDias(semana).map(({ dia, refeicao }) => [dia, refeicao ?? cardapioVazio]));
+            setCardapiosSalvos(salvos);
+            setFormulario(salvos[dataSelecionada] ?? cardapioVazio);
             setFeedback(true);
-        }, 400);
+        } catch (erro) {
+            setError(erro?.message || "Não foi possível salvar o cardápio.");
+        } finally {
+            setSalvando(false);
+        }
     };
 
     const copiarDoHistorico = (cardapio) => {
@@ -84,6 +133,8 @@ export default function GerenciarCardapio({ dataSolicitada }) {
             <NavbarPainel />
             <Box component="main" className={styles.main}>
                 <Box className={styles.content}>
+                    {error && <Alert severity="error">{error}</Alert>}
+                    {loading && <Alert severity="info">Carregando cardápio da semana...</Alert>}
                     <NavegacaoDias
                         dias={dias}
                         dataSelecionada={dataSelecionada}
@@ -99,7 +150,7 @@ export default function GerenciarCardapio({ dataSolicitada }) {
                         onChange={(campo, valor) => setFormulario((atual) => ({ ...atual, [campo]: valor }))}
                         onSave={salvarCardapio}
                         onOpenHistory={() => setModalAberto(true)}
-                        saving={salvando}
+                        saving={salvando || loading}
                     />
                 </Box>
             </Box>

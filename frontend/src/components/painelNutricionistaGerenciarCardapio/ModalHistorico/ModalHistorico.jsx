@@ -1,20 +1,40 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle,
     FormControlLabel, List, ListItem, Radio, RadioGroup, Stack, TextField, Typography,
 } from "@mui/material";
-import { filtrarHistoricoCardapios, formatarDataCardapio, historicoCardapiosMockados, resumirCardapio } from "../../../services/gerenciamentoCardapioService";
+import { filtrarHistoricoCardapios, formatarDataCardapio, listarHistoricoCardapios, resumirCardapio } from "../../../services/gerenciamentoCardapioService";
 import FiltroPeriodo from "./FiltroPeriodo/FiltroPeriodo";
 import styles from "./modalHistorico.module.css";
 
-const filtrosIniciais = { dataInicial: "2026-09-01", dataFinal: "2026-09-30", pesquisa: "" };
+function criarFiltrosIniciais() {
+    const hoje = new Date();
+    const primeiro = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+    const ultimo = new Date(hoje.getFullYear(), hoje.getMonth() + 1, 0);
+    const iso = (data) => [data.getFullYear(), String(data.getMonth() + 1).padStart(2, "0"), String(data.getDate()).padStart(2, "0")].join("-");
+    return { dataInicial: iso(primeiro), dataFinal: iso(ultimo), pesquisa: "" };
+}
 
 export default function ModalHistorico({ open, onClose, onSelect }) {
-    const [filtros, setFiltros] = useState(filtrosIniciais);
-    const [filtrosAplicados, setFiltrosAplicados] = useState(filtrosIniciais);
+    const [filtros, setFiltros] = useState(criarFiltrosIniciais);
+    const [filtrosAplicados, setFiltrosAplicados] = useState(criarFiltrosIniciais);
+    const [historico, setHistorico] = useState([]);
+    const [historicoCarregado, setHistoricoCarregado] = useState(false);
+    const [error, setError] = useState("");
     const [dataSelecionada, setDataSelecionada] = useState("");
-    const resultados = useMemo(() => filtrarHistoricoCardapios(historicoCardapiosMockados, filtrosAplicados), [filtrosAplicados]);
+    const loading = open && !historicoCarregado;
+    const resultados = useMemo(() => filtrarHistoricoCardapios(historico, filtrosAplicados), [historico, filtrosAplicados]);
     const cardapioSelecionado = resultados.find(({ data }) => data === dataSelecionada);
+
+    useEffect(() => {
+        if (!open) return undefined;
+        let ativo = true;
+        listarHistoricoCardapios()
+            .then((itens) => { if (ativo) setHistorico(itens); })
+            .catch((erro) => { if (ativo) setError(erro?.message || "Não foi possível carregar o histórico."); })
+            .finally(() => { if (ativo) setHistoricoCarregado(true); });
+        return () => { ativo = false; };
+    }, [open]);
 
     const atualizarFiltro = (campo) => (event) => setFiltros((atual) => ({ ...atual, [campo]: event.target.value }));
     const pesquisar = (event) => {
@@ -25,6 +45,8 @@ export default function ModalHistorico({ open, onClose, onSelect }) {
 
     const fechar = () => {
         setDataSelecionada("");
+        setError("");
+        setHistoricoCarregado(false);
         onClose();
     };
 
@@ -52,7 +74,7 @@ export default function ModalHistorico({ open, onClose, onSelect }) {
                 </Box>
                 <RadioGroup aria-label="Selecione um cardápio do histórico" value={dataSelecionada} onChange={(event) => setDataSelecionada(event.target.value)}>
                     <List className={styles.results}>
-                        {resultados.map((cardapio, index) => (
+                        {resultados.map((cardapio) => (
                             <ListItem key={cardapio.data} disablePadding className={`${styles.resultItem} ${dataSelecionada === cardapio.data ? styles.selected : ""}`}>
                                 <FormControlLabel
                                     value={cardapio.data}
@@ -75,7 +97,9 @@ export default function ModalHistorico({ open, onClose, onSelect }) {
                         ))}
                     </List>
                 </RadioGroup>
-                {resultados.length === 0 && <Alert severity="info" className={styles.empty}>Nenhum cardápio encontrado com esses filtros.</Alert>}
+                {loading && <Alert severity="info" className={styles.empty}>Carregando histórico...</Alert>}
+                {error && <Alert severity="error" className={styles.empty}>{error}</Alert>}
+                {!loading && !error && resultados.length === 0 && <Alert severity="info" className={styles.empty}>Nenhum cardápio encontrado com esses filtros.</Alert>}
             </DialogContent>
             <DialogActions className={styles.actions}>
                 <Button onClick={fechar}>Fechar</Button>

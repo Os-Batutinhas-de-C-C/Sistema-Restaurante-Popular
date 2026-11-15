@@ -22,6 +22,9 @@ public class CredencialAutenticacao {
     @Column 
     private int tentativasFalhas;
 
+    @Column(name = "versao_token", nullable = false)
+    private long versaoToken;
+
     @OneToOne
     @JoinColumn(name = "usuario_id", referencedColumnName = "id_usuario")
     private Usuario usuario;
@@ -77,6 +80,18 @@ public class CredencialAutenticacao {
 
     public void setTentativasFalhas(int tentativasFalhas) {
         this.tentativasFalhas = tentativasFalhas;
+    }
+
+    public long getVersaoToken() {
+        return versaoToken;
+    }
+
+    public void setVersaoToken(long versaoToken) {
+        this.versaoToken = versaoToken;
+    }
+
+    public void incrementarVersaoToken() {
+        this.versaoToken = Math.incrementExact(this.versaoToken);
     }
 
     public Usuario getUsuario() {

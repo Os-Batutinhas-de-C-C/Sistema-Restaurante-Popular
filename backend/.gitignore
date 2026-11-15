@@ -4,7 +4,12 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 src/resources/application.properties
-
+src/main/resources/application.properties
+.mvn/wrapper/
+.m2-repository/
+diagrama_de_clases/
+diagramas_atividade/
+database/
 ### STS ###
 .apt_generated
 .classpath
@@ -32,3 +37,4 @@ build/
 
 ### VS Code ###
 .vscode/
+

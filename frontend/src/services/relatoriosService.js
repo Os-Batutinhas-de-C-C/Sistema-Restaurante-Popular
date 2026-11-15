@@ -1,55 +1,4 @@
-const relatoriosIniciais = [
-    {
-        id: "2026-09-21",
-        data: "2026-09-21",
-        refeicao: "Gado com Legumes, Omelete, ...",
-        fichas: 85,
-        desperdicioKg: 10,
-        sobrasKg: 4,
-        satisfacao: 4.6,
-        editavel: false,
-    },
-    {
-        id: "2026-09-22",
-        data: "2026-09-22",
-        refeicao: "Suíno ao Molho, Dobradinha, ...",
-        fichas: 80,
-        desperdicioKg: 30,
-        sobrasKg: 5,
-        satisfacao: 4.7,
-        editavel: false,
-    },
-    {
-        id: "2026-09-23",
-        data: "2026-09-23",
-        refeicao: "Suíno com Legumes, Omelete, ...",
-        fichas: 60,
-        desperdicioKg: 30,
-        sobrasKg: 3,
-        satisfacao: 4.5,
-        editavel: true,
-    },
-    {
-        id: "2026-09-24",
-        data: "2026-09-24",
-        refeicao: "Pendente",
-        fichas: null,
-        desperdicioKg: null,
-        sobrasKg: null,
-        satisfacao: null,
-        editavel: true,
-    },
-    {
-        id: "2026-09-25",
-        data: "2026-09-25",
-        refeicao: "Pendente",
-        fichas: null,
-        desperdicioKg: null,
-        sobrasKg: null,
-        satisfacao: null,
-        editavel: true,
-    },
-];
+import { mapearSemanaParaDias } from "./cardapiosApiService";
 
 const diasDaSemana = ["Seg", "Ter", "Qua", "Qui", "Sex"];
 const diasCompletos = [
@@ -92,28 +41,39 @@ function escaparHtml(valor) {
     })[caractere]);
 }
 
-function obterValorNumerico(valor, nomeCampo, inteiro = false) {
-    const numero = Number(String(valor).replace(",", "."));
-    if (
-        String(valor).trim() === "" ||
-        !Number.isFinite(numero) ||
-        numero < 0 ||
-        (inteiro && !Number.isInteger(numero))
-    ) {
-        throw new Error(`Informe um valor válido e não negativo para ${nomeCampo}.`);
-    }
-    return numero;
-}
-
 export function obterPeriodoInicial() {
-    return {
-        from: new Date(2026, 8, 21),
-        to: new Date(2026, 8, 25),
-    };
+    return undefined;
 }
 
-export function obterRelatoriosIniciais() {
-    return relatoriosIniciais.map((relatorio) => ({ ...relatorio }));
+export function mapearSemanasParaRelatorios(semanas) {
+    return semanas.flatMap((semana) => mapearSemanaParaDias(semana).map((dia, index) => {
+        const refeicao = dia.refeicao;
+        const resumoRefeicao = [
+            refeicao?.pratoProteico,
+            refeicao?.opcaoProteica,
+            refeicao?.acompanhamento1,
+            refeicao?.acompanhamento2,
+            refeicao?.guarnicao,
+            refeicao?.saladaDoDia,
+            refeicao?.sobremesa,
+            refeicao?.sucoNatural,
+        ].filter(Boolean).join(", ");
+
+        return {
+            id: dia.dia,
+            data: dia.dia,
+            refeicao: resumoRefeicao || "Pendente",
+            fichas: Number.isSafeInteger(semana.fichasVendidas?.[index])
+                ? semana.fichasVendidas[index]
+                : null,
+            desperdicioKg: Number.isFinite(semana.desperdicio?.[index])
+                ? semana.desperdicio[index]
+                : null,
+            sobrasKg: null,
+            satisfacao: null,
+            editavel: true,
+        };
+    }));
 }
 
 export function filtrarRelatoriosPorPeriodo(relatorios, periodo) {
@@ -143,7 +103,7 @@ export function obterDadosDosGraficos(relatorios) {
                 .filter((valor) => Number.isFinite(valor));
             return valores.length
                 ? valores.reduce((total, valor) => total + valor, 0) / valores.length
-                : 0;
+                : null;
         };
         return {
             fichas: media("fichas"),
@@ -164,33 +124,18 @@ export function calcularIndicadores(relatorios) {
             .filter((valor) => Number.isFinite(valor));
         return valores.length
             ? valores.reduce((total, valor) => total + valor, 0) / valores.length
-            : 0;
+            : null;
     };
 
+    const registrosComFichas = relatorios.filter((relatorio) => Number.isSafeInteger(relatorio.fichas));
     return {
-        totalFichas: relatorios.reduce(
-            (total, relatorio) => total + (relatorio.fichas ?? 0),
-            0,
-        ),
+        totalFichas: registrosComFichas.length
+            ? registrosComFichas.reduce((total, relatorio) => total + relatorio.fichas, 0)
+            : null,
         mediaDesperdicioKg: media("desperdicioKg"),
         mediaSobrasKg: media("sobrasKg"),
         mediaSatisfacao: media("satisfacao"),
     };
-}
-
-export function atualizarRelatorio(relatorios, id, valores) {
-    const fichas = obterValorNumerico(valores.fichas, "fichas", true);
-    const desperdicioKg = obterValorNumerico(valores.desperdicioKg, "desperdício");
-
-    if (!relatorios.some((relatorio) => relatorio.id === id)) {
-        throw new Error("O registro selecionado não foi encontrado.");
-    }
-
-    return relatorios.map((relatorio) =>
-        relatorio.id === id
-            ? { ...relatorio, fichas, desperdicioKg }
-            : relatorio,
-    );
 }
 
 export function exportarRelatorioCsv(relatorios) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     Button,
     Chip,
@@ -16,24 +16,21 @@ import {
 import styles from "./painelNutricionistaRelatorios.module.css";
 
 export default function DialogRelatorio({ relatorio, onClose, onSave }) {
-    const [fichas, setFichas] = useState("");
-    const [desperdicioKg, setDesperdicioKg] = useState("");
+    const [desperdicioKg, setDesperdicioKg] = useState(
+        relatorio?.desperdicioKg == null ? "" : String(relatorio.desperdicioKg),
+    );
     const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
 
-    useEffect(() => {
-        setFichas(relatorio?.fichas == null ? "" : String(relatorio.fichas));
-        setDesperdicioKg(
-            relatorio?.desperdicioKg == null ? "" : String(relatorio.desperdicioKg),
-        );
-        setErro("");
-    }, [relatorio]);
-
-    const salvar = () => {
+    const salvar = async () => {
+        setSalvando(true);
         try {
-            onSave(relatorio.id, { fichas, desperdicioKg });
+            await onSave(relatorio.id, { desperdicioKg });
             onClose();
         } catch (erroValidacao) {
             setErro(erroValidacao.message);
+        } finally {
+            setSalvando(false);
         }
     };
 
@@ -56,7 +53,7 @@ export default function DialogRelatorio({ relatorio, onClose, onSave }) {
                         Editar relatório do dia
                     </Typography>
                     <Typography variant="body2">
-                        Atualize as fichas e o desperdício deste dia.
+                        As fichas são fornecidas pelo sistema. Atualize o desperdício deste dia.
                     </Typography>
                 </Stack>
             </DialogTitle>
@@ -88,10 +85,8 @@ export default function DialogRelatorio({ relatorio, onClose, onSave }) {
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
                     <TextField
                         label="Fichas"
-                        type="number"
-                        value={fichas}
-                        onChange={(event) => setFichas(event.target.value)}
-                        slotProps={{ htmlInput: { min: 0, step: 1 } }}
+                        value={relatorio?.fichas ?? "—"}
+                        disabled
                         fullWidth
                     />
                     <TextField
@@ -110,9 +105,9 @@ export default function DialogRelatorio({ relatorio, onClose, onSave }) {
                 )}
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>Cancelar</Button>
-                <Button variant="contained" onClick={salvar}>
-                    Salvar alterações
+                <Button onClick={onClose} disabled={salvando}>Cancelar</Button>
+                <Button variant="contained" onClick={salvar} disabled={salvando}>
+                    {salvando ? "Salvando..." : "Salvar alterações"}
                 </Button>
             </DialogActions>
         </Dialog>
