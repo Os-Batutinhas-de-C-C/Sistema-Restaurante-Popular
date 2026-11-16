@@ -27,7 +27,7 @@ export async function listarCardapiosPublicosApi(options = {}) {
 
 export function mapearRefeicao(dto) {
     if (!dto) return null;
-    return {
+    const refeicao = {
         idRefeicao: dto.idRefeicao,
         pratoProteico: dto.proteina ?? "",
         opcaoProteica: dto.opcaoProteica ?? "",
@@ -39,6 +39,17 @@ export function mapearRefeicao(dto) {
         sucoNatural: dto.suco ?? "",
         valorCalorico: dto.calorias == null ? "" : String(dto.calorias),
     };
+    refeicao.resumo = [
+        refeicao.pratoProteico,
+        refeicao.opcaoProteica,
+        refeicao.acompanhamento1,
+        refeicao.acompanhamento2,
+        refeicao.guarnicao,
+        refeicao.saladaDoDia,
+        refeicao.sobremesa,
+        refeicao.sucoNatural,
+    ].filter(Boolean).join(", ");
+    return refeicao;
 }
 
 export function dataIsoLocal(date) {
