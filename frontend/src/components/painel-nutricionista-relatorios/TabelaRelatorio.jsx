@@ -12,7 +12,17 @@ import {
 } from "@mui/material";
 import styles from "./painelNutricionistaRelatorios.module.css";
 
+function obterDataAtual() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, "0");
+    const dia = String(hoje.getDate()).padStart(2, "0");
+    return `${ano}-${mes}-${dia}`;
+}
+
 export default function TabelaRelatorio({ relatorios, onEditar }) {
+    const dataAtual = obterDataAtual();
+
     return (
         <Card
             component="section"
@@ -62,7 +72,12 @@ export default function TabelaRelatorio({ relatorios, onEditar }) {
                                     {relatorio.desperdicioKg ?? "—"}
                                 </TableCell>
                                 <TableCell align="right" className={styles.editCell}>
-                                    {relatorio.editavel && (
+                                    {relatorio.editavel
+                                        && (
+                                            relatorio.data === dataAtual
+                                            || relatorio.fichas == null
+                                            || relatorio.desperdicioKg == null
+                                        ) && (
                                         <IconButton
                                             aria-label={`Editar dados de ${relatorio.dia}`}
                                             size="small"
