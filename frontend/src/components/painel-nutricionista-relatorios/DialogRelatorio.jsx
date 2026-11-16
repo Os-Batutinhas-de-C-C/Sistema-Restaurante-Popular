@@ -1,0 +1,115 @@
+"use client";
+
+import { useState } from "react";
+import {
+    Button,
+    Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    Paper,
+    Stack,
+    TextField,
+    Typography,
+} from "@mui/material";
+import styles from "./painelNutricionistaRelatorios.module.css";
+
+export default function DialogRelatorio({ relatorio, onClose, onSave }) {
+    const [desperdicioKg, setDesperdicioKg] = useState(
+        relatorio?.desperdicioKg == null ? "" : String(relatorio.desperdicioKg),
+    );
+    const [erro, setErro] = useState("");
+    const [salvando, setSalvando] = useState(false);
+
+    const salvar = async () => {
+        setSalvando(true);
+        try {
+            await onSave(relatorio.id, { desperdicioKg });
+            onClose();
+        } catch (erroValidacao) {
+            setErro(erroValidacao.message);
+        } finally {
+            setSalvando(false);
+        }
+    };
+
+    return (
+        <Dialog
+            open={Boolean(relatorio)}
+            onClose={onClose}
+            fullWidth
+            maxWidth="xs"
+            aria-labelledby="editar-relatorio-titulo"
+        >
+            <DialogTitle component="div">
+                <Stack spacing={0.5}>
+                    <Typography
+                        id="editar-relatorio-titulo"
+                        component="h2"
+                        variant="subtitle1"
+                        sx={{ fontWeight: 700 }}
+                    >
+                        Editar relatório do dia
+                    </Typography>
+                    <Typography variant="body2">
+                        As fichas são fornecidas pelo sistema. Atualize o desperdício deste dia.
+                    </Typography>
+                </Stack>
+            </DialogTitle>
+            <DialogContent className={styles.dialogContent}>
+                <Paper variant="outlined" className={styles.dayDetails}>
+                    <Stack
+                        direction="row"
+                        sx={{
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                        }}
+                    >
+                        <Typography variant="subtitle2">Dados do dia</Typography>
+                        <Chip
+                            label="Somente leitura"
+                            size="small"
+                            variant="outlined"
+                        />
+                    </Stack>
+                    <Typography variant="body2" color="text.secondary">
+                        {relatorio
+                            ? `${relatorio.dia} · ${relatorio.dataFormatada}`
+                            : ""}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        {relatorio?.refeicao}
+                    </Typography>
+                </Paper>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                    <TextField
+                        label="Fichas"
+                        value={relatorio?.fichas ?? "—"}
+                        disabled
+                        fullWidth
+                    />
+                    <TextField
+                        label="Desperdício (kg)"
+                        type="number"
+                        value={desperdicioKg}
+                        onChange={(event) => setDesperdicioKg(event.target.value)}
+                        slotProps={{ htmlInput: { min: 0, step: "any" } }}
+                        fullWidth
+                    />
+                </Stack>
+                {erro && (
+                    <Typography role="alert" color="error" variant="body2">
+                        {erro}
+                    </Typography>
+                )}
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={onClose} disabled={salvando}>Cancelar</Button>
+                <Button variant="contained" onClick={salvar} disabled={salvando}>
+                    {salvando ? "Salvando..." : "Salvar alterações"}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
