@@ -56,11 +56,30 @@
 }
 
 .table {
-    min-width: 540px;
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
 }
 
 .table :global(.MuiTableCell-root) {
     border-bottom-color: #edf0f2;
+}
+
+.table :global(.MuiTableCell-root:nth-child(1)) {
+    width: 25%;
+}
+
+.table :global(.MuiTableCell-root:nth-child(2)) {
+    width: 28%;
+}
+
+.table :global(.MuiTableCell-root:nth-child(3)),
+.table :global(.MuiTableCell-root:nth-child(4)) {
+    width: 16.5%;
+}
+
+.table :global(.MuiTableCell-root:nth-child(5)) {
+    width: 14%;
 }
 
 .blankHeading {
@@ -71,11 +90,10 @@
     padding: 6px 4px !important;
     font-size: 0.625rem !important;
     font-weight: 700 !important;
-    white-space: nowrap;
+    white-space: normal;
 }
 
 .dayCell {
-    width: 25%;
     padding: 8px !important;
 }
 
@@ -95,7 +113,6 @@
 }
 
 .mealCell {
-    width: 34%;
     padding: 8px !important;
 }
 
@@ -105,18 +122,18 @@
 }
 
 .metric {
-    width: 18%;
     padding: 8px 4px !important;
     font-size: 0.875rem !important;
     font-weight: 700 !important;
 }
 
 .editCell {
-    width: 40px;
     padding: 8px 0 8px 4px !important;
 }
 
 .editButton {
+    width: 28px;
+    height: 28px;
     padding: 4px !important;
     color: #fff !important;
     background-color: #0398dc !important;
@@ -162,6 +179,22 @@
 }
 
 @media (max-width: 480px) {
+    .table :global(.MuiTableCell-root:nth-child(1)) {
+        width: 23%;
+    }
+
+    .table :global(.MuiTableCell-root:nth-child(2)) {
+        width: 24%;
+    }
+
+    .table :global(.MuiTableCell-root:nth-child(3)) {
+        width: 15%;
+    }
+
+    .table :global(.MuiTableCell-root:nth-child(4)) {
+        width: 24%;
+    }
+
     .filters {
         align-items: stretch;
     }
@@ -172,5 +205,26 @@
 
     .tableCard {
         padding: 12px;
+    }
+
+    .dayCell,
+    .mealCell {
+        padding: 8px 4px !important;
+    }
+
+    .date {
+        font-size: 0.625rem !important;
+    }
+
+    .columnHeading {
+        padding: 6px 1px !important;
+    }
+
+    .metric {
+        padding: 8px 2px !important;
+    }
+
+    .editCell {
+        padding: 4px 0 !important;
     }
 }
