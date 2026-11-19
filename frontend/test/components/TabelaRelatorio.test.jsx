@@ -10,7 +10,7 @@ function dataIso(data) {
 }
 
 describe("TabelaRelatorio", () => {
-    it("permite editar o dia atual e dias sem dados, mas oculta para dias anteriores preenchidos", () => {
+    it("permite editar hoje e dias com ao menos uma métrica vazia", () => {
         const hoje = new Date();
         const diaAnterior = new Date(hoje);
         diaAnterior.setDate(hoje.getDate() - 1);
@@ -26,12 +26,22 @@ describe("TabelaRelatorio", () => {
                 editavel: true,
             },
             {
-                id: "anterior-vazio",
+                id: "anterior-sem-fichas",
                 data: dataIso(diaAnterior),
-                dia: "Dia anterior vazio",
+                dia: "Dia anterior sem fichas",
                 dataFormatada: "data anterior",
                 refeicao: "Refeição",
                 fichas: null,
+                desperdicioKg: 2,
+                editavel: true,
+            },
+            {
+                id: "anterior-sem-desperdicio",
+                data: dataIso(diaAnterior),
+                dia: "Dia anterior sem desperdício",
+                dataFormatada: "data anterior",
+                refeicao: "Refeição",
+                fichas: 20,
                 desperdicioKg: null,
                 editavel: true,
             },
@@ -51,7 +61,9 @@ describe("TabelaRelatorio", () => {
 
         expect(screen.queryByRole("button", { name: "Editar dados de Dia anterior preenchido" }))
             .not.toBeInTheDocument();
-        expect(screen.getByRole("button", { name: "Editar dados de Dia anterior vazio" }))
+        expect(screen.getByRole("button", { name: "Editar dados de Dia anterior sem fichas" }))
+            .toBeInTheDocument();
+        expect(screen.getByRole("button", { name: "Editar dados de Dia anterior sem desperdício" }))
             .toBeInTheDocument();
         expect(screen.getByRole("button", { name: "Editar dados de Hoje" }))
             .toBeInTheDocument();

@@ -13,7 +13,10 @@ import {
     obterDadosDosGraficos,
     obterPeriodoInicial,
 } from "../../services/relatoriosService";
-import { listarSemanasApi, salvarDesperdicioDiaApi } from "../../services/cardapiosApiService";
+import {
+    listarSemanasApi,
+    salvarMetricasDiaApi,
+} from "../../services/cardapiosApiService";
 import DialogRelatorio from "./DialogRelatorio";
 import FiltrosRelatorio from "./FiltrosRelatorio";
 import GraficosRelatorio from "./GraficosRelatorio";
@@ -67,12 +70,27 @@ export default function PainelNutricionistaRelatorios() {
         const relatorio = relatorios.find((item) => item.id === id);
         if (!relatorio) throw new Error("O registro selecionado não foi encontrado.");
 
+        const fichasTexto = String(valores.fichasVendidas).trim();
+        const fichasVendidas = Number(fichasTexto);
+        if (
+            !fichasTexto
+            || !Number.isSafeInteger(fichasVendidas)
+            || fichasVendidas < 0
+            || fichasVendidas > 300
+        ) {
+            throw new Error("Informe uma quantidade de fichas entre 0 e 300.");
+        }
+
         const desperdicioTexto = String(valores.desperdicioKg).trim();
         const desperdicioKg = Number(desperdicioTexto.replace(",", "."));
         if (!desperdicioTexto || !Number.isFinite(desperdicioKg) || desperdicioKg < 0) {
             throw new Error("Informe um valor válido e não negativo para desperdício.");
         }
-        const semana = await salvarDesperdicioDiaApi(relatorio.data, desperdicioKg);
+        const metricas = { desperdicioKg };
+        if (fichasVendidas !== relatorio.fichas) {
+            metricas.fichasVendidas = fichasVendidas;
+        }
+        const semana = await salvarMetricasDiaApi(relatorio.data, metricas);
         const atualizados = new Map(
             mapearSemanasParaRelatorios([semana]).map((item) => [item.id, item]),
         );

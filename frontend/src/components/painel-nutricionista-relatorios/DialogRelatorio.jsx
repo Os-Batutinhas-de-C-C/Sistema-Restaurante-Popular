@@ -3,7 +3,6 @@
 import { useState } from "react";
 import {
     Button,
-    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -16,6 +15,9 @@ import {
 import styles from "./painelNutricionistaRelatorios.module.css";
 
 export default function DialogRelatorio({ relatorio, onClose, onSave }) {
+    const [fichasVendidas, setFichasVendidas] = useState(
+        relatorio?.fichas == null ? "" : String(relatorio.fichas),
+    );
     const [desperdicioKg, setDesperdicioKg] = useState(
         relatorio?.desperdicioKg == null ? "" : String(relatorio.desperdicioKg),
     );
@@ -25,7 +27,7 @@ export default function DialogRelatorio({ relatorio, onClose, onSave }) {
     const salvar = async () => {
         setSalvando(true);
         try {
-            await onSave(relatorio.id, { desperdicioKg });
+            await onSave(relatorio.id, { fichasVendidas, desperdicioKg });
             onClose();
         } catch (erroValidacao) {
             setErro(erroValidacao.message);
@@ -53,26 +55,13 @@ export default function DialogRelatorio({ relatorio, onClose, onSave }) {
                         Editar relatório do dia
                     </Typography>
                     <Typography variant="body2">
-                        As fichas são fornecidas pelo sistema. Atualize o desperdício deste dia.
+                        Atualize as fichas e o desperdício deste dia.
                     </Typography>
                 </Stack>
             </DialogTitle>
             <DialogContent className={styles.dialogContent}>
                 <Paper variant="outlined" className={styles.dayDetails}>
-                    <Stack
-                        direction="row"
-                        sx={{
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                        }}
-                    >
-                        <Typography variant="subtitle2">Dados do dia</Typography>
-                        <Chip
-                            label="Somente leitura"
-                            size="small"
-                            variant="outlined"
-                        />
-                    </Stack>
+                    <Typography variant="subtitle2">Dados do dia</Typography>
                     <Typography variant="body2" color="text.secondary">
                         {relatorio
                             ? `${relatorio.dia} · ${relatorio.dataFormatada}`
@@ -85,8 +74,10 @@ export default function DialogRelatorio({ relatorio, onClose, onSave }) {
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
                     <TextField
                         label="Fichas"
-                        value={relatorio?.fichas ?? "—"}
-                        disabled
+                        type="number"
+                        value={fichasVendidas}
+                        onChange={(event) => setFichasVendidas(event.target.value)}
+                        slotProps={{ htmlInput: { min: 0, max: 300, step: 1 } }}
                         fullWidth
                     />
                     <TextField

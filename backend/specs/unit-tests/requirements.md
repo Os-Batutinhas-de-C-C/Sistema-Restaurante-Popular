@@ -133,7 +133,7 @@ Unidade: `service/SemanaService.java`, métodos `create`, `update`, `findAll` e 
 
 - Data nula ou diferente de segunda-feira é rejeitada antes de persistir. Criação em data existente é rejeitada; atualização de segunda-feira ausente retorna `Optional.empty` sem salvar.
 - Cardápio nulo vira cinco posições nulas; lista não nula deve ter exatamente cinco posições, preservando lacunas e ordem. Desperdício nulo vira lista vazia.
-- Criação ignora `fichasVendidas` recebido; atualização preserva integralmente as contagens existentes mesmo com entrada ausente/nula, vazia, antiga ou forjada. Usa a consulta de atualização com bloqueio.
+- Criação ignora `fichasVendidas` recebido. Atualização preserva as contagens quando o campo é ausente/nulo; quando enviado, exige cinco posições e substitui as contagens existentes, inclusive lacunas nulas. Usa a consulta de atualização com bloqueio.
 - Referência de refeição por ID existente reutiliza a entidade; ID inexistente gera `EntityNotFoundException`. ID combinado com qualquer campo de criação é rejeitado, incluindo string vazia, calorias zero e `saladaDoDia`.
 - Criação inline mapeia todos os campos; texto opcional nulo é aceito, limites 255/256 são exercitados e calorias nulas viram zero. Nenhuma refeição existente é editada pelo payload de associação.
 - Refeições consideradas iguais pela implementação não podem ocupar duas posições da mesma semana. Compartilhamento entre semanas não deve ser rejeitado pelo service; a persistência desse vínculo é verificada por integração.

@@ -30,7 +30,7 @@ export default function TabelaRelatorio({ relatorios, onEditar }) {
             variant="outlined"
             className={styles.tableCard}
         >
-            <TableContainer>
+            <TableContainer className={styles.tableContainer}>
                 <Table
                     size="small"
                     aria-label="Detalhamento de fichas e desperdício por dia"
