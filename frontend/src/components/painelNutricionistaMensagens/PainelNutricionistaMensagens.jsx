@@ -27,7 +27,7 @@ export default function PainelNutricionistaMensagens() {
 
     useEffect(() => {
         const usuario = obterSessao()?.usuario;
-        const autorizado = Boolean(usuario && ["Nutricionista", "Gestor", "Caixa"].includes(usuario.perfil));
+        const autorizado = Boolean(usuario && ["Nutricionista", "Caixa"].includes(usuario.perfil));
 
         if (!autorizado) {
             router.replace("/login");

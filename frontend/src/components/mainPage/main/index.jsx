@@ -7,6 +7,7 @@
     import Cardapio from "./cardapio";
     import Localizacao from "./localizacao";
     import FichasHoje from "./FichasHoje";
+    import OficinasPortal from "../../oficinas/OficinasPortal";
 
     export default function Main() {
         return (
@@ -61,6 +62,7 @@
             <section id="localizacao" className="boxes">
                 <Localizacao />   
             </section>
+            <OficinasPortal />
         </div>
         );
     }

@@ -35,7 +35,7 @@
 - **Relacionada a:** RN06
 
 - [x] **T07 — Proteção de Rota**
-- Restringir a página a usuários autenticados com perfil Nutricionista ou Gestor, redirecionando os demais para o login.
+- Restringir a página a sessões de Nutricionista ou Caixa. Redirecionar quem estiver sem sessão para o login e quem tiver outro papel para o Portal do Cidadão.
 - **Relacionada a:** RN01, HU006
 
 - [x] **T08 — Acessibilidade**

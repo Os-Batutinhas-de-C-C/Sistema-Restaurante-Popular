@@ -7,7 +7,7 @@ Permitir que a nutricionista visualize a lista de insumos disponíveis e gerenci
 ## Histórias de usuário
 
 ### HU010 — Gerenciamento de Estoque
-Como um gestor / nutricionista,
+Como nutricionista,
 quero poder visualizar e editar os alimentos em estoque,
 para manter controle do estoque e comunicar à cozinha qualquer necessidade ou mudança.
 

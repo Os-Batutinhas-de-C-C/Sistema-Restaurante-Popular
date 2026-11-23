@@ -68,6 +68,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FichasApiIntegrationTests {
     private static final String TODAY_PATH = "/api/fichas/hoje";
     private static final String INCREMENT_PATH = TODAY_PATH + "/incrementos";
+    private static final String WASTE_PATH = "/api/desperdicio/hoje";
     private static final String PASSWORD = "fichas-test-password";
     private static final LocalDate MONDAY = LocalDate.of(2026, 11, 2);
 
@@ -108,6 +109,42 @@ class FichasApiIntegrationTests {
         assertEquals(1, semanaRepository.count());
         for (String hidden : List.of("desperdicio", "cardapio", "fichasVendidas", "idSemana", "usuario", "token")) {
             assertFalse(json(response).has(hidden));
+        }
+    }
+
+    @Test
+    void managerReadsOnlyTodaysWasteWithoutChangingTheWeek() throws Exception {
+        String gestorToken = token(gestor);
+        assertWaste(request("GET", WASTE_PATH, gestorToken, null), "2026-11-03", null);
+        assertEquals(0, semanaRepository.count());
+
+        seedWeek(List.of(12, 34, 56), List.of(1.5, 0.0, 9.5), null);
+        WeekSnapshot before = snapshot(MONDAY);
+
+        fichaTestClock.set(Instant.parse("2026-11-04T02:59:59Z"));
+        assertWaste(request("GET", WASTE_PATH, gestorToken, null), "2026-11-03", 0.0);
+        fichaTestClock.set(Instant.parse("2026-11-04T03:00:00Z"));
+        assertWaste(request("GET", WASTE_PATH + "?data=2026-11-02", gestorToken, null), "2026-11-04", 9.5);
+        fichaTestClock.set(Instant.parse("2026-11-05T15:00:00Z"));
+        assertWaste(request("GET", WASTE_PATH, gestorToken, null), "2026-11-05", null);
+        fichaTestClock.set(Instant.parse("2026-11-07T15:00:00Z"));
+        assertWaste(request("GET", WASTE_PATH, gestorToken, null), "2026-11-07", null);
+
+        assertEquals(1, semanaRepository.count());
+        assertEquals(before, snapshot(MONDAY));
+    }
+
+    private void assertWaste(HttpResponse<String> response, String date, Double amount) throws Exception {
+        assertEquals(200, response.statusCode(), response.body());
+        JsonNode body = json(response);
+        assertEquals(2, body.size());
+        assertEquals(date, body.path("data").asText());
+        JsonNode waste = body.path("desperdicioKg");
+        if (amount == null) {
+            assertTrue(waste.isNull());
+        } else {
+            assertTrue(waste.isNumber());
+            assertEquals(amount.doubleValue(), waste.asDouble());
         }
     }
 
@@ -182,7 +219,7 @@ class FichasApiIntegrationTests {
         Map<String, Object> forgedMenu = Map.of(
                 "fichasVendidas", List.of(300, 300, 300, 300, 300),
                 "desperdicio", List.of(2.0), "cardapio", Collections.nCopies(5, null));
-        assertEquals(200, request("PUT", "/api/semanas/2026-11-02", token(gestor), forgedMenu).statusCode());
+        assertEquals(200, request("PUT", "/api/semanas/2026-11-02", token(nutricionista), forgedMenu).statusCode());
         assertCounter(request("GET", TODAY_PATH, null, null), "2026-11-03", 1, true);
     }
 

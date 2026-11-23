@@ -44,6 +44,8 @@ Aplicar DTOs aos endpoints atualmente definidos em `controller/`:
 
 - **RN11 — Fichas entregues:** o servidor define a data de hoje em `America/Fortaleza`; o cliente não escolhe dia, índice ou quantidade. GET sem registro retorna zero sem gravar. Fins de semana retornam zero e `permiteAdicionar=false`; POST é rejeitado com `409 FICHAS_CLOSED_DAY`. Em dia útil, a primeira entrega inicializa a semana sem refeições, se necessário; incrementos são serializados e não excedem 300 (`409 FICHAS_LIMIT_REACHED`). A virada do dia inicia outro índice/semana sem apagar o histórico. Todos os demais dias, refeições e desperdício são preservados. `fichasVendidas` continua na resposta semanal como nome legado do mesmo contador, mas o valor enviado nos DTOs semanais é ignorado, preservando compatibilidade sem permitir alterar contagens fora da operação exclusiva do Caixa.
 
+- **RN12 — Acesso do Gestor:** o papel `GESTOR` acessa as rotas públicas, a leitura de desperdício do dia e as operações de perfil próprio listadas abaixo. A leitura usa a data do servidor em `America/Fortaleza` e a posição correspondente na semana. Zero é um valor registrado. Semana ou posição ausente, valor nulo e fins de semana retornam `desperdicioKg: null`. A consulta é somente leitura.
+
 ## Contrato por endpoint
 
 Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode ajustar o nome Java mantendo a distinção entre request e response. Os acessos refletem o contrato aprovado no aditivo, não o comportamento histórico do `SecurityConfig`.
@@ -53,30 +55,31 @@ Os nomes abaixo identificam os tipos lógicos esperados; a implementação pode 
 | `POST /api/auth/login` | `LoginDTO` (`email`, `senha`) | `200`, token Bearer/profile; `401` para credenciais inválidas | Público |
 | `GET /api/fichas/hoje` | Sem corpo | `200`, `FichasDiaResponseDTO`; sem métricas semanais ou dados pessoais | Público |
 | `POST /api/fichas/hoje/incrementos` | Sem corpo; data/quantidade definidas pelo servidor | `200`, `FichasDiaResponseDTO`; `409` limite/dia fechado | Papel `CAIXA` |
-| `GET /api/usuarios` | Sem corpo | `200`, lista de `UsuarioResponseDTO` | Usuário autenticado |
-| `POST /api/usuarios` | `UsuarioCreateRequestDTO` | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso | Usuário autenticado |
+| `GET /api/desperdicio/hoje` | Sem corpo | `200`, `DesperdicioDiaResponseDTO` | Papel `GESTOR` |
+| `GET /api/usuarios` | Sem corpo | `200`, lista de `UsuarioResponseDTO` | Usuário autenticado, exceto `GESTOR` |
+| `POST /api/usuarios` | `UsuarioCreateRequestDTO` | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso | Usuário autenticado, exceto `GESTOR` |
 | `GET /api/usuarios/me` | Sem corpo | `200`, `UsuarioResponseDTO` da própria conta | Usuário autenticado, identidade do JWT |
 | `PUT /api/usuarios/me` | `PerfilUpdateRequestDTO` | `200`, `PerfilUpdateResponseDTO`; `400` inválido/senha atual; `409` e-mail em uso | Usuário autenticado, própria conta |
 | `PUT /api/usuarios/me/senha` | `SenhaUpdateRequestDTO` | `204`, sem corpo; `400` inválido/senha atual | Usuário autenticado, própria conta |
-| `GET /api/semanas` | Sem corpo | `200`, lista de `SemanaResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `POST /api/semanas` | `SemanaCreateRequestDTO` | `200`, `SemanaResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `PUT /api/semanas/{data}` | `data` como segunda-feira (`LocalDate`); corpo `SemanaUpdateRequestDTO` | `200`, `SemanaResponseDTO`; `404` se a semana não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `GET /api/semanas` | Sem corpo | `200`, lista de `SemanaResponseDTO` | Papel `NUTRICIONISTA` |
+| `POST /api/semanas` | `SemanaCreateRequestDTO` | `200`, `SemanaResponseDTO` | Papel `NUTRICIONISTA` |
+| `PUT /api/semanas/{data}` | `data` como segunda-feira (`LocalDate`); corpo `SemanaUpdateRequestDTO` | `200`, `SemanaResponseDTO`; `404` se a semana não existir | Papel `NUTRICIONISTA` |
 | `GET /api/cardapios/publicos` | Sem corpo | `200`, lista de datas e refeições; sem métricas administrativas | Público |
-| `GET /api/refeicoes` | Sem corpo | `200`, lista de `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `POST /api/refeicoes` | `RefeicaoCreateRequestDTO` | `200`, `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `GET /api/refeicoes` | Sem corpo | `200`, lista de `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` |
+| `POST /api/refeicoes` | `RefeicaoCreateRequestDTO` | `200`, `RefeicaoResponseDTO` | Papel `NUTRICIONISTA` |
 | `GET /api/noticias` | Sem corpo | `200`, lista de `NoticiaResponseDTO` | Público |
-| `POST /api/noticias` | `NoticiaCreateRequestDTO` | `200`, `NoticiaResponseDTO` | Usuário autenticado |
-| `DELETE /api/noticias/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `GET /api/mensagens` | Sem corpo | `200`, lista de `MensagemResponseDTO` | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
-| `GET /api/mensagens/{id}` | `id` como parâmetro de rota | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
-| `POST /api/mensagens/usuario/{usuarioId}` | `usuarioId` como parâmetro de rota; corpo `MensagemCreateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se o usuário não existir | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
+| `POST /api/noticias` | `NoticiaCreateRequestDTO` | `200`, `NoticiaResponseDTO` | Usuário autenticado, exceto `GESTOR` |
+| `DELETE /api/noticias/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` |
+| `GET /api/mensagens` | Sem corpo | `200`, lista de `MensagemResponseDTO` | Papel `NUTRICIONISTA` ou `CAIXA` |
+| `GET /api/mensagens/{id}` | `id` como parâmetro de rota | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
+| `POST /api/mensagens/usuario/{usuarioId}` | `usuarioId` como parâmetro de rota; corpo `MensagemCreateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se o usuário não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
 | `POST /api/mensagens/publicas` | `MensagemPublicaCreateRequestDTO` | `200`, `MensagemResponseDTO`; usuário nulo | Público |
-| `PUT /api/mensagens/{id}` | `id` como parâmetro de rota; corpo `MensagemUpdateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
-| `DELETE /api/mensagens/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir ou se for notícia | Papel `NUTRICIONISTA`, `GESTOR` ou `CAIXA` |
-| `GET /api/estoque` | Sem corpo | `200`, lista de `EstoqueResponseDTO` com status calculado | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `POST /api/estoque` | `EstoqueCreateRequestDTO` | `200`, `EstoqueResponseDTO` | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `PUT /api/estoque/{idMaterial}` | `EstoqueUpdateRequestDTO` | `200`, `EstoqueResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
-| `DELETE /api/estoque/{idMaterial}` | Sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` ou `GESTOR` |
+| `PUT /api/mensagens/{id}` | `id` como parâmetro de rota; corpo `MensagemUpdateRequestDTO` | `200`, `MensagemResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` ou `CAIXA` |
+| `DELETE /api/mensagens/{id}` | `id` como parâmetro de rota; sem corpo | `204`, sem corpo; `404` se não existir ou se for notícia | Papel `NUTRICIONISTA` ou `CAIXA` |
+| `GET /api/estoque` | Sem corpo | `200`, lista de `EstoqueResponseDTO` com status calculado | Papel `NUTRICIONISTA` |
+| `POST /api/estoque` | `EstoqueCreateRequestDTO` | `200`, `EstoqueResponseDTO` | Papel `NUTRICIONISTA` |
+| `PUT /api/estoque/{idMaterial}` | `EstoqueUpdateRequestDTO` | `200`, `EstoqueResponseDTO`; `404` se não existir | Papel `NUTRICIONISTA` |
+| `DELETE /api/estoque/{idMaterial}` | Sem corpo | `204`, sem corpo; `404` se não existir | Papel `NUTRICIONISTA` |
 
 O relacionamento de cardápios é muitos-para-muitos: uma semana contém cinco posições de segunda a sexta; cada posição recebe uma refeição ou `null`, e a refeição pode estar associada a semanas diferentes ou a nenhuma. `Semana.data` deve ser a segunda-feira. O DTO de refeição não contém `semanaId`. Referências existentes usam somente `idRefeicao`; criação inline envia os campos da refeição sem ID. Dados legados sem posição são migrados em ordem crescente de `refeicao_id`, conforme decisão aprovada, mesmo que os dias resultantes possam estar incorretos. `POST /api/noticias` associa a notícia ao usuário autenticado; o cliente não escolhe o autor no corpo.
 
@@ -85,6 +88,36 @@ As linhas legadas de desperdício e fichas também não tinham dia/posição per
 `GET /api/cardapios/publicos` é uma rota somente leitura que retorna datas e refeições sem desperdício nem fichas vendidas. `/api/mensagens/publicas` aceita assunto e texto sem usuário, nome ou contato.
 
 Uma requisição protegida sem autenticação deve receber `401`; usuário autenticado sem o papel exigido deve receber `403`. As exceções públicas são as rotas marcadas como públicas na tabela de endpoints.
+
+## Oficinas ou Cursos
+
+As rotas abaixo usam o prefixo `/api/oficinas-ou-cursos`. As datas usam `yyyy-MM-dd` e os horários locais usam ISO 8601 em `America/Fortaleza`. Os instantes `agora`, `inicioEm` e `fimEm` usam UTC, também em ISO 8601.
+
+| Método e rota | Entrada | Sucesso | Acesso |
+|---|---|---|---|
+| `GET /publicas` | Sem corpo | `200 Agenda` | Público |
+| `POST /publicas/{id}/inscricoes` | `cpf`, `dataNascimento`, `email` | `201 Evento` | Público |
+| `POST /publicas/minhas-inscricoes` | `cpf`, `dataNascimento` | `200 Agenda` | Público |
+| `POST /publicas/{id}/cancelamentos` | `cpf`, `dataNascimento` | `204` | Público |
+| `GET /` | Filtros opcionais `data`, `horaInicio`, `horaFim` por igualdade | `200 Agenda` | Gestor |
+| `POST /` | `EventoRequest` | `201 EventoGestao` | Gestor |
+| `GET /{id}` | ID do evento | `200 EventoGestao` | Gestor |
+| `PUT /{id}` | `EventoRequest` com `versao` | `200 EventoGestao` | Gestor |
+| `DELETE /{id}` | ID do evento | `204` | Gestor |
+| `GET /{id}/inscricoes` | ID do evento | `200 Inscritos` | Gestor |
+| `DELETE /{id}/inscricoes/{inscricaoId}` | IDs do evento e da inscrição | `204` | Gestor |
+
+| DTO | Campos |
+|---|---|
+| `EventoRequest` | `title`, `tipo` (`OFICINA` ou `CURSO`), `vagas` (inteiro positivo em string decimal), `descricao`, `data`, `horaInicio`, `horaFim`, `local`, `instrutor`, `custo` (`PAGO` ou `GRATUITO`). Edição exige também `versao` e permite `confirmacao` no reagendamento. |
+| `Evento` | Os campos do evento, `id`, `vagasRestantes` (string decimal), `estado` (`PROGRAMADO`, `EM_ANDAMENTO` ou `ENCERRADO`), `inicioEm` e `fimEm`. |
+| `Agenda` | `agora` e `eventos`, ordenados por data, início e ID. |
+| `EventoGestao` | `evento`, `versao` e `agora`. |
+| `Inscritos` | `agora`, `inicioEm` e `inscricoes`, com `id`, `cpf` sem máscara, `dataNascimento` e `email` de cada inscrito. |
+
+O CPF aceita 11 dígitos ou o formato `000.000.000-00`. As respostas públicas devolvem somente os dados dos eventos. A consulta pública exige CPF e nascimento correspondentes, com resposta `no-store`. A consulta administrativa de inscritos também usa `no-store`.
+
+Entradas inválidas retornam `400`. Eventos e inscrições ausentes retornam `404`. Duplicidade, lotação, sobreposição, prazo encerrado, redução de capacidade com inscritos e versão desatualizada retornam `409` com `code` e `message`. Um reagendamento que exige confirmação retorna `409 REAGENDAMENTO_REQUER_CONFIRMACAO` com `quantidade` e `confirmacao`. Para confirmar, reenvie a mesma edição com o valor de `confirmacao`. Se o conjunto de inscrições afetadas mudar, a API devolve a contagem e a confirmação atualizadas.
 
 ## Campos dos DTOs
 
@@ -98,6 +131,7 @@ Os campos abaixo definem o contrato base a partir dos modelos e operações atua
 | `PerfilUpdateResponseDTO` | `usuario` (`UsuarioResponseDTO`) e `requerNovoLogin` (`true` após alterar o e-mail; `false` quando o e-mail é mantido). |
 | `SenhaUpdateRequestDTO` | `senhaAtual`, `novaSenha`, `confirmacaoSenha`, todos obrigatórios. Regras de RN09; nenhum campo é devolvido. |
 | `FichasDiaResponseDTO` | `data`, `entregues`, `capacidade` (300), `restantes`, `permiteAdicionar` (dia útil e abaixo do limite). Este último indica disponibilidade operacional; a autorização para registrar continua exclusiva do Caixa. Não expõe outras métricas ou usuários. |
+| `DesperdicioDiaResponseDTO` | `data` (ISO `yyyy-MM-dd`) e `desperdicioKg` (número ou `null`, conforme RN12). |
 | `SemanaCreateRequestDTO` | `data` (segunda-feira), `desperdicio`, `cardapio` com exatamente cinco posições; `null` indica dia vazio. `fichasVendidas` legado é aceito e ignorado; novas contagens iniciam em zero. |
 | `SemanaUpdateRequestDTO` | `desperdicio`, `cardapio` com cinco posições; a data da rota deve ser segunda-feira. `fichasVendidas` legado é aceito e ignorado, preservando as entregas persistidas. |
 | `SemanaResponseDTO` | `idSemana`, `data`, `desperdicio`, `fichasVendidas`, `cardapio` com cinco posições de `RefeicaoResponseDTO` ou `null` |
@@ -191,7 +225,7 @@ Os campos de `UsuarioCreateRequestDTO` (`nome`, `emailRecuperacao`, `tipo`, `sen
 
 ### Cenário 12 — Fichas públicas e registro autorizado
 
-**Dado que** um visitante consulta `/api/fichas/hoje`, **então** recebe somente os cinco campos do DTO diário, com zero quando ainda não há entrega e sem criar uma semana. **Quando** um cliente registra uma ficha, **então** apenas Caixa autenticado recebe sucesso; ausência/token inválido recebe `401` e Nutricionista/Gestor recebem `403`. As permissões de `/api/semanas` permanecem inalteradas.
+**Dado que** um visitante consulta `/api/fichas/hoje`, **então** recebe somente os cinco campos do DTO diário, com zero quando ainda não há entrega e sem criar uma semana. **Quando** um cliente registra uma ficha, **então** apenas Caixa autenticado recebe sucesso; ausência/token inválido recebe `401` e Nutricionista/Gestor recebem `403`.
 
 ### Cenário 13 — Dia, capacidade e ausência de cardápio
 

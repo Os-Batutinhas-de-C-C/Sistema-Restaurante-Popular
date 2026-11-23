@@ -3,5 +3,5 @@ import ProtectedRoute from "../../../../components/login/ProtectedRoute";
 
 export default async function GerenciarCardapioPage({ params }) {
     const { data } = await params;
-    return <ProtectedRoute><GerenciarCardapio dataSolicitada={data} /></ProtectedRoute>;
+    return <ProtectedRoute allowedProfiles={["Nutricionista"]}><GerenciarCardapio dataSolicitada={data} /></ProtectedRoute>;
 }

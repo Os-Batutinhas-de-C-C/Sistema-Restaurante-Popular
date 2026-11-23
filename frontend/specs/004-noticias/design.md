@@ -2,11 +2,11 @@
 
 ## Objetivo da experiência
 
-A nutricionista ou gestor deve conseguir consultar as notícias de um período, publicar novas notícias com duração definida e excluir notícias, de forma que o Portal do Cidadão (RF001) mostre comunicados atualizados sobre o funcionamento do restaurante, em qualquer dispositivo.
+A nutricionista deve conseguir consultar as notícias de um período, publicar novas notícias com duração definida e excluir notícias, de forma que o Portal do Cidadão (RF001) mostre comunicados atualizados sobre o funcionamento do restaurante, em qualquer dispositivo.
 
 ## Histórias atendidas
 
-- **HU018:** A nutricionista/gestor publica notícias em destaque na página inicial para informar rapidamente alterações operacionais.
+- **HU018:** A nutricionista publica notícias em destaque na página inicial para informar rapidamente alterações operacionais.
 
 ## Fluxo principal
 

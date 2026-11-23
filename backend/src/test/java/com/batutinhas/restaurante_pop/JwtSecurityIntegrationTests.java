@@ -96,15 +96,21 @@ class JwtSecurityIntegrationTests {
 
     @Test
     void endpointPermissionsMatchPublicAndRoleRules() throws Exception {
-        assertEquals(200, request("GET", "/api/semanas", token(nutricionista), null).statusCode());
-        assertEquals(200, request("GET", "/api/semanas", token(gestor), null).statusCode());
-        HttpResponse<String> denied = request("GET", "/api/semanas", token(caixa), null);
+        String nutriToken = token(nutricionista);
+        String caixaToken = token(caixa);
+        assertEquals(200, request("GET", "/api/semanas", nutriToken, null).statusCode());
+        assertEquals(200, request("GET", "/api/estoque", nutriToken, null).statusCode());
+        assertEquals(200, request("GET", "/api/refeicoes", nutriToken, null).statusCode());
+        assertEquals(200, request("GET", "/api/usuarios", nutriToken, null).statusCode());
+        HttpResponse<String> denied = request("GET", "/api/semanas", caixaToken, null);
         assertEquals(403, denied.statusCode());
         assertTrue(denied.body().contains("FORBIDDEN"));
 
-        assertEquals(200, request("GET", "/api/mensagens", token(nutricionista), null).statusCode());
-        assertEquals(200, request("GET", "/api/mensagens", token(gestor), null).statusCode());
-        assertEquals(200, request("GET", "/api/mensagens", token(caixa), null).statusCode());
+        assertEquals(200, request("GET", "/api/mensagens", nutriToken, null).statusCode());
+        assertEquals(200, request("GET", "/api/mensagens", caixaToken, null).statusCode());
+        assertEquals(401, request("GET", "/api/desperdicio/hoje", null, null).statusCode());
+        assertEquals(403, request("GET", "/api/desperdicio/hoje", nutriToken, null).statusCode());
+        assertEquals(403, request("GET", "/api/desperdicio/hoje", caixaToken, null).statusCode());
         assertEquals(200, request("GET", "/api/noticias", null, null).statusCode());
         assertEquals(200, request("GET", "/api/cardapios/publicos", null, null).statusCode());
 
@@ -113,6 +119,30 @@ class JwtSecurityIntegrationTests {
         assertEquals(200, anonymousMessage.statusCode(), anonymousMessage.body());
         long messageId = objectMapper.readTree(anonymousMessage.body()).path("idMensagem").asLong();
         assertTrue(mensagemRepository.findById(messageId).orElseThrow().getUsuario() == null);
+    }
+
+    @Test
+    void managerMayReadDailyIndicatorsAndOwnProfileButNotAdministrativeOperations() throws Exception {
+        String gestorToken = token(gestor);
+        for (String path : List.of("/api/desperdicio/hoje", "/api/fichas/hoje", "/api/noticias",
+                "/api/cardapios/publicos", "/api/usuarios/me")) {
+            assertEquals(200, request("GET", path, gestorToken, null).statusCode(), path);
+        }
+
+        for (String operation : List.of(
+                "GET /api/semanas", "POST /api/semanas", "PUT /api/semanas/2026-11-23",
+                "GET /api/refeicoes", "POST /api/refeicoes",
+                "GET /api/estoque", "POST /api/estoque", "PUT /api/estoque/1", "DELETE /api/estoque/1",
+                "POST /api/noticias", "DELETE /api/noticias/1",
+                "GET /api/mensagens", "GET /api/mensagens/1", "POST /api/mensagens/usuario/1",
+                "PUT /api/mensagens/1", "DELETE /api/mensagens/1",
+                "GET /api/usuarios", "POST /api/usuarios", "POST /api/fichas/hoje/incrementos",
+                "PUT /api/desperdicio/hoje")) {
+            String[] parts = operation.split(" ", 2);
+            HttpResponse<String> response = request(parts[0], parts[1], gestorToken, null);
+            assertEquals(403, response.statusCode(), operation);
+            assertEquals("FORBIDDEN", objectMapper.readTree(response.body()).path("code").asText(), operation);
+        }
     }
 
     private Usuario createUser(String email, char role) {

@@ -36,7 +36,7 @@ function Metric({ title, value, suffix, children, borderLeft = false }) {
  * Os cálculos ficam aqui para que o componente continue "dumb": ele recebe
  * dados simples e apenas transforma esses dados em uma representação visual.
  */
-export default function ResumoMetricas({ dadosDashboard }) {
+export default function ResumoMetricas({ dadosDashboard, somenteLeitura = false }) {
     // Normaliza valores ausentes para evitar resultados inválidos na interface.
     const fichasDisponiveis = Number.isSafeInteger(dadosDashboard?.fichasEntregues);
     const fichasEntregues = fichasDisponiveis ? dadosDashboard.fichasEntregues : "—";
@@ -52,6 +52,10 @@ export default function ResumoMetricas({ dadosDashboard }) {
         dadosDashboard?.desperdicioKg !== undefined &&
         dadosDashboard?.desperdicioKg !== "";
     const desperdicio = desperdicioExiste ? dadosDashboard.desperdicioKg : "—";
+    let estadoDesperdicio = "Sem dado disponível";
+    if (desperdicioExiste) estadoDesperdicio = "Dado registrado";
+    else if (dadosDashboard?.desperdicioCarregando) estadoDesperdicio = "Carregando desperdício...";
+    else if (somenteLeitura && !dadosDashboard?.desperdicioErro) estadoDesperdicio = "Sem registro para hoje";
     const fichasComCapacidade = (
         <>
             <span data-testid="fichas-entregues">{fichasEntregues}</span>
@@ -103,15 +107,13 @@ export default function ResumoMetricas({ dadosDashboard }) {
                 >
                     <Stack spacing={0.25} className={styles.details}>
                         <Typography variant="caption" className={styles.blueText}>
-                            {desperdicioExiste
-                                ? "Dado registrado"
-                                : "Sem dado disponível"}
+                            {estadoDesperdicio}
                         </Typography>
-                        <Typography variant="caption" className={styles.grayText}>
-                            {desperdicioExiste
-                                ? "Registro salvo hoje"
-                                : "Registre os dados do dia"}
-                        </Typography>
+                        {!somenteLeitura && (
+                            <Typography variant="caption" className={styles.grayText}>
+                                {desperdicioExiste ? "Registro salvo hoje" : "Registre os dados do dia"}
+                            </Typography>
+                        )}
                     </Stack>
                 </Metric>
             </Box>

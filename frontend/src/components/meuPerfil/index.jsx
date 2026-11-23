@@ -9,11 +9,12 @@ import NavbarPainel from "@/components/NavbarPainel/NavbarPainel";
 const MeuPerfil = () => {
   const state = useMeuPerfil();
   const perfil = state.perfil?.perfil ?? state.usuarioInicial?.perfil ?? "";
+  const variant = { Caixa: "caixa", Gestor: "gestor" }[perfil] ?? "nutricionista";
   const disabled = state.loading || !state.perfil || state.busy;
 
   return (
     <main className={styles.main}>
-      <NavbarPainel variant={perfil === "Caixa" ? "caixa" : "nutricionista"} />
+      <NavbarPainel variant={variant} />
       <div className={styles.container}>
         <header className={styles.header}>
           <Typography component="h1" className={styles.title}>

@@ -15,7 +15,8 @@ import {
 } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { encerrarSessao } from "../../services/authService";
+import { encerrarSessao, obterSessao } from "../../services/authService";
+import { ROTA_OFICINAS } from "../../services/oficinasService";
 import styles from "./navbarPainel.module.css";
 
 // Itens do menu principal. Os ícones são assets do Figma para manter a
@@ -30,6 +31,18 @@ const menuItems = [
     { label: "Sair", icon: "/icons/li_log-out.svg", href: "/mainPage" },
 ];
 
+const variants = {
+    nutricionista: { titulo: "Painel Nutricionista", inicio: "/painel-nutricionista" },
+    caixa: { titulo: "Painel do Caixa", inicio: "/painel-caixa" },
+    gestor: { titulo: "Painel Gestor", inicio: "/painel-gestor" },
+};
+
+const menuGestor = [
+    menuItems[0],
+    { label: "Oficinas ou Cursos", icon: "/icons/calendar.svg", href: ROTA_OFICINAS },
+    menuItems.at(-1),
+];
+
 /**
  * Navbar compartilhada dos painéis administrativos.
  *
@@ -38,14 +51,14 @@ const menuItems = [
  * - Controlar a abertura e o fechamento do menu.
  * - Exibir as opções da variante do painel.
  */
-export default function NavbarPainel({ onProfileClick, variant = "nutricionista" }) {
+export default function NavbarPainel({ onProfileClick, variant }) {
     const router = useRouter();
-    const isCaixa = variant === "caixa";
-    const visibleMenuItems = isCaixa
-        ? menuItems
-            .filter(({ label }) => label === "Início" || label === "Sair")
-            .map((item) => item.label === "Início" ? { ...item, href: "/painel-caixa" } : item)
-        : menuItems;
+    const [sessionProfile] = useState(() => obterSessao()?.usuario.perfil);
+    const activeVariant = variant ?? (sessionProfile === "Gestor" ? "gestor" : "nutricionista");
+    const isGestor = activeVariant === "gestor";
+    const visibleMenuItems = isGestor ? menuGestor
+        : activeVariant === "caixa" ? [menuItems[0], menuItems.at(-1)] : menuItems;
+    const { titulo, inicio } = variants[activeVariant] ?? variants.nutricionista;
     // Referência do botão que abriu o menu, usada pelo MUI para posicioná-lo.
     const [menuAnchor, setMenuAnchor] = useState(null);
     const isMenuOpen = Boolean(menuAnchor);
@@ -90,6 +103,7 @@ export default function NavbarPainel({ onProfileClick, variant = "nutricionista"
                     aria-expanded={isMenuOpen ? "true" : undefined}
                     onClick={handleMenuOpen}
                     className={styles.menuButton}
+                    focusVisibleClassName={styles.focusVisible}
                 >
                     <Box
                         component="img"
@@ -108,13 +122,14 @@ export default function NavbarPainel({ onProfileClick, variant = "nutricionista"
                     variant="body1"
                     className={styles.title}
                 >
-                    {isCaixa ? "Painel do Caixa" : "Painel Nutricionista"}
+                    {titulo}
                 </Typography>
                     <Box className={styles.spacer} />
                     <ButtonBase
-                        aria-label="Abrir perfil do usuário"
+                        aria-label={isGestor ? "Meu Perfil" : "Abrir perfil do usuário"}
                         onClick={handleProfileClick}
                         className={styles.profileButton}
+                        focusVisibleClassName={styles.focusVisible}
                     >
                         <Avatar className={styles.avatar}>
                             <Box
@@ -155,7 +170,7 @@ export default function NavbarPainel({ onProfileClick, variant = "nutricionista"
                 {visibleMenuItems.map(({ label, icon, href }, index) => (
                     <MenuItem
                         key={label}
-                        onClick={() => handleMenuItemClick(label, href)}
+                        onClick={() => handleMenuItemClick(label, label === "Início" ? inicio : href)}
                         divider={index < visibleMenuItems.length - 1}
                         sx={{
                             minHeight: 48,
