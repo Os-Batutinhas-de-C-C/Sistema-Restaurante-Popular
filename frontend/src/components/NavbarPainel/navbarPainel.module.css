@@ -57,6 +57,14 @@
     border-radius: 50% !important;
 }
 
+.menuButton.focusVisible,
+.profileButton.focusVisible,
+.menuButton:focus-visible,
+.profileButton:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
 .personIcon {
     width: 24px;
     height: 24px;

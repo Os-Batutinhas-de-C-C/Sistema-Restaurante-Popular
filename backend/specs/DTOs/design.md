@@ -12,7 +12,7 @@ Controllers recebem DTOs e parâmetros simples de rota, delegam aos services e d
 
 - `POST /api/auth/login` recebe e-mail/senha e responde com JWT Bearer, duração de 3600 segundos e o perfil do usuário.
 - Spring Resource Server valida tokens HS256 assinados com uma chave configurada por `JWT_SECRET_BASE64`, mantendo a validade de uma hora e sem criar sessão HTTP. Além de issuer/tempo/assinatura, `JwtTokenVersionValidator` compara `userId`, `tokenVersion` e subject com a conta/credencial atual no banco.
-- `SecurityConfig` aplica a matriz de `requirements.md`, com respostas JSON para `401` e `403`. `GESTOR` tem as mesmas permissões de `NUTRICIONISTA`; `CAIXA` acessa mensagens.
+- `SecurityConfig` aplica a matriz de `requirements.md`, com respostas JSON para `401` e `403`. Gestor acessa as rotas públicas, a leitura de desperdício do dia e o perfil próprio. Nutricionista e Caixa acessam as mensagens administrativas.
 - Contas iniciais são criadas somente no perfil `local`, quando e-mail e senha vêm de variáveis de ambiente.
 - O proxy de mesma origem Next encaminha requisições. CORS não é alterado.
 
@@ -46,9 +46,9 @@ Contagens existentes não são reduzidas automaticamente: um total já igual ou 
 
 ## Notícias, mensagens e estoque
 
-- Notícias podem ser criadas por qualquer usuário autenticado e removidas por `NUTRICIONISTA`/`GESTOR`.
+- Notícias podem ser criadas por usuários autenticados, exceto Gestor, e removidas por Nutricionista.
 - Mensagens administrativas mantêm as permissões DTO e podem ser removidas; `/api/mensagens/publicas` aceita assunto e texto anônimos, sem nome/contato, com data e hora atribuídas pelo servidor.
-- Estoque recebe PUT/DELETE autenticados por `NUTRICIONISTA`/`GESTOR`. O status é calculado em `America/Fortaleza`: “Vencido” a partir do dia seguinte à validade, “Vence em breve” da data da validade até sete dias antes, e “No prazo” nos demais casos.
+- Estoque recebe PUT/DELETE autenticados por Nutricionista. O status é calculado em `America/Fortaleza`: “Vencido” a partir do dia seguinte à validade, “Vence em breve” da data da validade até sete dias antes, e “No prazo” nos demais casos.
 
 ## Persistência e migração
 

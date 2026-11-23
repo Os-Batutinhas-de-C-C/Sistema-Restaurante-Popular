@@ -4,6 +4,12 @@ import { useState } from "react";
 import { apiRequest, ApiError } from "./apiClient";
 import { clearAuthSession, getAuthSession, setAuthSession } from "./authSession";
 
+const painelPorPerfil = new Map([
+    ["Caixa", "/painel-caixa"],
+    ["Gestor", "/painel-gestor"],
+    ["Nutricionista", "/painel-nutricionista"],
+]);
+
 export async function autenticar(email, senha) {
     const { data } = await apiRequest("/auth/login", {
         method: "POST",
@@ -43,9 +49,7 @@ export function useAuthService(router) {
         setError("");
         try {
             const session = await autenticar(email, password);
-            if (session.usuario.perfil === "Caixa") router.push("/painel-caixa");
-            else if (["Nutricionista", "Gestor"].includes(session.usuario.perfil)) router.push("/painel-nutricionista");
-            else router.push("/mainPage");
+            router.push(painelPorPerfil.get(session.usuario.perfil) ?? "/mainPage");
         } catch (cause) {
             setError(cause?.message || "Não foi possível entrar. Confira o e-mail e a senha.");
         } finally {

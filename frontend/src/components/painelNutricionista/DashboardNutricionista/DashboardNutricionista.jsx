@@ -1,4 +1,4 @@
-import { Alert, Box, CircularProgress, Stack, Typography } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import NavbarPainel from "../../NavbarPainel/NavbarPainel";
 import AcoesRapidas from "../AcoesRapidas/AcoesRapidas";
 import CardapioHoje from "../CardapioHoje/CardapioHoje";
@@ -26,7 +26,7 @@ export default function DashboardNutricionista({
                 <Stack className={styles.heading}>
                     <Box className={styles.headingRow}>
                         <Box>
-                            <Typography variant="h4" className={styles.title}>
+                            <Typography variant="h4" component="h1" className={styles.title}>
                                 {dadosDashboard.titulo}
                             </Typography>
                             <Typography variant="body2" className={styles.date}>
@@ -54,7 +54,14 @@ export default function DashboardNutricionista({
                 </Stack>
                 {/* Seções independentes que compõem o conteúdo do dashboard. */}
                 <Stack className={styles.sections}>
-                    {error && <Alert severity="error">{error}</Alert>}
+                    {error && (
+                        <Alert
+                            severity="error"
+                            action={<Button color="inherit" size="small" onClick={onRefresh}>Tentar novamente</Button>}
+                        >
+                            {error}
+                        </Alert>
+                    )}
                     {loading && <CircularProgress size={24} aria-label="Carregando dados do painel" />}
                     <AcoesRapidas onWasteClick={onWasteClick} />
                     <ResumoMetricas dadosDashboard={dadosDashboard} />

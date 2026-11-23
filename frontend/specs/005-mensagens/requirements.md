@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Permitir que a nutricionista ou gestor consulte as mensagens enviadas pelos clientes pelo formulário "Fale Conosco" em um período e leia o conteúdo completo de cada uma, para fechar o ciclo de atendimento e ter controle do feedback gerado.
+Permitir que Nutricionista ou Caixa consulte as mensagens enviadas pelos clientes pelo formulário "Fale Conosco" em um período e leia o conteúdo completo de cada uma, para fechar o ciclo de atendimento e ter controle do feedback gerado.
 
 ## Histórias de usuário
 
@@ -20,7 +20,7 @@ para acompanhar problemas, dúvidas e sugestões sobre o restaurante.
 
 ## Regras de negócio
 
-- **RN01:** O acesso a esta tela é restrito a usuários autenticados com o perfil de Nutricionista ou Gestor. Caso não esteja logado, deve ser redirecionado para a tela de login (ref HU006).
+- **RN01:** O acesso a esta tela é restrito a usuários autenticados com o perfil de Nutricionista ou Caixa. Caso não esteja logado, deve ser redirecionado para a tela de login (ref HU006).
 - **RN02:** A lista exibe as mensagens do período selecionado, da mais recente para a mais antiga. [SUPOSIÇÃO]
 - **RN03:** Cada mensagem exibe data, hora, título e descrição (texto truncado). A mensagem do cliente tem texto obrigatório e nome opcional (ref HU011).
 - **RN04:** O botão Visualizar (ícone de olho) abre um modal na mesma tela com o conteúdo completo da mensagem, sem navegar para outra página.

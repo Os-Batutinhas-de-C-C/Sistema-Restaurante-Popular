@@ -4,7 +4,7 @@
 
 O backend usa Java 25, Spring Boot 4.1.1, Spring Web, Spring Security, Spring Data JPA e PostgreSQL. A autenticação é stateless por JWT HS256. Os perfis do sistema são `NUTRICIONISTA`, `GESTOR` e `CAIXA`; H2 é usado nos testes.
 
-Os controllers atuais cobrem autenticação e usuários, perfil, semanas e refeições/cardápios, estoque, fichas do dia, notícias e mensagens. Entre as rotas públicas estão `POST /api/auth/login`, `GET /api/cardapios/publicos`, `GET /api/noticias`, `GET /api/fichas/hoje` e `POST /api/mensagens/publicas`. O registro de incrementos de fichas exige perfil de caixa; operações de semanas, refeições e estoque exigem nutricionista ou gestor. O frontend consome essa API pelo proxy Next.js em `/api`; veja [frontend.md](./frontend.md).
+A API usa o perfil Caixa para registrar fichas e o perfil Nutricionista para operar semanas, refeições e estoque. O Gestor consulta fichas pelo endpoint público, lê `GET /api/desperdicio/hoje` e gerencia a própria conta. As rotas públicas incluem login, cardápio, notícias, leitura de fichas e envio anônimo de mensagens. A matriz de acesso está na [especificação DTO](./backend/specs/DTOs/requirements.md). O frontend consome a API pelo proxy Next.js em `/api`.
 
 ## Pré-requisitos
 

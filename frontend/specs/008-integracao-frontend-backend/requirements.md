@@ -114,7 +114,7 @@ A forma genérica do erro deve seguir a resposta já definida pelo backend; o fr
 
 ### RF008 — Meu Perfil integrado
 
-A tela consulta `GET /api/usuarios/me` e exibe nome, e-mail e nível de acesso da própria conta. O nível é somente leitura. Nutricionista/Gestor usam a navbar completa; Caixa usa “Painel do Caixa” com somente “Sair”. Os dados fictícios são removidos e as chamadas ficam em `perfilService.js`.
+A tela consulta `GET /api/usuarios/me` e exibe nome, e-mail e nível de acesso da própria conta. O nível é somente leitura. Nutricionista usa a navegação operacional. Gestor e Caixa usam seus respectivos cabeçalhos com “Início” e “Sair”. Os dados fictícios são removidos e as chamadas ficam em `perfilService.js`.
 
 “Salvar Informações” envia `PerfilUpdateRequestDTO(nome, emailRecuperacao, senhaAtual)` a `PUT /api/usuarios/me` e recebe `PerfilUpdateResponseDTO(usuario, requerNovoLogin)`. Nome/e-mail são obrigatórios, recebem trim e aceitam até 255 caracteres Unicode; e-mail deve ter conteúdo antes/depois de `@`, sem espaços. A senha atual é exigida quando o e-mail mudar. Nome apenas atualiza os dados da sessão sem renovar token ou `expiresAt`; mudança de e-mail limpa a sessão e abre o login com confirmação da alteração.
 
@@ -124,7 +124,7 @@ Carregamento, falha com repetição, salvamento e sucesso devem ter estados expl
 
 ### RF009 — Fichas entregues sincronizadas
 
-As três telas consultam `GET /api/fichas/hoje`, que retorna `data`, `entregues`, `capacidade`, `restantes` e `permiteAdicionar`. Contagem zero é um dado válido; falhas não podem ser substituídas por valores de demonstração. Capacidade, percentual e restantes usam a mesma resposta. Nos fins de semana, a consulta retorna total zero e registro desabilitado.
+O Portal do Cidadão e os painéis de Nutricionista, Gestor e Caixa consultam `GET /api/fichas/hoje`, que retorna `data`, `entregues`, `capacidade`, `restantes` e `permiteAdicionar`. Contagem zero é um dado válido; falhas não podem ser substituídas por valores de demonstração. Capacidade, percentual e restantes usam a mesma resposta. Nos fins de semana, a consulta retorna total zero e registro desabilitado.
 
 O botão do Caixa envia `POST /api/fichas/hoje/incrementos`, sem escolher data nem quantidade. O backend soma exatamente um ao total persistido de hoje e responde com o novo estado; o botão fica desabilitado durante a solicitação, fora dos dias úteis ou ao atingir 300. Não há incremento otimista nem repetição automática de gravações. Limite atingido ou dia fechado retorna `409`, com `FICHAS_LIMIT_REACHED` ou `FICHAS_CLOSED_DAY`.
 
@@ -146,11 +146,13 @@ As telas atualizam a leitura a cada cinco segundos enquanto visíveis, ao recupe
 
 - **RN11 — Navegação autenticada do dashboard:** os botões de perfil e edição do cardápio usam `router.push()` para conservar a sessão JWT em memória durante a navegação. O perfil abre `/meuPerfil`; editar cardápio conserva a rota `/painel-nutricionista-cardapio/gerenciar/{dataIso}`, com a lista de cardápios como fallback quando não houver data. “Publicar Nova Notícia” abre `/painel-nutricionista-noticias` e “Atualizar Estoque” abre `/painel-nutricionista-estoque`. Registrar desperdício continua abrindo o diálogo existente. A correção foi solicitada em 03/11/2026.
 
-- **RN12 — Navbar do Caixa:** `/painel-caixa` reutiliza a navbar compartilhada, seus ícones e estilos, com título “Painel do Caixa” e somente “Sair” no dropdown. Sair executa o encerramento de sessão existente antes de navegar a `/mainPage`. O conteúdo fica abaixo da barra fixa de 64 px, mantendo o espaço original de 28 px. O acesso à página continua restrito ao perfil Caixa.
+- **RN12 — Navbar do Caixa:** `/painel-caixa` reutiliza a navbar compartilhada, seus ícones e estilos, com título “Painel do Caixa” e “Início” e “Sair” no menu. Sair executa o encerramento de sessão existente antes de navegar a `/mainPage`. O conteúdo fica abaixo da barra fixa de 64 px, mantendo o espaço original de 28 px. O acesso à página continua restrito ao perfil Caixa.
 
-- **RN13 — Identidade e sessão no perfil:** a conta é resolvida pelo JWT validado, sem ID ou papel escolhido no formulário. O backend revalida `tokenVersion` após bloquear a conta para atualização. E-mail/senha alterados invalidam todos os tokens anteriores; nome apenas mantém token e expiração. A apresentação distingue Caixa de Nutricionista/Gestor, mantendo o nível somente leitura.
+- **RN13 — Identidade e sessão no perfil:** a conta é resolvida pelo JWT validado, sem ID ou papel escolhido no formulário. O backend revalida `tokenVersion` após bloquear a conta para atualização. E-mail/senha alterados invalidam todos os tokens anteriores; nome apenas mantém token e expiração. A navegação de Meu Perfil usa a variante do papel, e o nível aparece como somente leitura.
 
 - **RN14 — Contagem de fichas:** fichas entregues têm uma única fonte persistente em `semana_fichas`, com posição `0–4` derivada de segunda a sexta. A ausência de semana não impede registrar: o backend inicializa a semana sem refeições. Incrementos concorrentes e edições de cardápio preservam a contagem; `fichasVendidas` permanece como nome histórico de saída da API semanal, mas o valor enviado em cadastro/edição de cardápio deixa de alterar fichas. Essa compatibilidade evita que um formulário antigo apague entregas registradas pelo Caixa. Os rótulos dos painéis indicam fichas entregues; o gráfico semanal atualiza o índice de hoje com a consulta diária, mantendo os demais índices históricos.
+
+- **RN15 — Acesso do Gestor:** `/painel-gestor` oferece leitura de fichas e desperdício do dia e acesso ao Meu Perfil. As rotas operacionais da Nutricionista redirecionam o Gestor ao Portal do Cidadão. Os papéis autorizados em Mensagens são Nutricionista e Caixa. A API aplica a matriz de permissões DTO inclusive para sessões de Gestor já emitidas.
 
 ## Contratos HTTP de referência
 
@@ -160,6 +162,7 @@ Os caminhos e os formatos de sucesso abaixo refletem `backend/specs/DTOs/require
 |---|---|---|
 | `POST /api/auth/login` | Login | `200`, JWT Bearer com validade de 3600 segundos e perfil; `401` JSON para credenciais inválidas |
 | `GET /api/fichas/hoje` | Contador público e painéis | `200`, `FichasDiaResponseDTO`; somente data/contagem/capacidade/restantes/permissão do dia |
+| `GET /api/desperdicio/hoje` | Indicador de desperdício do Gestor | `200` com data e quilogramas ou `null`, `401` sem JWT válido e `403` para outro papel |
 | `POST /api/fichas/hoje/incrementos` | Adicionar uma ficha pelo Caixa | `200`, contador confirmado; `409` limite/dia fechado; `401` sem login; `403` para outro papel |
 | `GET /api/usuarios` | Consulta administrativa de usuários | `200`, lista de `UsuarioResponseDTO` |
 | `POST /api/usuarios` | Cadastro de usuário | `200`, `UsuarioResponseDTO`; `409` para e-mail em uso |
@@ -267,7 +270,7 @@ O serviço de cardápio converte nomes como `pratoProteico`/`sucoNatural` para `
 
 ### Cenário 9 — Perfil do usuário autenticado
 
-**Dado que** Nutricionista, Gestor ou Caixa acessa `/meuPerfil` autenticado, **quando** os dados são carregados, **então** a tela mostra a própria conta e o nível somente leitura. Caixa vê sua navbar reduzida, enquanto Nutricionista/Gestor veem o menu completo.
+**Dado que** Nutricionista, Gestor ou Caixa acessa `/meuPerfil` autenticado, **quando** os dados são carregados, **então** a tela mostra a própria conta e o nível somente leitura. Gestor e Caixa veem “Início” e “Sair”. Nutricionista vê seu menu operacional.
 
 ### Cenário 10 — Atualização e nova autenticação
 
@@ -275,7 +278,7 @@ O serviço de cardápio converte nomes como `pratoProteico`/`sucoNatural` para `
 
 ### Cenário 11 — Mesmo total nas telas
 
-**Dado que** Caixa, Nutricionista/Gestor e página pública estão abertos, **quando** o backend confirma uma nova ficha, **então** o Caixa mostra imediatamente o total confirmado e as demais telas visíveis passam ao mesmo total na consulta seguinte, agendada a cada cinco segundos ou ao recuperar foco. Capacidade, percentual e restantes derivam do mesmo DTO. O índice de hoje no gráfico semanal também usa esse total, sem substituir os outros dias.
+**Dado que** os painéis de Caixa, Nutricionista e Gestor e a página pública estão abertos, **quando** o backend confirma uma nova ficha, **então** o Caixa mostra imediatamente o total confirmado e as demais telas visíveis passam ao mesmo total na consulta seguinte, agendada a cada cinco segundos ou ao recuperar foco. Capacidade, percentual e restantes derivam do mesmo DTO. O índice de hoje no gráfico semanal também usa esse total, sem substituir os outros dias.
 
 ### Cenário 12 — Registro, limite e dias úteis
 

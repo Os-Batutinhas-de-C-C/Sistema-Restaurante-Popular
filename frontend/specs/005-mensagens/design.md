@@ -2,11 +2,11 @@
 
 ## Objetivo da experiência
 
-A nutricionista ou gestor deve conseguir consultar as mensagens enviadas pelos clientes pelo formulário "Fale Conosco" em um período e ler o conteúdo completo de cada uma, fechando o ciclo de atendimento e acompanhando o feedback recebido, em qualquer dispositivo.
+Nutricionista ou Caixa deve conseguir consultar as mensagens enviadas pelos clientes pelo formulário "Fale Conosco" em um período e ler o conteúdo completo de cada uma, fechando o ciclo de atendimento e acompanhando o feedback recebido, em qualquer dispositivo.
 
 ## Histórias atendidas
 
-- **RF010 (Gestão de mensagens do "Fale Conosco"):** a nutricionista acessa o painel "Mensagens" para ler e acompanhar os relatos enviados pelos clientes.
+- **RF010 (Gestão de mensagens do "Fale Conosco"):** Nutricionista e Caixa acessam a tela "Mensagens" para ler e acompanhar os relatos enviados pelos clientes.
 - **HU011 (parte administrativa):** as mensagens enviadas pelo formulário do cliente chegam ao painel de mensagens do administrador.
 
 ## Fluxo principal

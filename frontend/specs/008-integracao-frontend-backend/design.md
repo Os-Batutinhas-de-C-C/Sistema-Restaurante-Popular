@@ -2,7 +2,7 @@
 
 ## Decisões confirmadas
 
-O escopo cobre as alterações necessárias no frontend, backend e PostgreSQL. O navegador chama o Next.js pela mesma origem; a regra de CORS Spring permanece inalterada. Login usa e-mail/senha e JWT Bearer, mantido somente em memória por uma hora. O backend aplica a matriz de acesso de `backend/specs/DTOs/requirements.md` e inclui `GESTOR` com permissões de `NUTRICIONISTA`.
+O escopo cobre as alterações necessárias no frontend, backend e PostgreSQL. O navegador chama o Next.js pela mesma origem; a regra de CORS Spring permanece inalterada. Login usa e-mail/senha e JWT Bearer, mantido somente em memória por uma hora. O backend aplica a matriz de acesso de `backend/specs/DTOs/requirements.md` e autoriza o Gestor a consultar os indicadores diários, usar os serviços públicos e gerenciar a própria conta.
 
 O cardápio semanal usa `Semana.data` como segunda-feira e cinco posições de refeição (segunda a sexta); posições vazias são `null`. O endpoint público do cardápio retorna somente datas/refeições. Mensagens públicas não coletam nome ou contato. O change log registra todas as definições aprovadas e os motivos das mudanças.
 
@@ -17,7 +17,7 @@ O cardápio semanal usa `Semana.data` como segunda-feira e cinco posições de r
 
 ## Conversão e telas
 
-- `NavbarPainel` aceita a variante `caixa`, usada explicitamente pela página `/painel-caixa`. Ela compartilha os mesmos SVGs, CSS, avatar e handlers da navbar padrão, altera o título para “Painel do Caixa” e filtra o menu para “Sair”. A variante padrão conserva o menu da nutricionista. O conteúdo do Caixa recebe 64 px adicionais no padding superior para acomodar a barra fixa, preservando os 28 px de espaço do layout original.
+- `NavbarPainel` compartilha SVGs, CSS, avatar e navegação. As variantes Caixa e Gestor exibem seus respectivos títulos e “Início” e “Sair”. A variante Nutricionista oferece os destinos operacionais. O conteúdo do Caixa tem 64 px de espaço adicional para a barra fixa, além dos 28 px do layout original.
 - Serviços de recurso convertem os DTOs HTTP aos modelos visuais. Notícias, mensagens e estoque carregam dados reais e mostram estados de loading/empty/error.
 - Formulários só mostram sucesso depois da resposta do backend e conservam valores em caso de falha.
 - Estoque exibe o status calculado pela API, não solicita status manual. Edição e exclusão usam PUT/DELETE.
@@ -27,13 +27,13 @@ O cardápio semanal usa `Semana.data` como segunda-feira e cinco posições de r
 
 ## Meu Perfil
 
-`perfilService.js` centraliza `GET`/`PUT /api/usuarios/me` e `PUT /api/usuarios/me/senha`, valida os DTOs recebidos e converte o papel para a sessão. `useMeuPerfil` gerencia carga, repetição, validação dos dois formulários, salvamento e erros inline, substituindo os valores de mock por dados da própria conta. O nível de acesso não é editável; o perfil carregado seleciona navbar Caixa ou Nutricionista/Gestor.
+`perfilService.js` centraliza `GET`/`PUT /api/usuarios/me` e `PUT /api/usuarios/me/senha`, valida os DTOs recebidos e converte o papel para a sessão. `useMeuPerfil` gerencia carga, repetição, validação dos dois formulários, salvamento e erros inline, substituindo os valores de mock por dados da própria conta. O nível de acesso é somente leitura. O perfil carregado seleciona a navegação de Nutricionista, Gestor ou Caixa.
 
 Alteração somente de nome usa `updateAuthSessionUser`, conservando `accessToken` e `expiresAt`. Mudança de e-mail/senha limpa a sessão e leva a `/login?motivo=perfil-alterado`; `LoginNotice` mostra uma mensagem conhecida, sem renderizar livremente o parâmetro recebido. O backend exige senha atual para operações sensíveis, mantém e-mail único e incrementa `versao_token`. A validação do JWT contra essa versão revoga todos os tokens anteriores, mantendo a assinatura HS256, validade de uma hora e regras de papel existentes.
 
 ## Fichas entregues
 
-Um serviço HTTP e um hook compartilhados conectam as três telas a `GET /api/fichas/hoje`. A consulta pública não envia o JWT da sessão; o registro por `POST /api/fichas/hoje/incrementos` mantém Bearer e exige Caixa. As telas consultam a cada cinco segundos enquanto visíveis e ao recuperar foco; o POST aplica a resposta confirmada e invalida consultas anteriores, evitando restaurar um total antigo. Falhas preservam o estado de erro e impedem apresentar valores de demonstração.
+Um serviço HTTP e um hook compartilhados conectam o portal e os painéis a `GET /api/fichas/hoje`. A consulta pública não envia o JWT da sessão; o registro por `POST /api/fichas/hoje/incrementos` mantém Bearer e exige Caixa. As telas consultam a cada cinco segundos enquanto visíveis e ao recuperar foco; o POST aplica a resposta confirmada e invalida consultas anteriores, evitando restaurar um total antigo. Falhas preservam o estado de erro e impedem apresentar valores de demonstração.
 
 `fichasService.js` valida a data, os inteiros e a coerência entre entregues, capacidade, restantes e disponibilidade; `useFichasDia.js` coordena consultas, cancelamento, timeout, atualização manual e bloqueio de gravação em andamento. `apiClient.js` mantém autenticação por padrão e aceita `auth: false` apenas quando o consumidor escolhe uma leitura pública. Esse GET não depende da sessão em memória; POST continua usando Bearer. Uma falha de gravação provoca consulta para conferir o estado persistido, sem repetir a gravação.
 

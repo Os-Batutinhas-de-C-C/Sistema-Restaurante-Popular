@@ -19,6 +19,11 @@ import org.springframework.security.web.SecurityFilterChain;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static org.springframework.security.authorization.AuthenticatedAuthorizationManager.authenticated;
+import static org.springframework.security.authorization.AuthorityAuthorizationManager.hasRole;
+import static org.springframework.security.authorization.AuthorizationManagers.allOf;
+import static org.springframework.security.authorization.AuthorizationManagers.not;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -68,15 +73,16 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/fichas/hoje").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/fichas/hoje/incrementos").hasRole("CAIXA")
                         .requestMatchers(HttpMethod.POST, "/api/mensagens/publicas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/desperdicio/hoje").hasRole("GESTOR")
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/me", "/api/usuarios/me/senha").authenticated()
                         .requestMatchers("/api/semanas/**", "/api/refeicoes/**", "/api/estoque/**")
-                        .hasAnyRole("NUTRICIONISTA", "GESTOR")
+                        .hasRole("NUTRICIONISTA")
                         .requestMatchers(HttpMethod.DELETE, "/api/noticias/**")
-                        .hasAnyRole("NUTRICIONISTA", "GESTOR")
+                        .hasRole("NUTRICIONISTA")
                         .requestMatchers("/api/mensagens/**")
-                        .hasAnyRole("NUTRICIONISTA", "GESTOR", "CAIXA")
-                        .requestMatchers("/api/noticias/**").authenticated()
-                        .requestMatchers("/api/usuarios/**").authenticated()
-                        .requestMatchers("/api/**").authenticated()
+                        .hasAnyRole("NUTRICIONISTA", "CAIXA")
+                        .requestMatchers("/api/**").access(allOf(authenticated(), not(hasRole("GESTOR"))))
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(resourceServer -> resourceServer
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter))
