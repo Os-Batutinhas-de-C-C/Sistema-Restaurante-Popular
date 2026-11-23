@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
+import Link from "next/link";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
+import ProgramacaoOficinas, { useProgramacaoOficinas } from "../oficinas/ProgramacaoOficinas";
 import ResumoMetricas from "../painelNutricionista/ResumoMetricas/ResumoMetricas";
 import styles from "../painelNutricionista/DashboardNutricionista/dashboardNutricionista.module.css";
 import { consultarDesperdicioHoje } from "../../services/desperdicioService";
 import { formatarDataFichas } from "../../services/fichasService";
 import useFichasDia from "../../services/useFichasDia";
+import { ROTA_OFICINAS } from "../../services/oficinasService";
 
 export default function PainelGestor() {
     const fichas = useFichasDia();
+    const programacao = useProgramacaoOficinas();
     const dataFichas = fichas.dataReferencia;
     const recarregarFichas = fichas.recarregar;
     const [ciclo, setCiclo] = useState(0);
@@ -96,6 +100,11 @@ export default function PainelGestor() {
                         </Alert>
                     )}
                     <ResumoMetricas dadosDashboard={dadosDashboard} somenteLeitura />
+                    <ProgramacaoOficinas consulta={programacao} acao={
+                        <Button component={Link} href={ROTA_OFICINAS} variant="contained">
+                            Gerenciar Oficinas ou Cursos
+                        </Button>
+                    } />
                 </Stack>
             </Box>
         </Box>

@@ -73,6 +73,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/fichas/hoje").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/fichas/hoje/incrementos").hasRole("CAIXA")
                         .requestMatchers(HttpMethod.POST, "/api/mensagens/publicas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/oficinas-ou-cursos/publicas").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/oficinas-ou-cursos/publicas/{id}/inscricoes",
+                                "/api/oficinas-ou-cursos/publicas/minhas-inscricoes",
+                                "/api/oficinas-ou-cursos/publicas/{id}/cancelamentos").permitAll()
+                        .requestMatchers("/api/oficinas-ou-cursos", "/api/oficinas-ou-cursos/**").hasRole("GESTOR")
                         .requestMatchers(HttpMethod.GET, "/api/desperdicio/hoje").hasRole("GESTOR")
                         .requestMatchers(HttpMethod.GET, "/api/usuarios/me").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/me", "/api/usuarios/me/senha").authenticated()

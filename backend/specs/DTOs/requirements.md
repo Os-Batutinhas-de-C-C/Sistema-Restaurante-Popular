@@ -89,6 +89,36 @@ As linhas legadas de desperdício e fichas também não tinham dia/posição per
 
 Uma requisição protegida sem autenticação deve receber `401`; usuário autenticado sem o papel exigido deve receber `403`. As exceções públicas são as rotas marcadas como públicas na tabela de endpoints.
 
+## Oficinas ou Cursos
+
+As rotas abaixo usam o prefixo `/api/oficinas-ou-cursos`. As datas usam `yyyy-MM-dd` e os horários locais usam ISO 8601 em `America/Fortaleza`. Os instantes `agora`, `inicioEm` e `fimEm` usam UTC, também em ISO 8601.
+
+| Método e rota | Entrada | Sucesso | Acesso |
+|---|---|---|---|
+| `GET /publicas` | Sem corpo | `200 Agenda` | Público |
+| `POST /publicas/{id}/inscricoes` | `cpf`, `dataNascimento`, `email` | `201 Evento` | Público |
+| `POST /publicas/minhas-inscricoes` | `cpf`, `dataNascimento` | `200 Agenda` | Público |
+| `POST /publicas/{id}/cancelamentos` | `cpf`, `dataNascimento` | `204` | Público |
+| `GET /` | Filtros opcionais `data`, `horaInicio`, `horaFim` por igualdade | `200 Agenda` | Gestor |
+| `POST /` | `EventoRequest` | `201 EventoGestao` | Gestor |
+| `GET /{id}` | ID do evento | `200 EventoGestao` | Gestor |
+| `PUT /{id}` | `EventoRequest` com `versao` | `200 EventoGestao` | Gestor |
+| `DELETE /{id}` | ID do evento | `204` | Gestor |
+| `GET /{id}/inscricoes` | ID do evento | `200 Inscritos` | Gestor |
+| `DELETE /{id}/inscricoes/{inscricaoId}` | IDs do evento e da inscrição | `204` | Gestor |
+
+| DTO | Campos |
+|---|---|
+| `EventoRequest` | `title`, `tipo` (`OFICINA` ou `CURSO`), `vagas` (inteiro positivo em string decimal), `descricao`, `data`, `horaInicio`, `horaFim`, `local`, `instrutor`, `custo` (`PAGO` ou `GRATUITO`). Edição exige também `versao` e permite `confirmacao` no reagendamento. |
+| `Evento` | Os campos do evento, `id`, `vagasRestantes` (string decimal), `estado` (`PROGRAMADO`, `EM_ANDAMENTO` ou `ENCERRADO`), `inicioEm` e `fimEm`. |
+| `Agenda` | `agora` e `eventos`, ordenados por data, início e ID. |
+| `EventoGestao` | `evento`, `versao` e `agora`. |
+| `Inscritos` | `agora`, `inicioEm` e `inscricoes`, com `id`, `cpf` sem máscara, `dataNascimento` e `email` de cada inscrito. |
+
+O CPF aceita 11 dígitos ou o formato `000.000.000-00`. As respostas públicas devolvem somente os dados dos eventos. A consulta pública exige CPF e nascimento correspondentes, com resposta `no-store`. A consulta administrativa de inscritos também usa `no-store`.
+
+Entradas inválidas retornam `400`. Eventos e inscrições ausentes retornam `404`. Duplicidade, lotação, sobreposição, prazo encerrado, redução de capacidade com inscritos e versão desatualizada retornam `409` com `code` e `message`. Um reagendamento que exige confirmação retorna `409 REAGENDAMENTO_REQUER_CONFIRMACAO` com `quantidade` e `confirmacao`. Para confirmar, reenvie a mesma edição com o valor de `confirmacao`. Se o conjunto de inscrições afetadas mudar, a API devolve a contagem e a confirmação atualizadas.
+
 ## Campos dos DTOs
 
 Os campos abaixo definem o contrato base a partir dos modelos e operações atuais. A coluna de obrigatoriedade deve ser completada conforme os requisitos de domínio antes de implementar validações semânticas.

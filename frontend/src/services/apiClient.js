@@ -11,11 +11,12 @@ const STATUS_MESSAGES = {
 };
 
 export class ApiError extends Error {
-    constructor(message, { status = 0, code = "API_ERROR" } = {}) {
+    constructor(message, { status = 0, code = "API_ERROR", details } = {}) {
         super(message);
         this.name = "ApiError";
         this.status = status;
         this.code = code;
+        this.details = details;
     }
 }
 
@@ -54,7 +55,7 @@ function responseError(response, body) {
         typeof body.code === "string" &&
         typeof body.message === "string"
     ) {
-        return new ApiError(body.message, { status: response.status, code: body.code });
+        return new ApiError(body.message, { status: response.status, code: body.code, details: body });
     }
 
     return new ApiError(

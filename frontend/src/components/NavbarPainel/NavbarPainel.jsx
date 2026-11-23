@@ -16,6 +16,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { encerrarSessao, obterSessao } from "../../services/authService";
+import { ROTA_OFICINAS } from "../../services/oficinasService";
 import styles from "./navbarPainel.module.css";
 
 // Itens do menu principal. Os ícones são assets do Figma para manter a
@@ -36,6 +37,12 @@ const variants = {
     gestor: { titulo: "Painel Gestor", inicio: "/painel-gestor" },
 };
 
+const menuGestor = [
+    menuItems[0],
+    { label: "Oficinas ou Cursos", icon: "/icons/calendar.svg", href: ROTA_OFICINAS },
+    menuItems.at(-1),
+];
+
 /**
  * Navbar compartilhada dos painéis administrativos.
  *
@@ -49,9 +56,8 @@ export default function NavbarPainel({ onProfileClick, variant }) {
     const [sessionProfile] = useState(() => obterSessao()?.usuario.perfil);
     const activeVariant = variant ?? (sessionProfile === "Gestor" ? "gestor" : "nutricionista");
     const isGestor = activeVariant === "gestor";
-    const visibleMenuItems = isGestor || activeVariant === "caixa"
-        ? menuItems.filter(({ label }) => label === "Início" || label === "Sair")
-        : menuItems;
+    const visibleMenuItems = isGestor ? menuGestor
+        : activeVariant === "caixa" ? [menuItems[0], menuItems.at(-1)] : menuItems;
     const { titulo, inicio } = variants[activeVariant] ?? variants.nutricionista;
     // Referência do botão que abriu o menu, usada pelo MUI para posicioná-lo.
     const [menuAnchor, setMenuAnchor] = useState(null);

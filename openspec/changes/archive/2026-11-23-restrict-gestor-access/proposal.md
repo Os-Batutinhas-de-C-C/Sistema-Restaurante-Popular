@@ -17,7 +17,7 @@ O Gestor usa a mesma composição e várias das mesmas permissões operacionais 
 
 ### Modified Capabilities
 
-- `painel-gestor` — Indicadores diários, navegação do Gestor e permissões para acessar telas e operações da API. A exigência de alterar as credenciais da própria conta faz parte da [especificação entregue em `add-painel-gestor`](../add-painel-gestor/specs/painel-gestor/spec.md).
+- `painel-gestor` — Indicadores diários, navegação do Gestor e permissões para acessar telas e operações da API. A exigência de alterar as credenciais da própria conta faz parte da [especificação entregue em `add-painel-gestor`](../2026-11-23-add-painel-gestor/specs/painel-gestor/spec.md).
 
 ## Impact
 

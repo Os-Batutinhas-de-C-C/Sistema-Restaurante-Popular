@@ -60,6 +60,12 @@ Para o código de Meu Perfil, aplique também `backend/database/migrations/V2026
 
 Após atualizar esse código, reinicie o backend na sessão configurada e faça novo login. JWTs antigos sem `tokenVersion` são rejeitados, mesmo quando a chave de assinatura é mantida. Alterar e-mail/senha pelo próprio perfil incrementa a versão das credenciais e invalida todos os tokens anteriores; nome apenas mantém a sessão. A nova senha exige senha atual, confirmação, pelo menos seis caracteres Unicode e no máximo 72 bytes UTF-8. Tokens, senhas e hashes não devem ser registrados.
 
+Antes de iniciar a versão com Oficinas ou Cursos usando `ddl-auto=validate`, aplique a migração versionada [V20261123__oficinas_ou_cursos.sql](./backend/migrations/V20261123__oficinas_ou_cursos.sql) ao banco PostgreSQL configurado. Ela cria as tabelas de eventos e inscrições, a restrição de CPF único por evento e a chave estrangeira com exclusão em cascata. Execute da raiz do repositório, usando a conexão do ambiente autorizado.
+
+```text
+psql -d restaurante_popular -v ON_ERROR_STOP=1 -f backend/migrations/V20261123__oficinas_ou_cursos.sql
+```
+
 ## Compilar e executar
 
 No Windows, a partir da raiz do repositório, o helper seleciona o JDK 25 em `%USERPROFILE%\jdks\temurin-25.0.5.8` e chama o Maven instalado:
