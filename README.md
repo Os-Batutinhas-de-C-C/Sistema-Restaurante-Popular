@@ -1,12 +1,12 @@
 ## 🍽️ Sistema Restaurante Popular
 
-Sistema web de cardápio digital, gestão de fichas e estoque desenvolvido para otimizar o fluxo e paginação do cardápio do restaurante popular de Quixadá.
+Sistema web para consulta do cardápio, gestão de fichas, refeições e estoque do Restaurante Popular de Quixadá.
 
 ---
 
 ## 🚀 Sobre o Projeto
 
-O **Sistema Restaurante Popular** permite que os clientes do restaurante acessem o cardápio de forma digital e visualize os itens disponíveis nas refeições pela interface web. O sistema conta também com um painel para a gestão de produtos, cardápio e estoque em tempo real.
+O **Sistema Restaurante Popular** oferece o cardápio público do Restaurante Popular de Quixadá e ferramentas operacionais para as equipes de nutrição e caixa. O projeto contém autenticação por perfil, gestão de cardápios e refeições, estoque, fichas, notícias, mensagens e atualização de perfil.
 
 ### 🎨 Design e Protótipo
 O design da interface do sistema foi validado junto ao cliente. O protótipo interativo e as telas finais podem ser acessados através do Figma:
@@ -15,22 +15,29 @@ O design da interface do sistema foi validado junto ao cliente. O protótipo int
 ### 📎Anexos do Projeto 
 - **Link do drive:** https://drive.google.com/drive/folders/1iFvenMoOS3NGie6ryhtk90SZci4ebJHp?usp=sharing
 
+### Documentação técnica
+
+- [Frontend: configuração, rotas e comandos](./frontend.md)
+- [Backend: API, banco de dados e execução](./backend.md)
+
 ---
 
 ## 🏛️ Arquitetura do Sistema
 
-O sistema foi arquitetado com uma separação clara entre as camadas de apresentação (Frontend), regras de negócio (Backend) e persistência de dados (Banco de Dados), garantindo escalabilidade e facilidade de manutenção.
+O frontend apresenta as telas, a API Spring Boot aplica as regras de negócio e o PostgreSQL persiste os dados.
 
 ### Frontend (Interface do Usuário)
-- **Framework/Biblioteca:** React com Next.js. A utilização do Next.js permite uma navegação fluida e renderização otimizada, essencial para o acesso rápido dos clientes ao cardápio e para o uso dos painéis administrativos.
-- **Ambiente de Execução:** Node.js. Fornece a base de execução para o ecossistema e gerenciamento de pacotes do frontend.
-- **Biblioteca de UI:** Material UI (MUI). Utilizado para garantir uma interface padronizada, responsiva e acessível, fornecendo componentes prontos para botões, formulários, tabelas e modais consistentes em todo o sistema.
+- **Framework:** Next.js 16.3.3 com App Router, React 19.2.8 e JavaScript.
+- **Interface:** Material UI 9, Emotion, Material Icons, Lucide, DayPicker e MUI X Charts.
+- **Execução local validada:** Node.js 24.15.0 e npm 11.12.1.
+- O frontend chama a API pela mesma origem (`/api`) e o Next.js encaminha as requisições ao backend.
 
 ### Backend (Regras de Negócio e API)
-- **Linguagem/Framework:** Java (Spring Boot). O Spring Boot atua como o controlador do sistema, sendo responsável por processar as requisições do frontend, validar as regras de negócio (como limites de fichas e permissões de acesso) e orquestrar a comunicação segura com o banco de dados.
+- **Linguagem/Framework:** Java 25 e Spring Boot 4.1.1, com Spring Web, Spring Security e Spring Data JPA.
+- A API usa JWT sem sessão de servidor e aplica permissões para os perfis `NUTRICIONISTA`, `GESTOR` e `CAIXA`.
 
 ### Banco de Dados (Persistência)
-- **SGBD:** PostgreSQL (SQL). Banco de dados relacional robusto encarregado de armazenar com segurança todas as informações transacionais do sistema, incluindo o controle do estoque em tempo real, as fichas vendidas pelo caixa, os usuários autenticados, mensagens da ouvidoria e o histórico de cardápios.
+- **SGBD:** PostgreSQL. H2 é usado nos testes do backend.
 
 ---
 
@@ -41,7 +48,7 @@ Os comandos abaixo usam **Windows PowerShell**. Mantenha dois terminais abertos:
 ### Pré-requisitos
 
 - JDK **25** instalado.
-- Maven instalado e disponível no `PATH` para usar o iniciador Windows; o Maven Wrapper do projeto é uma alternativa.
+- Maven instalado e disponível no `PATH` para usar o iniciador Windows `run-with-java25.cmd`; o Maven Wrapper é uma alternativa.
 - Node.js e npm instalados; esta execução foi validada com Node.js 24.15.0 e npm 11.12.1.
 - PostgreSQL em execução, com acesso ao banco `restaurante_popular` e ao schema JPA atual.
 
@@ -52,11 +59,11 @@ git clone https://github.com/Os-Batutinhas-de-C-C/Sistema-Restaurante-Popular.gi
 Set-Location .\Sistema-Restaurante-Popular
 ```
 
-O banco local deste ambiente já foi inicializado e recebeu a migração de integração. As tabelas JPA atuais foram criadas sem importar as tabelas legadas; desde então, contas de desenvolvimento autorizadas foram registradas no banco local. Use `validate` nas próximas inicializações. Para preparar outro banco, consulte [backend.md](./backend.md); os scripts antigos de `database/` não correspondem ao modelo JPA atual.
+O banco local deste ambiente já foi inicializado e recebeu as migrações de integração e de perfil. As tabelas JPA atuais foram criadas sem importar as tabelas legadas; desde então, contas de desenvolvimento autorizadas foram registradas no banco local. Use `validate` nas próximas inicializações. Os scripts em `backend/database/migrations/` estão atualmente ignorados pelo Git, portanto não são incluídos em um clone novo. Para preparar outro banco, consulte [backend.md](./backend.md) e obtenha os scripts de migração mantidos pela equipe; os scripts antigos em `database/` não correspondem ao modelo JPA atual.
 
 Os arquivos locais `backend/src/main/resources/application.properties` e `frontend/.env.local` são ignorados pelo Git e não aparecem em um clone novo. Neste computador eles já existem. Em outra instalação, configure as variáveis de conexão do PostgreSQL e `JWT_SECRET_BASE64` no terminal do backend, configure `BACKEND_API_BASE_URL` no terminal do frontend e prepare o schema conforme [backend.md](./backend.md). `ddl-auto=validate` exige que as tabelas JPA já existam; o comando de inicialização não cria nem migra o schema.
 
-O código de Meu Perfil também exige a migração [V20261103__perfil_usuario.sql](./backend/database/migrations/V20261103__perfil_usuario.sql), aplicada antes de iniciar com `validate`: ela adiciona a versão de tokens e o e-mail de login único. Neste banco local, essa migração já foi aplicada e os dados existentes foram preservados. Depois de atualizar o código, reinicie o backend e faça novo login; tokens emitidos sem a nova versão deixam de ser aceitos. Consulte [backend.md](./backend.md) para preparar outro banco.
+O código de Meu Perfil também exige a migração `V20261103__perfil_usuario.sql`, aplicada antes de iniciar com `validate`: ela adiciona a versão de tokens e o e-mail de login único. Neste banco local, essa migração já foi aplicada e os dados existentes foram preservados. Depois de atualizar o código, reinicie o backend e faça novo login; tokens emitidos sem a nova versão deixam de ser aceitos. Consulte [backend.md](./backend.md) para preparar outro banco.
 
 Os comandos de inicialização abaixo são servidores em primeiro plano e **não devolvem o prompt do PowerShell enquanto estiverem funcionando**. Isso é esperado: deixe o primeiro terminal aberto, espere a mensagem de inicialização e abra um segundo terminal para iniciar o outro serviço. O backend confirma a inicialização com `Started RestaurantePopApplication`; o frontend mostra `Ready` e `http://localhost:3000`. Fechar um terminal ou pressionar `Ctrl+C` encerra aquele serviço.
 
@@ -96,7 +103,7 @@ if (-not $env:JWT_SECRET_BASE64) {
 
 Essa chave fica no ambiente do terminal. Uma chave nova invalida os tokens emitidos pela anterior. Mantenha credenciais e chaves fora dos arquivos versionados.
 
-Na instalação Windows utilizada neste ambiente, o iniciador seleciona o JDK 25 em `%USERPROFILE%\jdks\temurin-25.0.5.8` e usa o Maven instalado:
+Na instalação Windows utilizada neste ambiente, `run-with-java25.cmd` seleciona o JDK 25 em `%USERPROFILE%\jdks\temurin-25.0.5.8` e chama o Maven instalado:
 
 ```powershell
 .\run-with-java25.cmd
@@ -141,7 +148,9 @@ npm.cmd run dev
 
 Abra **http://localhost:3000/mainPage**; o login fica em **http://localhost:3000/login**. O Next.js encaminha as chamadas `/api` ao backend pela mesma origem do frontend. `BACKEND_API_BASE_URL` pode também ficar no arquivo local ignorado `frontend/.env.local`.
 
-Para encerrar o sistema, pressione **Ctrl+C em cada terminal**. No Windows, usar `npm.cmd` evita a dependência da política de execução do script `npm.ps1`.
+O script `dev` inicia o Next.js com Turbopack por meio de um launcher Node compatível com Windows e Unix. Ele também remove `NEXT_PRIVATE_DEV_DIR` do processo do servidor; `babel.config.js` usa o preset `next/babel` para manter a configuração compatível com o Next.js atual. Consulte [frontend.md](./frontend.md) para rotas, integração e testes.
+
+Para encerrar o sistema, pressione **Ctrl+C em cada terminal**. No Windows, use `npm.cmd` para evitar a política de execução do script `npm.ps1`.
 
 ## 🧪 Como executar os testes
 
@@ -155,6 +164,7 @@ validam os principais fluxos da aplicação.
 - Frontend disponível em `http://localhost:3000`.
 - Dependências instaladas com `npm.cmd ci` (Windows) ou `npm ci` (Linux/macOS).
 - Google Chrome e ChromeDriver disponíveis no `PATH` para os testes Selenium.
+- O teste sistêmico usa a conta `nutri@local.test`; prepare-a pelo perfil local do backend e defina `TEST_PASSWORD` com a senha correspondente. O projeto não fornece contas padrão.
 
 Execute os comandos a partir da pasta `frontend`:
 
