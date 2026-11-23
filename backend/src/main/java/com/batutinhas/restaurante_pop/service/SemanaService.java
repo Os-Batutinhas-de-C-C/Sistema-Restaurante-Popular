@@ -123,7 +123,16 @@ public class SemanaService {
         refeicao.setSobremesa(RequestValidation.text(item.sobremesa(), "sobremesa", 255));
         refeicao.setOpcaoProteica(RequestValidation.text(item.opcaoProteica(), "opcaoProteica", 255));
         refeicao.setCalorias(item.calorias() == null ? 0 : item.calorias());
-        return refeicao;
+        return refeicaoRepository.findByComposicao(
+                refeicao.getProteina(),
+                refeicao.getGuarnicao(),
+                refeicao.getAcompanhamento1(),
+                refeicao.getAcompanhamento2(),
+                refeicao.getSuco(),
+                refeicao.getSobremesa(),
+                refeicao.getOpcaoProteica(),
+                refeicao.getSaladaDoDia()
+        ).orElse(refeicao);
     }
 
     private SemanaResponseDTO toResponseDTO(Semana semana) {

@@ -19,6 +19,8 @@ frontend/docs/
 
 # next.js
 /.next/
+**/.next/
+
 /out/
 
 # production

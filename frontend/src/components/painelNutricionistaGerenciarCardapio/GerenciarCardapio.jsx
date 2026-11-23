@@ -157,7 +157,7 @@ export default function GerenciarCardapio({ dataSolicitada }) {
             <ModalHistorico open={modalAberto} onClose={() => setModalAberto(false)} onSelect={copiarDoHistorico} />
             <Snackbar open={feedback} autoHideDuration={4000} onClose={() => setFeedback(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
                 <Alert onClose={() => setFeedback(false)} severity="success" variant="filled" sx={{ width: "100%" }}>
-                    Cardápio de {diaSelecionado.nome} salvo com sucesso.
+                    Cardápio já salvo com sucesso.
                 </Alert>
             </Snackbar>
         </Box>
