@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-/** RF005: posições semanais, referências e proteção das fichas; RN07/RN11 do contrato DTO. */
+/** RF005: posições semanais, referências e atualização das fichas; RN07/RN11 do contrato DTO. */
 class SemanaServiceTest {
     private static final LocalDate SEGUNDA = LocalDate.of(2026, 11, 2);
     private final SemanaRepository repository = mock(SemanaRepository.class);
@@ -133,22 +133,61 @@ class SemanaServiceTest {
         assertTrue(service.create(criacao(null, recebidas)).fichasVendidas().isEmpty());
     }
 
-    @ParameterizedTest
-    @MethodSource("fichasRecebidas")
-    @DisplayName("Atualização consulta para bloqueio e preserva as fichas persistidas")
-    void atualizacaoPreservaFichas(List<Integer> recebidas) {
+    @Test
+    @DisplayName("Atualização substitui as fichas enviadas e preserva as lacunas")
+    void atualizacaoAlteraFichasEnviadas() {
         var semana = SemanaFactory.criarSemanaValida();
         semana.setFichasVendidas(new ArrayList<>(List.of(12, 23, 34, 45, 56)));
         when(repository.findByDataForUpdate(SEGUNDA)).thenReturn(Optional.of(semana));
         aceitaSalvar();
 
-        var resposta = service.update(SEGUNDA, new SemanaUpdateRequestDTO(null, recebidas, null)).orElseThrow();
+        var fichas = Arrays.asList(12, 20, null, 45, 56);
+        var resposta = service.update(SEGUNDA, new SemanaUpdateRequestDTO(null, fichas, null)).orElseThrow();
 
-        assertEquals(List.of(12, 23, 34, 45, 56), resposta.fichasVendidas());
-        assertEquals(List.of(12, 23, 34, 45, 56), semana.getFichasVendidas());
+        assertEquals(fichas, resposta.fichasVendidas());
+        assertEquals(fichas, semana.getFichasVendidas());
         assertTrue(resposta.desperdicio().isEmpty());
         verify(repository).findByDataForUpdate(SEGUNDA);
         verify(repository, never()).findByData(any());
+    }
+
+    @Test
+    @DisplayName("Atualização sem fichas preserva as contagens existentes")
+    void atualizacaoSemFichasPreservaContagens() {
+        var semana = SemanaFactory.criarSemanaValida();
+        semana.setFichasVendidas(new ArrayList<>(List.of(12, 23, 34, 45, 56)));
+        when(repository.findByDataForUpdate(SEGUNDA)).thenReturn(Optional.of(semana));
+        aceitaSalvar();
+
+        var resposta = service.update(SEGUNDA, new SemanaUpdateRequestDTO(null, null, null)).orElseThrow();
+
+        assertEquals(List.of(12, 23, 34, 45, 56), resposta.fichasVendidas());
+    }
+
+    @Test
+    @DisplayName("Atualização rejeita uma lista de fichas sem cinco posições")
+    void rejeitaFichasComTamanhoInvalidoNaAtualizacao() {
+        when(repository.findByDataForUpdate(SEGUNDA)).thenReturn(Optional.of(SemanaFactory.criarSemanaValida()));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.update(SEGUNDA, new SemanaUpdateRequestDTO(null, List.of(20), null)));
+
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    @DisplayName("Atualização rejeita contagens negativas de fichas")
+    void rejeitaFichasNegativasNaAtualizacao() {
+        when(repository.findByDataForUpdate(SEGUNDA)).thenReturn(Optional.of(SemanaFactory.criarSemanaValida()));
+
+        assertThrows(IllegalArgumentException.class,
+                () -> service.update(SEGUNDA, new SemanaUpdateRequestDTO(
+                        null,
+                        Arrays.asList(20, -1, null, null, null),
+                        null
+                )));
+
+        verify(repository, never()).save(any());
     }
 
     @Test
@@ -382,4 +421,5 @@ class SemanaServiceTest {
     private static Stream<List<Integer>> fichasRecebidas() {
         return Stream.of(null, List.of(), List.of(1), List.of(300, 300, 300, 300, 300));
     }
+
 }

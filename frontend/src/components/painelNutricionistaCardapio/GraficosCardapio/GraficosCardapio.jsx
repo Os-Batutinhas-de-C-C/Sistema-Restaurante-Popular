@@ -28,6 +28,20 @@ function GraficoBarras({ titulo, valores, cor, maximo = 100, aviso, erro, onRetr
             />
         </Card>
     );
+
+    if (!emCartao) {
+        return (
+            <Box component="section" className={styles.chart}>
+                {conteudo}
+            </Box>
+        );
+    }
+
+    return (
+        <Card component="section" variant="outlined" className={styles.card}>
+            {conteudo}
+        </Card>
+    );
 }
 
 export default function GraficosCardapio({ graficos, erroFichas, carregandoFichas, onRefreshFichas }) {

@@ -130,9 +130,10 @@ class DtoApiIntegrationTests {
         assertTrue(weekList.body().contains("2026-10-26"));
 
         HttpResponse<String> update = request("PUT", "/api/semanas/2026-10-12", nutricionista,
-                "{\"desperdicio\":[2.0],\"fichasVendidas\":[20],\"cardapio\":[{\"idRefeicao\":" + mealId + "},null,null,null,null]}");
+                "{\"desperdicio\":[2.0],\"fichasVendidas\":[null,20,null,null,null],\"cardapio\":[{\"idRefeicao\":" + mealId + "},null,null,null,null]}");
         assertEquals(200, update.statusCode());
         assertTrue(update.body().contains("\"desperdicio\":[2.0]"));
+        assertTrue(update.body().contains("\"fichasVendidas\":[null,20,null,null,null]"));
 
         HttpResponse<String> absentWeek = request("PUT", "/api/semanas/2099-01-05", nutricionista, "{}");
         assertEquals(404, absentWeek.statusCode());

@@ -131,16 +131,27 @@ export async function salvarRefeicaoDiaApi(dataDia, valores, options = {}) {
     return validarSemana(result.data);
 }
 
-export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}) {
+export async function salvarMetricasDiaApi(dataDia, metricas, options = {}) {
     const monday = obterSegundaIso(dataDeIsoLocal(dataDia));
     const dateIndex = Math.round((dataDeIsoLocal(dataDia) - dataDeIsoLocal(monday)) / 86400000);
-    if (dateIndex < 0 || dateIndex > 4 || !Number.isFinite(Number(desperdicio)) || Number(desperdicio) < 0) {
-        throw new ApiError("O valor de desperdício ou a data selecionada é inválido.", { code: "INVALID_WASTE" });
+    const desperdicio = metricas?.desperdicioKg;
+    const fichasVendidas = metricas?.fichasVendidas;
+    if (
+        dateIndex < 0
+        || dateIndex > 4
+        || (desperdicio !== undefined && (!Number.isFinite(Number(desperdicio)) || Number(desperdicio) < 0))
+        || (fichasVendidas !== undefined
+            && (!Number.isSafeInteger(fichasVendidas) || fichasVendidas < 0 || fichasVendidas > 300))
+        || (desperdicio === undefined && fichasVendidas === undefined)
+    ) {
+        throw new ApiError("As métricas ou a data selecionada são inválidas.", {
+            code: fichasVendidas === undefined ? "INVALID_WASTE" : "INVALID_METRICS",
+        });
     }
 
     const semana = await obterSemanaApi(monday, options);
     const desperdicioPorDia = Array.from({ length: 5 }, (_, index) => semana?.desperdicio?.[index] ?? null);
-    desperdicioPorDia[dateIndex] = Number(desperdicio);
+    if (desperdicio !== undefined) desperdicioPorDia[dateIndex] = Number(desperdicio);
     const cardapio = semana
         ? semana.cardapio.map((refeicao) => refeicao ? { idRefeicao: refeicao.idRefeicao } : null)
         : Array(5).fill(null);
@@ -148,10 +159,19 @@ export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}
         desperdicio: desperdicioPorDia,
         cardapio,
     };
+    if (fichasVendidas !== undefined) {
+        const fichasPorDia = Array.from({ length: 5 }, (_, index) => semana?.fichasVendidas?.[index] ?? null);
+        fichasPorDia[dateIndex] = fichasVendidas;
+        body.fichasVendidas = fichasPorDia;
+    }
     const result = semana
         ? await apiRequest(`/semanas/${monday}`, { ...options, method: "PUT", body })
         : await apiRequest("/semanas", { ...options, method: "POST", body: { data: monday, ...body } });
     return validarSemana(result.data);
+}
+
+export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}) {
+    return salvarMetricasDiaApi(dataDia, { desperdicioKg: desperdicio }, options);
 }
 
 export function transformarHistorico(semana) {
