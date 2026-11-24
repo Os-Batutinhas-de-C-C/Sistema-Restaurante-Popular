@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import Link from "next/link";
 import { Alert, Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Stack, Typography } from "@mui/material";
 import { cancelarInscricaoComoGestor, consultarInscritos, formatarCpf, formatarDataOficina } from "../../services/oficinasService";
 import { useAgendaOficinas } from "./useAgendaOficinas";
@@ -62,7 +63,10 @@ export default function DialogoInscritos({ evento, onClose, onAlteracao }) {
                     ))}
                 </Stack>
             </DialogContent>
-            <DialogActions><Button onClick={onClose} disabled={cancelando !== null}>Fechar</Button></DialogActions>
+            <DialogActions>
+                <Button component={Link} href={`/painel-gestor/oficinas-ou-cursos/${id}/frequencia`}>Lista de frequência</Button>
+                <Button onClick={onClose} disabled={cancelando !== null}>Fechar</Button>
+            </DialogActions>
         </Dialog>
     );
 }

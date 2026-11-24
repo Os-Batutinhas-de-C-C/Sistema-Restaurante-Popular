@@ -1,0 +1,22 @@
+.page {
+    min-height: 100vh;
+    background-color: #f7f9fb;
+}
+
+.main {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 96px 32px 40px;
+}
+
+.title {
+    color: #191c1e;
+    font-weight: 700 !important;
+}
+
+@media (max-width: 599px) {
+    .main {
+        padding: 88px 16px 32px;
+    }
+}

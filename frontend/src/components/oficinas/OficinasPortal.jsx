@@ -2,14 +2,15 @@
 
 import { useRef, useState } from "react";
 import {
-    Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Paper, Snackbar, Stack, TextField, Typography,
+    Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Paper, Snackbar, Stack, TextField, Typography,
 } from "@mui/material";
 import {
     cancelarMinhaInscricao, consultarMinhasInscricoes, estadoEvento, formatarCpf, inscreverEmOficina,
 } from "../../services/oficinasService";
-import ProgramacaoOficinas, { DataHorarioOficina, useProgramacaoOficinas } from "./ProgramacaoOficinas";
+import ProgramacaoOficinas, { DataHorarioOficina, TituloSecaoOficinas, useProgramacaoOficinas } from "./ProgramacaoOficinas";
 import { marcarHorario, useHorarioAgenda } from "./useAgendaOficinas";
 import { restaurarFoco } from "./restaurarFoco";
+import styles from "./oficinasPortal.module.css";
 
 const IDENTIDADE_INICIAL = { cpf: "", dataNascimento: "" };
 
@@ -112,9 +113,9 @@ function MinhasInscricoes({ consulta, setConsulta, onAlteracao }) {
 
     return (
         <Stack component="section" id="minhas-inscricoes" aria-labelledby="titulo-minhas-inscricoes" spacing={2}>
-            <Typography component="h2" variant="h5" id="titulo-minhas-inscricoes">Minhas inscrições</Typography>
+            <TituloSecaoOficinas id="titulo-minhas-inscricoes">Minhas inscrições</TituloSecaoOficinas>
             <Stack component="form" onSubmit={consultar} direction={{ xs: "column", md: "row" }}
-                gap={2} alignItems={{ md: "center" }}>
+                sx={{ gap: 2, alignItems: { md: "center" } }}>
                 <CamposIdentidade valores={dados} disabled={ocupado} onChange={(novo) => {
                     setDados(novo);
                     setConsulta(null);
@@ -131,8 +132,8 @@ function MinhasInscricoes({ consulta, setConsulta, onAlteracao }) {
                         const iniciou = estadoEvento(evento, agora) === "EM_ANDAMENTO";
                         return (
                             <Paper key={evento.id} component="li" variant="outlined" sx={{ p: 2 }}>
-                                <Stack direction={{ xs: "column", sm: "row" }} gap={1}
-                                    justifyContent="space-between" alignItems={{ sm: "center" }}>
+                                <Stack direction={{ xs: "column", sm: "row" }}
+                                    sx={{ gap: 1, justifyContent: "space-between", alignItems: { sm: "center" } }}>
                                     <Box sx={{ overflowWrap: "anywhere" }}>
                                         <Typography fontWeight={700}>{evento.title}</Typography>
                                         <Typography variant="body2"><DataHorarioOficina evento={evento} /></Typography>
@@ -181,13 +182,14 @@ export default function OficinasPortal() {
     }
 
     return (
-        <Box className="boxes">
-            <Stack className="boxBorder" spacing={4} sx={{ width: "100%", minWidth: 0, p: { xs: 2, md: 3 } }}>
+        <Box className={styles.root}>
+            <Stack className={styles.surface}>
                 <ProgramacaoOficinas consulta={programacao} onInscrever={(selecionado, acionador) => {
                     acionadorInscricao.current = acionador;
                     setMensagem("");
                     setEvento(selecionado);
                 }} />
+                <Divider />
                 <MinhasInscricoes consulta={consulta} setConsulta={setConsulta} onAlteracao={atualizar} />
                 {evento && <DialogoInscricao evento={evento} onClose={fecharInscricao} onInscrito={confirmarInscricao} />}
                 <Snackbar open={Boolean(mensagem)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>

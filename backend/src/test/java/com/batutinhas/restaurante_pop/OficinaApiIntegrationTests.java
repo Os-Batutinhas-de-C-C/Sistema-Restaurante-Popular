@@ -164,6 +164,52 @@ class OficinaApiIntegrationTests {
     }
 
     @Test
+    void consultaESalvaFrequenciaSomenteDoInicioEmDianteEParaInscricoesDoEvento() throws Exception {
+        JsonNode criado = criar(evento("09:00", "10:00", "3"));
+        long id = id(criado);
+        inscrever(id, CPF_A, 201);
+        inscrever(id, CPF_B, 201);
+        String frequencia = "/" + id + "/frequencia";
+
+        JsonNode inicial = assertStatus(200, "GET", frequencia, gestor, null);
+        assertEquals("2026-11-07T12:00:00Z", inicial.path("evento").path("inicioEm").asText());
+        assertEquals(2, inicial.path("inscricoes").size());
+        assertFalse(inicial.path("inscricoes").get(0).path("presente").asBoolean());
+        assertEquals(CPF_A, inicial.path("inscricoes").get(0).path("cpf").asText());
+
+        String nutricionista = entrar("nutri-frequencia", 'N');
+        assertStatus(401, "GET", frequencia, null, null);
+        assertStatus(403, "GET", frequencia, nutricionista, null);
+        assertStatus(403, "PUT", frequencia, nutricionista,
+                Map.of("inscricoes", List.of(Map.of("inscricaoId", inicial.path("inscricoes").get(0).path("id").asLong(), "presente", true))));
+
+        long inscricaoA = inicial.path("inscricoes").get(0).path("id").asLong();
+        long inscricaoB = inicial.path("inscricoes").get(1).path("id").asLong();
+        var lote = Map.of("inscricoes", List.of(Map.of("inscricaoId", inscricaoA, "presente", true),
+                Map.of("inscricaoId", inscricaoB, "presente", false)));
+        assertEquals("FREQUENCIA_BLOQUEADA", assertStatus(409, "PUT", frequencia, gestor, lote).path("code").asText());
+
+        relogio.set(Instant.parse("2026-11-07T12:00:00Z"));
+        assertEquals("INSCRICOES_ALTERADAS", assertStatus(409, "PUT", frequencia, gestor,
+                Map.of("inscricoes", List.of(Map.of("inscricaoId", inscricaoA, "presente", true)))).path("code").asText());
+        assertEquals("DADOS_INVALIDOS", assertStatus(400, "PUT", frequencia, gestor,
+                Map.of("inscricoes", List.of(Map.of("inscricaoId", inscricaoA, "presente", true),
+                        Map.of("inscricaoId", inscricaoA, "presente", false)))).path("code").asText());
+
+        JsonNode salvo = assertStatus(200, "PUT", frequencia, gestor, lote);
+        assertTrue(salvo.path("inscricoes").get(0).path("presente").asBoolean());
+        assertFalse(salvo.path("inscricoes").get(1).path("presente").asBoolean());
+        assertTrue(assertStatus(200, "GET", frequencia, gestor, null).path("inscricoes").get(0).path("presente").asBoolean());
+
+        relogio.set(Instant.parse("2026-11-07T13:00:00Z"));
+        lote = Map.of("inscricoes", List.of(Map.of("inscricaoId", inscricaoA, "presente", false),
+                Map.of("inscricaoId", inscricaoB, "presente", true)));
+        JsonNode corrigido = assertStatus(200, "PUT", frequencia, gestor, lote);
+        assertFalse(corrigido.path("inscricoes").get(0).path("presente").asBoolean());
+        assertTrue(corrigido.path("inscricoes").get(1).path("presente").asBoolean());
+    }
+
+    @Test
     void bloqueiaSobreposicaoEFechaInscricaoECancelamentoNoInicio() throws Exception {
         JsonNode primeiro = criar(evento("09:00", "10:00", "2"));
         long id = id(primeiro);

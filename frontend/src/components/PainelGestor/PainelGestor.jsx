@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Alert, Box, Button, Stack, Typography } from "@mui/material";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import Link from "next/link";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
 import ProgramacaoOficinas, { useProgramacaoOficinas } from "../oficinas/ProgramacaoOficinas";
 import ResumoMetricas from "../painelNutricionista/ResumoMetricas/ResumoMetricas";
-import styles from "../painelNutricionista/DashboardNutricionista/dashboardNutricionista.module.css";
+import styles from "./painelGestor.module.css";
 import { consultarDesperdicioHoje } from "../../services/desperdicioService";
-import { formatarDataFichas } from "../../services/fichasService";
+import { formatarAtualizacaoFichas, formatarDataFichas } from "../../services/fichasService";
 import useFichasDia from "../../services/useFichasDia";
 import { ROTA_OFICINAS } from "../../services/oficinasService";
 
@@ -19,7 +20,7 @@ export default function PainelGestor() {
     const recarregarFichas = fichas.recarregar;
     const [ciclo, setCiclo] = useState(0);
     const [desperdicio, setDesperdicio] = useState({
-        dados: null, dataReferencia: null, dataFichas: null, ciclo: -1, erro: "",
+        dados: null, dataReferencia: null, dataFichas: null, ciclo: -1, erro: "", atualizadoEm: null,
     });
 
     useEffect(() => {
@@ -30,13 +31,14 @@ export default function PainelGestor() {
         consultarDesperdicioHoje({ signal: controller.signal })
             .then((dados) => {
                 if (ativo) {
-                    setDesperdicio({ dados, dataReferencia: dados.data, dataFichas, ciclo, erro: "" });
+                    setDesperdicio({ dados, dataReferencia: dados.data, dataFichas, ciclo, erro: "", atualizadoEm: new Date() });
                 }
             })
             .catch((erro) => {
                 if (ativo) {
                     setDesperdicio((anterior) => ({
                         dados: null, dataReferencia: anterior.dataReferencia, dataFichas, ciclo,
+                        atualizadoEm: anterior.atualizadoEm,
                         erro: erro.message || "Não foi possível consultar o desperdício do dia.",
                     }));
                 }
@@ -60,6 +62,7 @@ export default function PainelGestor() {
     const desperdicioDoDia = desperdicio.dados?.data === data ? desperdicio.dados : null;
     const consultaAtual = desperdicio.ciclo === ciclo && desperdicio.dataFichas === dataFichas;
     const erroDesperdicio = consultaAtual ? desperdicio.erro : "";
+    const atualizadoEm = fichas.atualizadoEm ?? desperdicio.atualizadoEm;
     const dadosDashboard = {
         fichasEntregues: fichasDoDia?.entregues,
         fichasTotais: fichasDoDia?.capacidade,
@@ -85,7 +88,17 @@ export default function PainelGestor() {
                             <Typography variant="h4" component="h1" className={styles.title}>Painel Gestor</Typography>
                             <Typography variant="body2" className={styles.date}>{formatarDataFichas(data)}</Typography>
                         </Box>
-                        <Button variant="outlined" onClick={atualizarIndicadores}>Atualizar indicadores</Button>
+                        <Button
+                            variant="outlined"
+                            size="small"
+                            className={styles.refreshButton}
+                            startIcon={<RefreshIcon />}
+                            onClick={atualizarIndicadores}
+                            disabled={fichas.loading || dadosDashboard.desperdicioCarregando}
+                            aria-label="Atualizar indicadores"
+                        >
+                            {formatarAtualizacaoFichas(atualizadoEm)}
+                        </Button>
                     </Box>
                 </Stack>
                 <Stack className={styles.sections}>

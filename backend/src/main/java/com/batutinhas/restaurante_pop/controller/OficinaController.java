@@ -81,6 +81,17 @@ public class OficinaController {
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.listarInscritos(id));
     }
 
+    @GetMapping("/{id}/frequencia")
+    public ResponseEntity<OficinaDTO.Frequencia> consultarFrequencia(@PathVariable long id) {
+        return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(service.consultarFrequencia(id));
+    }
+
+    @PutMapping("/{id}/frequencia")
+    public OficinaDTO.Frequencia salvarFrequencia(@PathVariable long id,
+                                                  @RequestBody OficinaDTO.FrequenciaRequest entrada) {
+        return service.salvarFrequencia(id, entrada);
+    }
+
     @DeleteMapping("/{id}/inscricoes/{inscricaoId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void cancelarComoGestor(@PathVariable long id, @PathVariable long inscricaoId) {

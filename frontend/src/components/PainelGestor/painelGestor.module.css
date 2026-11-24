@@ -1,0 +1,78 @@
+.page {
+    min-height: 100vh;
+    background-color: #f7f9fb;
+}
+
+.main {
+    width: 100%;
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 96px 32px 40px;
+}
+
+.heading {
+    margin-bottom: 28px;
+}
+
+.headingRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.title {
+    color: #191c1e;
+    font-size: 1.875rem !important;
+    font-weight: 700 !important;
+    line-height: 2.375rem !important;
+}
+
+.date {
+    color: #526071;
+}
+
+.refreshButton {
+    min-width: 0 !important;
+    margin-top: 4px !important;
+    padding: 6px 12px !important;
+    border-color: #cbd5e1 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+    color: #334155 !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    line-height: 16px !important;
+    text-transform: none !important;
+}
+
+.refreshButton :global(.MuiButton-startIcon) {
+    margin-right: 4px;
+}
+
+.refreshButton :global(.MuiSvgIcon-root) {
+    font-size: 12px;
+}
+
+.sections {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+@media (max-width: 599px) {
+    .main {
+        padding: 88px 16px 32px;
+    }
+
+    .headingRow {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .title {
+        font-size: 1.625rem !important;
+        line-height: 2rem !important;
+    }
+}
