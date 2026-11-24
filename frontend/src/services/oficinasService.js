@@ -29,6 +29,10 @@ export const salvarOficina = (id, body) =>
 export const removerOficina = (id) => apiRequest(`${API}/${id}`, { method: "DELETE" });
 export const consultarInscritos = (id, signal) =>
     apiRequest(`${API}/${id}/inscricoes`, { signal }).then(dados);
+export const consultarFrequenciaOficina = (id, signal) =>
+    apiRequest(`${API}/${id}/frequencia`, { signal }).then(dados);
+export const salvarFrequenciaOficina = (id, inscricoes) =>
+    apiRequest(`${API}/${id}/frequencia`, { method: "PUT", body: { inscricoes } }).then(dados);
 export const cancelarInscricaoComoGestor = (id, inscricaoId) =>
     apiRequest(`${API}/${id}/inscricoes/${inscricaoId}`, { method: "DELETE" });
 

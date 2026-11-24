@@ -15,6 +15,7 @@ const pages = [
     { label: 'Orientações', id: 'orientacao' },  
     { label: 'Cardápio',    id: 'cardapio' },
     { label: 'Localização', id: 'localizacao' },
+    { label: 'Oficinas',    id: 'oficinas-ou-cursos' },
 ];
 
 const ABRE  = 10 * 60 + 30;

@@ -39,7 +39,7 @@ const variants = {
 
 const menuGestor = [
     menuItems[0],
-    { label: "Oficinas ou Cursos", icon: "/icons/calendar.svg", href: ROTA_OFICINAS },
+    { label: "Oficinas", icon: "/icons/calendar.svg", href: ROTA_OFICINAS },
     menuItems.at(-1),
 ];
 

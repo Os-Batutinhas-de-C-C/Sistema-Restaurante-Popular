@@ -40,5 +40,17 @@ public final class OficinaDTO {
         @Override public String toString() { return "Inscritos"; }
     }
 
+    public record InscritoFrequencia(Long id, String cpf, LocalDate dataNascimento, String email, boolean presente) {
+        @Override public String toString() { return "InscritoFrequencia"; }
+    }
+
+    public record Frequencia(Instant agora, Evento evento, List<InscritoFrequencia> inscricoes) {
+        @Override public String toString() { return "Frequencia"; }
+    }
+
+    public record PresencaRequest(Long inscricaoId, Boolean presente) {}
+
+    public record FrequenciaRequest(List<PresencaRequest> inscricoes) {}
+
     public record ConfirmacaoReagendamento(String code, String message, int quantidade, String confirmacao) {}
 }

@@ -66,6 +66,29 @@ Antes de iniciar a versão com Oficinas ou Cursos usando `ddl-auto=validate`, ap
 psql -d restaurante_popular -v ON_ERROR_STOP=1 -f backend/migrations/V20261123__oficinas_ou_cursos.sql
 ```
 
+Para habilitar a frequência nas inscrições existentes, aplique também a migração aditiva [V20261124__oficina_frequencia.sql](./backend/migrations/V20261124__oficina_frequencia.sql), que cria `presente BOOLEAN NOT NULL DEFAULT FALSE` sem alterar os dados ou o contrato de inscrição. Execute uma vez, da raiz do repositório, após a migração de Oficinas ou Cursos:
+
+```text
+psql -d restaurante_popular -v ON_ERROR_STOP=1 -f backend/migrations/V20261124__oficina_frequencia.sql
+```
+
+### Frequência de Oficinas ou Cursos
+
+As rotas abaixo exigem um JWT de perfil Gestor. O `GET /api/oficinas-ou-cursos/{id}/frequencia` responde sem cache com `agora`, o objeto completo `evento` e `inscricoes` em ordem crescente de inscrição (`id`), cada uma com `id`, `cpf`, `dataNascimento`, `email` e `presente`. Inscrições existentes recebem `presente: false` pela migração.
+
+O `PUT /api/oficinas-ou-cursos/{id}/frequencia` salva o conjunto completo em uma transação e exige que cada inscrição atual apareça uma vez:
+
+```json
+{
+  "inscricoes": [
+    { "inscricaoId": 123, "presente": true },
+    { "inscricaoId": 124, "presente": false }
+  ]
+}
+```
+
+A resposta do PUT tem o mesmo formato do GET. O backend rejeita o salvamento antes do horário de início em `America/Fortaleza` (HTTP 409, `FREQUENCIA_BLOQUEADA`), entradas inválidas ou IDs repetidos (HTTP 400) e conjuntos que não correspondam às inscrições atuais (HTTP 409, `INSCRICOES_ALTERADAS`). O GET continua disponível antes do evento; o PUT permanece liberado depois do encerramento. A rota usa a mesma regra de autorização Gestor já aplicada ao restante de `/api/oficinas-ou-cursos/**`.
+
 ## Compilar e executar
 
 No Windows, a partir da raiz do repositório, o helper seleciona o JDK 25 em `%USERPROFILE%\jdks\temurin-25.0.5.8` e chama o Maven instalado:
