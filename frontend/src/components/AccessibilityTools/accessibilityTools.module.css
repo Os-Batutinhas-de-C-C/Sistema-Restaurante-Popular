@@ -1,0 +1,120 @@
+﻿.toolbarContainer {
+  position: fixed;
+  z-index: 1200;
+  left: 58px;
+  bottom: 16px;
+  display: flex;
+  justify-content: flex-start;
+  width: max-content;
+  max-width: calc(100vw - 68px);
+}
+
+.toolbarContainer.collapsed {
+  width: fit-content;
+}
+
+.toolbar {
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #64748b;
+  border-radius: 0.5rem !important;
+}
+
+.toolbarLayout {
+  align-items: flex-end;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.controls {
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  max-width: 100%;
+}
+
+.controls[hidden] {
+  display: none;
+}
+
+.controls :global(.MuiButton-root[aria-pressed="true"]) {
+  background-color: #dbeafe;
+  border-width: 2px;
+  color: #0b3d91;
+  font-weight: 700;
+  opacity: 1;
+}
+
+.toggleButton {
+  flex: 0 0 auto;
+  border: 1px solid #64748b !important;
+}
+
+.toggleButton:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+:global(html[data-high-contrast="true"]) .toolbar {
+  color: #fff !important;
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+
+:global(html[data-high-contrast="true"]) .toolbar :global(.MuiButton-root) {
+  color: #fff !important;
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+
+:global(html[data-high-contrast="true"]) .toolbar :global(.MuiButton-root[aria-pressed="true"]) {
+  color: #000 !important;
+  background-color: #ff0 !important;
+  border-color: #ff0 !important;
+}
+
+:global(html[data-high-contrast="true"]) .toggleButton {
+  color: #fff !important;
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+
+.status {
+  max-width: 100%;
+  margin-top: 0.4rem;
+  text-align: left;
+  font-size: 0.75rem !important;
+}
+
+@media (max-width: 480px) {
+  .toolbarContainer {
+    left: 56px;
+    bottom: 16px;
+    max-width: calc(100vw - 64px);
+  }
+
+  .toolbar {
+    width: 100%;
+  }
+
+  .controls {
+    gap: 0.35rem;
+  }
+
+  .controls :global(.MuiButton-root) {
+    min-width: 36px;
+    padding-inline: 0.5rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toolbar,
+  .toolbar * {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
