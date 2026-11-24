@@ -58,6 +58,30 @@
   outline-offset: 2px;
 }
 
+:global(html[data-high-contrast="true"]) .toolbar {
+  color: #fff !important;
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+
+:global(html[data-high-contrast="true"]) .toolbar :global(.MuiButton-root) {
+  color: #fff !important;
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+
+:global(html[data-high-contrast="true"]) .toolbar :global(.MuiButton-root[aria-pressed="true"]) {
+  color: #000 !important;
+  background-color: #ff0 !important;
+  border-color: #ff0 !important;
+}
+
+:global(html[data-high-contrast="true"]) .toggleButton {
+  color: #fff !important;
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+
 .status {
   max-width: 100%;
   margin-top: 0.4rem;

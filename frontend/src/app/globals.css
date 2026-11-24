@@ -47,7 +47,7 @@ html[data-high-contrast="true"] {
 }
 
 html[data-high-contrast="true"] body,
-html[data-high-contrast="true"] body :where(*) {
+html[data-high-contrast="true"] body :where(*):not([data-accessibility-tools]):not([data-accessibility-tools] *) {
   color: #ffffff !important;
   background-color: #000000 !important;
   border-color: #ffffff !important;

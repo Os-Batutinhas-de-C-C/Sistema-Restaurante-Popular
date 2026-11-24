@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Oferece aos visitantes do portal controles integrados de acessibilidade visual e auditiva e acesso ao apoio de tradução em Libras, com operação por teclado e adaptação a telas pequenas.
+Oferece aos visitantes do portal controles integrados de acessibilidade visual e acesso ao apoio de tradução em Libras, com operação por teclado e adaptação a telas pequenas.
 
 ## Requirements
 
@@ -12,6 +12,10 @@ O frontend SHALL oferecer controles acessíveis para reduzir, restaurar e amplia
 #### Scenario: Ajustar tamanho do texto
 - **WHEN** a pessoa seleciona A-, A ou A+
 - **THEN** o tamanho do texto diminui, retorna ao padrão ou aumenta, respectivamente, e a interface indica o controle selecionado
+
+#### Scenario: Ajustes sucessivos
+- **WHEN** a pessoa aciona A- ou A+ repetidamente
+- **THEN** cada acionamento altera um nível de tamanho até os limites mínimo ou máximo
 
 #### Scenario: Limites do ajuste
 - **WHEN** a pessoa tenta reduzir ou ampliar além dos limites suportados
@@ -28,21 +32,6 @@ O frontend SHALL disponibilizar um controle de alto contraste cuja preferência 
 - **WHEN** o navegador não permite armazenar a preferência
 - **THEN** o controle continua funcionando durante a sessão atual sem impedir o uso do portal
 
-### Requirement: Leitura em voz alta
-O frontend SHALL permitir iniciar e interromper a leitura em voz alta do conteúdo principal usando a síntese de fala disponível no navegador e solicitar português do Brasil quando houver uma voz compatível.
-
-#### Scenario: Iniciar leitura
-- **WHEN** a pessoa inicia a leitura em uma página com conteúdo legível e a API está disponível
-- **THEN** o conteúdo principal é lido em voz alta, priorizando uma voz pt-BR, e o controle comunica que a leitura está ativa
-
-#### Scenario: Interromper leitura
-- **WHEN** a pessoa interrompe a leitura ou inicia outra página
-- **THEN** a fala em andamento é cancelada e o controle retorna ao estado inativo
-
-#### Scenario: API indisponível
-- **WHEN** o navegador não oferece a API de síntese de fala
-- **THEN** a leitura fica indisponível e a interface informa isso de forma compreensível
-
 ### Requirement: Tradução de apoio em Libras
 O frontend SHALL disponibilizar o widget gratuito VLibras nas páginas do portal e preservar a navegação quando o serviço externo não puder ser carregado.
 
@@ -55,7 +44,7 @@ O frontend SHALL disponibilizar o widget gratuito VLibras nas páginas do portal
 - **THEN** as demais páginas e controles de acessibilidade continuam utilizáveis
 
 ### Requirement: Barras agrupadas, recolhíveis e acessíveis
-A barra de baixa visão SHALL ficar fixa à esquerda, imediatamente ao lado do botão do widget VLibras, e permitir ocultar e reexibir os controles por uma seta, mantendo-se dentro da largura da tela.
+A barra de baixa visão SHALL iniciar recolhida no canto inferior esquerdo, junto ao botão do widget VLibras. A pessoa pode expandir os controles por uma seta, mantendo-se dentro da largura da tela.
 
 #### Scenario: Operar controles por teclado
 - **WHEN** a pessoa percorre as barras usando teclado
