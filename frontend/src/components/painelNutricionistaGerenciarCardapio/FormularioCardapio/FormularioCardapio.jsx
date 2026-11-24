@@ -4,11 +4,11 @@ import Grid from "@mui/material/Grid";
 import { camposCardapio } from "../../../services/gerenciamentoCardapioService";
 import styles from "./formularioCardapio.module.css";
 
-export default function FormularioCardapio({ dia, data, valores, onChange, onSave, onOpenHistory, saving }) {
+export default function FormularioCardapio({ dia, data, valores, onChange, onSave, onOpenHistory, onGenerate, saving, generating }) {
     const dataFormatada = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(new Date(`${data}T12:00:00`));
     const diaFormatado = dia.charAt(0).toUpperCase() + dia.slice(1);
     return (
-        <Card component="section" aria-labelledby="formulario-cardapio-titulo" variant="outlined" className={styles.card}>
+        <Card component="section" aria-labelledby="formulario-cardapio-titulo" aria-busy={generating} variant="outlined" className={styles.card}>
             <Stack className={styles.cardHeader} direction={{ xs: "column", md: "row" }}>
                 <Box className={styles.headingCopy}>
                     <Typography id="formulario-cardapio-titulo" component="h2" variant="h6" className={styles.title}>
@@ -17,10 +17,10 @@ export default function FormularioCardapio({ dia, data, valores, onChange, onSav
                     <Typography variant="body2" color="text.secondary">Defina a composição nutricional para o almoço.</Typography>
                 </Box>
                 <Stack direction={{ xs: "column", md: "row" }} className={styles.actions}>
-                    <Button variant="contained" size="small" startIcon={<AutoAwesome />} onClick={() => {}} sx={{ textTransform: "none" }}>
-                        Gerar Cardápio
+                    <Button variant="contained" size="small" startIcon={generating ? <CircularProgress size={18} color="inherit" /> : <AutoAwesome />} onClick={onGenerate} disabled={saving || generating} sx={{ textTransform: "none" }}>
+                        {generating ? "Gerando..." : "Gerar Cardápio"}
                     </Button>
-                    <Button variant="contained" size="small" startIcon={<ContentCopy />} onClick={onOpenHistory} sx={{ textTransform: "none" }}>
+                    <Button variant="contained" size="small" startIcon={<ContentCopy />} onClick={onOpenHistory} disabled={saving || generating} sx={{ textTransform: "none" }}>
                         Copiar Do Histórico
                     </Button>
                 </Stack>
@@ -37,13 +37,14 @@ export default function FormularioCardapio({ dia, data, valores, onChange, onSav
                                 variant="standard"
                                 fullWidth
                                 size="small"
+                                disabled={generating}
                                 type={key === "valorCalorico" ? "number" : "text"}
                                 slotProps={{ inputLabel: { shrink: true }, ...(key === "valorCalorico" ? { htmlInput: { min: 0, step: 1 } } : {}) }}
                             />
                         </Grid>
                     ))}
                 </Grid>
-                <Button type="submit" variant="contained" color="success" size="large" fullWidth disabled={saving} className={styles.saveButton}>
+                <Button type="submit" variant="contained" color="success" size="large" fullWidth disabled={saving || generating} className={styles.saveButton}>
                     {saving ? <><CircularProgress size={18} color="inherit" /> Salvando...</> : "Salvar Cardápio"}
                 </Button>
             </Box>

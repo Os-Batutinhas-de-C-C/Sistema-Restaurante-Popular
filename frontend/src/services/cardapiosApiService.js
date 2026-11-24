@@ -156,6 +156,7 @@ export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}
 
 export function transformarHistorico(semana) {
     return mapearSemanaParaDias(semana).map(({ nome, dia, refeicao }) => ({
+        idRefeicao: refeicao?.idRefeicao ?? null,
         dia: nome,
         data: dia,
         pratoProteico: refeicao?.pratoProteico ?? "",

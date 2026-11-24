@@ -8,8 +8,9 @@ import FormularioCardapio from "./FormularioCardapio/FormularioCardapio";
 import ModalHistorico from "./ModalHistorico/ModalHistorico";
 import NavegacaoDias from "./NavegacaoDias/NavegacaoDias";
 import {
-    cardapioVazio, dataDeIsoLocal, dataIsoLocal, formatarIntervaloSemana,
-    obterDiasUteisDaSemana, salvarCardapioDia,
+    cardapioVazio, camposCardapio, dataDeIsoLocal, dataIsoLocal, formatarIntervaloSemana,
+    listarHistoricoCardapios, obterDiasUteisDaSemana, salvarCardapioDia,
+    selecionarSugestaoCardapio,
 } from "../../services/gerenciamentoCardapioService";
 import { mapearSemanaParaDias, obterSemanaApi } from "../../services/cardapiosApiService";
 import styles from "./gerenciarCardapio.module.css";
@@ -37,6 +38,9 @@ export default function GerenciarCardapio({ dataSolicitada }) {
     const [error, setError] = useState("");
     const [modalAberto, setModalAberto] = useState(false);
     const [salvando, setSalvando] = useState(false);
+    const [gerando, setGerando] = useState(false);
+    const [ultimaSugestaoId, setUltimaSugestaoId] = useState(null);
+    const [feedbackGeracao, setFeedbackGeracao] = useState(null);
     const [feedback, setFeedback] = useState(false);
 
     const diaSelecionado = dias.find(({ data }) => data === dataSelecionada) ?? dias[0];
@@ -81,6 +85,8 @@ export default function GerenciarCardapio({ dataSolicitada }) {
     const selecionarDia = (data) => {
         setDataSelecionada(data);
         setFormulario(cardapiosSalvos[data] ?? cardapioVazio);
+        setUltimaSugestaoId(null);
+        setFeedbackGeracao(null);
     };
 
     const navegarSemana = (direcao) => {
@@ -92,9 +98,49 @@ export default function GerenciarCardapio({ dataSolicitada }) {
         setDias(novosDias);
         setDataSelecionada(novaData);
         setFormulario(cardapioVazio);
+        setUltimaSugestaoId(null);
+        setFeedbackGeracao(null);
         setLoading(true);
         setError("");
         carregarSemana(novosDias, novaData);
+    };
+
+    const gerarCardapio = async () => {
+        setGerando(true);
+        setError("");
+        setFeedbackGeracao(null);
+        try {
+            const historico = await listarHistoricoCardapios();
+            const sugestao = selecionarSugestaoCardapio(
+                historico,
+                cardapiosSalvos,
+                dataSelecionada,
+                ultimaSugestaoId,
+            );
+            if (!sugestao) {
+                setFeedbackGeracao({
+                    severity: "info",
+                    message: "Não há sugestões disponíveis no histórico para este dia.",
+                });
+                return;
+            }
+
+            setFormulario(Object.fromEntries(
+                camposCardapio.map(({ key }) => [key, sugestao[key] ?? ""]),
+            ));
+            setUltimaSugestaoId(sugestao.idRefeicao ?? null);
+            setFeedbackGeracao({
+                severity: "success",
+                message: "Sugestão preenchida. Revise o cardápio antes de salvar.",
+            });
+        } catch (erro) {
+            setFeedbackGeracao({
+                severity: "error",
+                message: erro?.message || "Não foi possível gerar uma sugestão de cardápio.",
+            });
+        } finally {
+            setGerando(false);
+        }
     };
 
     const salvarCardapio = async (event) => {
@@ -134,6 +180,7 @@ export default function GerenciarCardapio({ dataSolicitada }) {
             <Box component="main" className={styles.main}>
                 <Box className={styles.content}>
                     {error && <Alert severity="error">{error}</Alert>}
+                    {feedbackGeracao && <Alert severity={feedbackGeracao.severity}>{feedbackGeracao.message}</Alert>}
                     {loading && <Alert severity="info">Carregando cardápio da semana...</Alert>}
                     <NavegacaoDias
                         dias={dias}
@@ -142,6 +189,7 @@ export default function GerenciarCardapio({ dataSolicitada }) {
                         onSelectDay={selecionarDia}
                         onNavigateWeek={navegarSemana}
                         onBack={() => router.push("/painel-nutricionista-cardapio")}
+                        disabled={gerando}
                     />
                     <FormularioCardapio
                         dia={diaSelecionado.nome}
@@ -149,8 +197,10 @@ export default function GerenciarCardapio({ dataSolicitada }) {
                         valores={formulario}
                         onChange={(campo, valor) => setFormulario((atual) => ({ ...atual, [campo]: valor }))}
                         onSave={salvarCardapio}
+                        onGenerate={gerarCardapio}
                         onOpenHistory={() => setModalAberto(true)}
                         saving={salvando || loading}
+                        generating={gerando}
                     />
                 </Box>
             </Box>

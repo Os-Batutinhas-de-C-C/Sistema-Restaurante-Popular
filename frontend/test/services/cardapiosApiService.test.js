@@ -40,6 +40,7 @@ describe("cardapiosApiService", () => {
 
     it("transforma histórico em linhas editáveis", () => {
         expect(transformarHistorico(semana)[0]).toMatchObject({
+            idRefeicao: 1,
             dia: "Segunda-feira",
             data: "2026-11-09",
             pratoProteico: "Frango",
