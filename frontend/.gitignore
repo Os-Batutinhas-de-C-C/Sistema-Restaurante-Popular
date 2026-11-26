@@ -22,6 +22,8 @@ frontend/docs/
 **/.next/
 
 /out/
+/.agents/
+/skills-lock.json
 
 # production
 /build

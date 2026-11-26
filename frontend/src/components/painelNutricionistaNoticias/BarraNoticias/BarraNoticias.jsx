@@ -19,11 +19,11 @@ export default function BarraNoticias({ periodo, onPeriodoChange, onPublicar }) 
                     minWidth: { xs: "100%", sm: 168 },
                     minHeight: 40,
                     borderRadius: 1,
-                    bgcolor: "#008fd3",
-                    boxShadow: "0 2px 5px rgba(0, 0, 0, 0.18)",
+                    bgcolor: "primary.main",
+                    boxShadow: "0 1px 3px rgba(15, 23, 42, 0.18)",
                     fontSize: 12,
                     fontWeight: 700,
-                    "&:hover": { bgcolor: "#007fbc" },
+                    "&:hover": { bgcolor: "primary.dark", boxShadow: "0 2px 5px rgba(15, 23, 42, 0.2)" },
                 }}
             >
                 Publicar notícia

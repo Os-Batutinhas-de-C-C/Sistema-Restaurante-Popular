@@ -16,7 +16,7 @@
 .title { font-weight: 600 !important; font-size: 30px !important; line-height: 1.2 !important; }
 .weekActions { flex-shrink: 0; }
 .weekActions button { min-width: 156px; min-height: 32px; font-size: 0.72rem; text-transform: none; }
-.daysCard { padding: 12px; border-radius: 10px !important; }
+.daysCard { padding: 12px; border-radius: var(--rp-card-radius) !important; box-shadow: var(--rp-card-shadow); }
 .daysGrid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; min-height: 108px; align-items: center; }
 .dayButton {
     min-width: 0;

@@ -1,4 +1,6 @@
-import { Alert, Box, Button, Card, Stack, Typography } from "@mui/material";
+"use client";
+
+import { Alert, Box, Button, Card, Stack, Typography, useMediaQuery } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
 import styles from "./graficosCardapio.module.css";
 
@@ -6,6 +8,7 @@ const diasDaSemana = ["Seg", "Ter", "Qua", "Qui", "Sex"];
 
 function GraficoBarras({ titulo, valores, cor, maximo = 100, aviso, erro, onRetry }) {
     const dataset = diasDaSemana.map((dia, index) => ({ dia, valor: valores[index] }));
+    const mobile = useMediaQuery("(max-width: 620px)");
 
     return (
         <Card component="section" variant="outlined" className={styles.card}
@@ -23,31 +26,18 @@ function GraficoBarras({ titulo, valores, cor, maximo = 100, aviso, erro, onRetr
                 series={[{ dataKey: "valor", label: titulo, color: cor }]}
                 grid={{ horizontal: true }}
                 hideLegend
-                height={205}
+                height={mobile ? 180 : 205}
                 margin={{ top: 8, right: 8, bottom: 28, left: 4 }}
             />
         </Card>
     );
 
-    if (!emCartao) {
-        return (
-            <Box component="section" className={styles.chart}>
-                {conteudo}
-            </Box>
-        );
-    }
-
-    return (
-        <Card component="section" variant="outlined" className={styles.card}>
-            {conteudo}
-        </Card>
-    );
 }
 
-export default function GraficosCardapio({ graficos, erroFichas, carregandoFichas, onRefreshFichas }) {
+export default function GraficosCardapio({ graficos, erroFichas, carregandoFichas, onRefreshFichas, className = "" }) {
     const maximoFichas = Math.max(graficos.capacidadeFichas ?? 0, ...graficos.fichas.filter(Number.isFinite)) || undefined;
     return (
-        <Stack component="section" aria-label="Gráficos semanais" className={styles.charts}>
+        <Stack component="section" aria-label="Gráficos semanais" className={`${styles.charts} ${className}`}>
             <GraficoBarras titulo="Fichas entregues" valores={graficos.fichas} cor="#1565c0"
                 maximo={maximoFichas} aviso={carregandoFichas} erro={erroFichas} onRetry={onRefreshFichas} />
             <GraficoBarras titulo="Desperdício" valores={graficos.desperdicio} cor="#ef6c00" />

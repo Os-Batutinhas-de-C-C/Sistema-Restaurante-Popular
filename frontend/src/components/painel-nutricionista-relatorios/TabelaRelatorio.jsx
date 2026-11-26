@@ -1,5 +1,6 @@
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
+    Box,
     Card,
     IconButton,
     Table,
@@ -30,6 +31,50 @@ export default function TabelaRelatorio({ relatorios, onEditar }) {
             variant="outlined"
             className={styles.tableCard}
         >
+            <Box className={styles.mobileReports}>
+                {relatorios.map((relatorio) => (
+                    <Box key={relatorio.id} className={styles.mobileReport}>
+                        <Box className={styles.mobileReportHeader}>
+                            <Box>
+                                <Typography className={styles.dayName}>{relatorio.dia}</Typography>
+                                <Typography className={styles.date}>{relatorio.dataFormatada}</Typography>
+                            </Box>
+                            {relatorio.editavel
+                                && (
+                                    relatorio.data === dataAtual
+                                    || relatorio.fichas == null
+                                    || relatorio.desperdicioKg == null
+                                ) && (
+                                <IconButton
+                                    aria-label={`Editar dados de ${relatorio.dia}`}
+                                    onClick={() => onEditar(relatorio)}
+                                    className={styles.editButton}
+                                >
+                                    <EditOutlinedIcon />
+                                </IconButton>
+                            )}
+                        </Box>
+                        <Typography className={styles.meal}>{relatorio.refeicao}</Typography>
+                        <Box className={styles.mobileMetrics}>
+                            <Box className={styles.mobileMetric}>
+                                <Typography className={styles.mobileMetricLabel}>Fichas</Typography>
+                                <Typography className={styles.mobileMetricValue}>{relatorio.fichas ?? "—"}</Typography>
+                            </Box>
+                            <Box className={styles.mobileMetric}>
+                                <Typography className={styles.mobileMetricLabel}>Desperdício</Typography>
+                                <Typography className={styles.mobileMetricValue}>
+                                    {relatorio.desperdicioKg == null ? "—" : `${relatorio.desperdicioKg} kg`}
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+                ))}
+                {relatorios.length === 0 && (
+                    <Typography className={styles.mobileEmptyState}>
+                        Nenhum relatório no período selecionado.
+                    </Typography>
+                )}
+            </Box>
             <TableContainer className={styles.tableContainer}>
                 <Table
                     size="small"

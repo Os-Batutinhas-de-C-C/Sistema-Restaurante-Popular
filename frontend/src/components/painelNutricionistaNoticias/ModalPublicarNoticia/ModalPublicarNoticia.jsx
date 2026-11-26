@@ -99,7 +99,7 @@ export default function ModalPublicarNoticia({ open, onClose, onPublicar }) {
                     variant="contained"
                     startIcon={<AddIcon />}
                     disabled={enviando || !form.titulo.trim() || !form.texto.trim() || !duracaoValida}
-                    sx={{ bgcolor: "#008fd3", "&:hover": { bgcolor: "#007fbc" } }}
+                    color="primary"
                 >
                     Publicar notícia
                 </Button>

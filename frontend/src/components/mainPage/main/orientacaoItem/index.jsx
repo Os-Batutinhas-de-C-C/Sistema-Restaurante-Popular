@@ -17,7 +17,9 @@ export default function OrientacaoItem({ id, symbolId, icon, titulo, resumo, det
                 <span className="paddingTextLight">{resumo}</span>
 
                 <div className="detalhe">
-                    <p className="orientacaoTittle">{detalhe}</p>
+                    <ul className="orientacaoLista">
+                        {detalhe.map((instrucao) => <li key={instrucao}>{instrucao}</li>)}
+                    </ul>
                 </div>
             </div>
 

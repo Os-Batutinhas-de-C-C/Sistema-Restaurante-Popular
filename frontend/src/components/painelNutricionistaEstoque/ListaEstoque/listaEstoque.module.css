@@ -1,6 +1,8 @@
-.listCard { padding: 17px 24px; border-radius: 10px !important; overflow: hidden; }
+.listCard { padding: 17px 24px; border-radius: var(--rp-card-radius) !important; box-shadow: var(--rp-card-shadow); overflow: hidden; }
 .desktopList { display: block; overflow-x: auto; }
 .desktopList :global(.MuiTableCell-root) { padding: 14px 10px; border-bottom-color: #e4eaf0; vertical-align: middle; }
+.desktopList :global(.MuiTableBody-root .MuiTableRow-root) { transition: background-color 150ms ease; }
+.desktopList :global(.MuiTableBody-root .MuiTableRow-root:hover) { background: #f8fafc; }
 .desktopList :global(.MuiTableHead-root .MuiTableCell-root) { font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
 .mobileList { display: none !important; }
 .emptyState { display: flex; flex-direction: column; gap: 6px; padding: 28px 24px; border-radius: 10px !important; }

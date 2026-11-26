@@ -25,12 +25,12 @@ function Acao({ label, onClick, children }) {
             aria-label={label}
             onClick={onClick}
             sx={{
-                width: { xs: 44, sm: 32 },
-                height: { xs: 44, sm: 32 },
-                bgcolor: "#0789cf",
+                width: { xs: 44, sm: 36 },
+                height: { xs: 44, sm: 36 },
+                bgcolor: "primary.main",
                 color: "common.white",
-                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
-                "&:hover": { bgcolor: "#0578b8" },
+                boxShadow: "0 1px 3px rgba(15, 23, 42, 0.18)",
+                "&:hover": { bgcolor: "primary.dark", boxShadow: "0 2px 5px rgba(15, 23, 42, 0.2)" },
             }}
         >
             {children}
@@ -86,7 +86,7 @@ export default function ListaMensagens({ mensagens, loading, error, onRetry, onV
                         key={mensagem.id}
                         component="article"
                         variant="outlined"
-                        sx={{ p: 1.75, borderColor: "#e4e8eb", borderRadius: 2 }}
+                        sx={{ p: { xs: 2, sm: 2.25 }, borderColor: "#e2e8f0", borderRadius: 2, boxShadow: "0 1px 3px rgba(15, 23, 42, 0.05)" }}
                     >
                         <Stack direction="row" sx={{ justifyContent: "space-between", alignItems: "center" }}>
                             <Typography component="time" variant="caption" fontWeight={700} color="text.secondary">
@@ -110,14 +110,14 @@ export default function ListaMensagens({ mensagens, loading, error, onRetry, onV
     }
 
     return (
-        <TableContainer component={Paper} variant="outlined" sx={{ borderColor: "#e4e8eb", borderRadius: 2, overflowX: "hidden" }}>
+        <TableContainer component={Paper} variant="outlined" sx={{ borderColor: "#e2e8f0", borderRadius: 2, overflowX: "hidden", boxShadow: "0 1px 3px rgba(15, 23, 42, 0.05)" }}>
             <Table size="small" aria-label="Mensagens" sx={{ width: "100%", tableLayout: "fixed" }}>
                 <TableHead>
-                    <TableRow>
-                        <TableCell sx={{ width: "16%", fontWeight: 700 }}>Data</TableCell>
-                        <TableCell sx={{ width: "26%", fontWeight: 700 }}>Título</TableCell>
-                        <TableCell sx={{ width: "45%", fontWeight: 700 }}>Descrição</TableCell>
-                        <TableCell sx={{ width: "13%" }} />
+                    <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                        <TableCell sx={{ width: "16%", fontWeight: 700, color: "#334155" }}>Data</TableCell>
+                        <TableCell sx={{ width: "26%", fontWeight: 700, color: "#334155" }}>Título</TableCell>
+                        <TableCell sx={{ width: "45%", fontWeight: 700, color: "#334155" }}>Descrição</TableCell>
+                        <TableCell sx={{ width: "13%", bgcolor: "#f8fafc" }} />
                     </TableRow>
                 </TableHead>
                 <TableBody>

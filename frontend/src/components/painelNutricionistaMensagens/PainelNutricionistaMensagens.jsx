@@ -98,7 +98,7 @@ export default function PainelNutricionistaMensagens() {
                 component="main"
                 sx={{
                     width: "100%",
-                    maxWidth: 1180,
+                    maxWidth: 1000,
                     mx: "auto",
                     px: { xs: 2, sm: 3 },
                     pt: { xs: "76px", sm: "84px" },

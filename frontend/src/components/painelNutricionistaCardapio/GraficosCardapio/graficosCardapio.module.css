@@ -9,16 +9,18 @@
 .card {
     min-width: 0;
     padding: 16px 12px 8px;
-    border-color: #e1e7ef !important;
-    border-radius: 8px !important;
+	border-color: var(--rp-border) !important;
+	border-radius: var(--rp-card-radius) !important;
     background: #fff;
+	box-shadow: var(--rp-card-shadow);
 }
 
 .combinedCard {
     padding: 16px 24px 12px;
-    border-color: #e1e7ef !important;
-    border-radius: 8px !important;
+	border-color: var(--rp-border) !important;
+	border-radius: var(--rp-card-radius) !important;
     background: #fff;
+	box-shadow: var(--rp-card-shadow);
 }
 
 .combinedCharts {

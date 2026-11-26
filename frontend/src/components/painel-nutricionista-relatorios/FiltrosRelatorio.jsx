@@ -39,7 +39,7 @@ export default function FiltrosRelatorio({ periodo, onPeriodoChange, onExport })
                 />
                 <Button
                     variant="contained"
-                    color="success"
+                    color="primary"
                     endIcon={<DownloadIcon />}
                     aria-haspopup="menu"
                     aria-expanded={Boolean(menuAnchor)}

@@ -5,6 +5,15 @@ html {
 :root {
   --background: #ffffff;
   --foreground: #171717;
+    --rp-page-bg: #f7f9fb;
+    --rp-surface: #ffffff;
+    --rp-border: #e2e8f0;
+    --rp-text: #0f172a;
+    --rp-muted: #475569;
+    --rp-primary: #1976d2;
+    --rp-primary-hover: #1565c0;
+    --rp-card-radius: 12px;
+    --rp-card-shadow: 0 1px 3px rgb(15 23 42 / 6%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -18,7 +27,7 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
-  background: #f7f9fb;
+  background: var(--rp-page-bg);
 }
 
 body {

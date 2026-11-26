@@ -146,7 +146,7 @@ export default function NavbarPainel({ onProfileClick, variant = "nutricionista"
                         sx: {
                             width: 180,
                             maxWidth: "calc(100vw - 32px)",
-                            mt: 1,
+                            mt: 0,
                             borderRadius: 1,
                         },
                     },

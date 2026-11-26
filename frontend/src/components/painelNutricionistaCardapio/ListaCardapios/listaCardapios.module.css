@@ -1,9 +1,10 @@
 .card {
     min-width: 0;
     padding: 16px 20px 8px;
-    border-color: #e1e7ef !important;
-    border-radius: 8px !important;
+	border-color: var(--rp-border) !important;
+	border-radius: var(--rp-card-radius) !important;
     background: #fff;
+	box-shadow: var(--rp-card-shadow);
 }
 
 .header {
@@ -75,12 +76,12 @@
     width: 44px;
     height: 44px;
     color: #fff !important;
-    background: #039be5 !important;
-    box-shadow: 0 2px 5px #0003;
+    background: #1976d2 !important;
+    box-shadow: 0 1px 3px #0002;
 }
 
 .actionButton:hover {
-    background: #0288d1 !important;
+    background: #1565c0 !important;
 }
 
 @media (max-width: 700px) {

@@ -1,7 +1,7 @@
 .card {
     border: 1px solid #e2e8f0;
     border-radius: 12px !important;
-    box-shadow: 0 1px 2px rgb(0 0 0 / 5%) !important;
+    box-shadow: var(--rp-card-shadow) !important;
 }
 
 .content {
@@ -22,12 +22,12 @@
 }
 
 .editButton {
-    background-color: #0288d1 !important;
+    background-color: #1976d2 !important;
     text-transform: none !important;
 }
 
 .editButton:hover {
-    background-color: #0288d1 !important;
+    background-color: #1565c0 !important;
 }
 
 .editButton svg {
@@ -70,6 +70,10 @@
 }
 
 .calories {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: 4px;
     padding: 14px;
     background-color: #f8fafc;
     border: 1px solid #e6ecf2;

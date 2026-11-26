@@ -139,7 +139,38 @@
 }
 
 @media (max-width: 420px) {
+    .locHeader {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .locTitulo {
+        font-size: 0.85rem;
+        line-height: 1.35;
+    }
+
+    .locSede {
+        padding-left: 14px;
+        font-size: 0.8rem;
+    }
+
+    .locLinha {
+        align-items: flex-start;
+        padding: 9px 10px;
+    }
+
+    .locForte,
+    .locFraco {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
     .locBotoes {
         grid-template-columns: 1fr;
+    }
+
+    .locRodape {
+        line-height: 1.4;
     }
 }

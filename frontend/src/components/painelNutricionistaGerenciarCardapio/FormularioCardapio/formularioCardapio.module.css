@@ -1,4 +1,4 @@
-.card { padding: 32px 32px 36px; border-radius: 10px !important; }
+.card { padding: 32px 32px 36px; border-radius: var(--rp-card-radius) !important; box-shadow: var(--rp-card-shadow); }
 .cardHeader {
     display: flex;
     justify-content: space-between;

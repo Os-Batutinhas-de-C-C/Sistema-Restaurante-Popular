@@ -8,18 +8,15 @@ import styles from "./acoesRapidas.module.css";
 const actions = [
     {
         label: "Publicar Nova Notícia",
-        color: "#A5243D",
         icon: "/icons/action-news.svg",
         path: "/painel-nutricionista-noticias",
     },
     {
         label: "Registrar Desperdício do Dia",
-        color: "#4A0D67",
         icon: "/icons/calendar.svg",
     },
     {
         label: "Atualizar Estoque",
-        color: "#0288D1",
         icon: "/icons/action-stock.svg",
         path: "/painel-nutricionista-estoque",
     },
@@ -69,7 +66,7 @@ export default function AcoesRapidas({ onWasteClick }) {
                                     : onWasteClick
                             }
                             className={styles.button}
-                            sx={{ backgroundColor: action.color, "&:hover": { backgroundColor: action.color } }}
+                            sx={{ bgcolor: "primary.main", "&:hover": { bgcolor: "primary.dark" } }}
                         >
                             {action.label}
                         </Button>

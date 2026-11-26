@@ -50,7 +50,7 @@ export default function NewsCard({ id }) {
 
   if (loading || error || total === 0) {
     return (
-      <section id={id} className="newsBoxes">
+      <section id={id} className={`newsBoxes${!loading && total === 0 ? " emptyNews" : ""}`}>
         <div className="newsBoxBorder">
           <span className="tag"><span className="dot" />Notícias</span>
           <hr className="divider" />

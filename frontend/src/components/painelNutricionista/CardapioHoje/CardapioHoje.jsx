@@ -13,14 +13,14 @@ import styles from "./cardapioHoje.module.css";
 
 // Define a ordem, o campo de origem e a cor de cada item do cardápio.
 const menuFields = [
-    ["PRATO PROTEICO", "pratoProteico", "#A5243D"],
-    ["OPÇÃO PROTEICA", "opcaoProteica", "#A5243D"],
-    ["ACOMPANHAMENTO 1", "acompanhamento1", "#0288D1"],
-    ["ACOMPANHAMENTO 2", "acompanhamento2", "#0288D1"],
-    ["GUARNIÇÃO", "guarnicao", "#0288D1"],
-    ["SALADA DO DIA", "saladaDoDia", "#0288D1"],
-    ["SOBREMESA", "sobremesa", "#0288D1"],
-    ["SUCO NATURAL", "sucoNatural", "#0288D1"],
+    ["PRATO PROTEICO", "pratoProteico", "#1976D2"],
+    ["OPÇÃO PROTEICA", "opcaoProteica", "#1976D2"],
+    ["ACOMPANHAMENTO 1", "acompanhamento1", "#1976D2"],
+    ["ACOMPANHAMENTO 2", "acompanhamento2", "#1976D2"],
+    ["GUARNIÇÃO", "guarnicao", "#1976D2"],
+    ["SALADA DO DIA", "saladaDoDia", "#1976D2"],
+    ["SOBREMESA", "sobremesa", "#1976D2"],
+    ["SUCO NATURAL", "sucoNatural", "#1976D2"],
 ];
 
 /**

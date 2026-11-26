@@ -21,9 +21,9 @@ section, div[id] {
 
 .toolbar {
 	width: 100%;
-	max-width: 1100px;
+	max-width: 1200px;
 	justify-content: space-between;
-	gap: 2rem;
+	gap: 1.25rem;
  	min-height: 7rem;		
 }
 
@@ -31,6 +31,7 @@ section, div[id] {
 	display: flex;
 	align-items: center;
 	gap: 0.75rem;
+	flex-shrink: 0;
 }
 
 #symbol {
@@ -60,6 +61,7 @@ section, div[id] {
 	font-weight: 800;
 	letter-spacing: -0.02em;
 	color: #0F172A;
+	white-space: nowrap;
 }
 
 .brandText span {
@@ -74,21 +76,37 @@ section, div[id] {
 #navigation {
 	display: flex;
 	align-items: center;
-	gap: 1.5rem;
+	gap: 1rem;
 	background-color: #F1F5F9;
 	border: 1px solid #E2E8F0;
 	border-radius: 0.8rem;
-	padding: 0.7rem 1.4rem;
+	padding: 0.65rem 1rem;
 }
 
 #navigation a {
+	display: inline-flex;
+	align-items: center;
+	min-height: 40px;
+	padding: 0.4rem 0.6rem;
+	border: 1px solid transparent;
+	border-radius: 0.55rem;
 	font-size: 0.85rem;
 	color: #334155;
 	text-decoration: none;
+	transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
 
 #navigation a:hover {
 	color: #1D4ED8;
+	background-color: #fff;
+}
+
+#navigation a[aria-current="location"] {
+	border-color: #bfdbfe;
+	background: #fff;
+	color: #1d4ed8;
+	font-weight: 700;
+	box-shadow: 0 1px 3px rgb(15 23 42 / 10%);
 }
 
 #statusBadge {
@@ -163,27 +181,42 @@ section, div[id] {
     order: 3;
     display: flex;
     width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 0.25rem;
     overflow-x: auto;
-    gap: 0.5rem;
-    white-space: nowrap;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
   }
 
-  #navigation a { flex-shrink: 0; }
-   #navigation::-webkit-scrollbar {
-    display: none;        
+  #navigation a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+    padding: 0.35rem 0.55rem;
+  }
+
+  #navigation::-webkit-scrollbar {
+    display: none;
   }
 }
 
 @media (max-width: 700px) {
-	#navigation   {
-    order: 3;
-    display: flex;
-    width: 100%;
-    overflow-x: auto;
-    gap: 0.3rem;
-    white-space: nowrap;
-    scrollbar-width: none;
+	#navigation {
+    gap: 0.15rem 0.25rem;
   }
+}
+
+@media (min-width: 901px) and (max-width: 1100px) {
+	.toolbar { gap: 0.75rem; }
+	#navigation { gap: 0.55rem; padding-inline: 0.7rem; }
+	#navigation a { font-size: 0.78rem; }
+	#brand { gap: 0.5rem; }
+	.brandText strong { font-size: 1.2rem; }
 }
 

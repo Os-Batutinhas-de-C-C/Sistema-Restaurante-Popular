@@ -32,7 +32,7 @@ export default function ModalVisualizarMensagem({ mensagem, onClose }) {
                 )}
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
-                <Button variant="contained" onClick={onClose} sx={{ bgcolor: "#008fd3" }}>Fechar</Button>
+                <Button variant="contained" onClick={onClose} color="primary">Fechar</Button>
             </DialogActions>
         </Dialog>
     );
