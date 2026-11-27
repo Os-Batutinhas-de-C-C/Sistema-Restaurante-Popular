@@ -166,7 +166,6 @@ export async function salvarCardapioSemanaApi(dataSegunda, refeicoes, options = 
     return validarSemana(result.data);
 }
 
-export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}) {
 export async function salvarMetricasDiaApi(dataDia, metricas, options = {}) {
     const monday = obterSegundaIso(dataDeIsoLocal(dataDia));
     const dateIndex = Math.round((dataDeIsoLocal(dataDia) - dataDeIsoLocal(monday)) / 86400000);
