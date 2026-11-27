@@ -6,6 +6,7 @@ import {
     obterDiasUteisDaSemana,
     resumirCardapio,
     selecionarSugestaoCardapio,
+    selecionarSugestoesSemana,
 } from "../../src/services/gerenciamentoCardapioService";
 
 const refeicao = (idRefeicao, pratoProteico = `Prato ${idRefeicao}`) => ({
@@ -78,5 +79,34 @@ describe("gerenciamentoCardapioService", () => {
     it("preserva todos os campos da composição incluindo calorias", () => {
         expect(selecionarSugestaoCardapio([refeicao(8)], {}, "2026-11-09", null, () => 0))
             .toMatchObject(refeicao(8));
+    });
+
+    it("seleciona cinco combinações completas distintas ignorando ID, calorias, caixa e espaços externos", () => {
+        const historico = [
+            refeicao(1, "Prato 1"),
+            { ...refeicao(2, "  PRATO 1  "), valorCalorico: "990" },
+            refeicao(3, "Prato 2"),
+            refeicao(4, "Prato 3"),
+            refeicao(5, "Prato 4"),
+            refeicao(6, "Prato 5"),
+        ];
+
+        const resultado = selecionarSugestoesSemana(historico, () => 0);
+
+        expect(resultado).toHaveLength(5);
+        expect(new Set(resultado.map(({ pratoProteico }) => pratoProteico.trim().toLocaleLowerCase("pt-BR"))).size)
+            .toBe(5);
+        expect(resultado.every((cardapio) => cardapio.valorCalorico)).toBe(true);
+    });
+
+    it("não retorna uma semana parcial quando há menos de cinco combinações distintas", () => {
+        const historico = [
+            refeicao(1, "Prato 1"),
+            { ...refeicao(2, "PRATO 1"), valorCalorico: "990" },
+            refeicao(3, "Prato 2"),
+            { ...refeicao(4), acompanhamento1: "" },
+        ];
+
+        expect(selecionarSugestoesSemana(historico)).toBeNull();
     });
 });

@@ -72,6 +72,9 @@ export const camposCardapio = [
 ];
 
 const camposObrigatoriosParaSugestao = camposCardapio.map(({ key }) => key);
+const camposComposicao = camposCardapio
+    .filter(({ key }) => key !== "valorCalorico")
+    .map(({ key }) => key);
 
 function cardapioCompleto(cardapio) {
     return cardapio && camposObrigatoriosParaSugestao.every((campo) =>
@@ -84,6 +87,36 @@ function chaveComposicao(cardapio) {
     return `composicao:${camposObrigatoriosParaSugestao
         .map((campo) => String(cardapio[campo] ?? "").trim().toLocaleLowerCase("pt-BR"))
         .join("|")}`;
+}
+
+function chaveCombinacaoSemanal(cardapio) {
+    return camposComposicao
+        .map((campo) => String(cardapio[campo] ?? "").trim().toLocaleLowerCase("pt-BR"))
+        .join("\u001f");
+}
+
+export function selecionarSugestoesSemana(historico, aleatorio = Math.random) {
+    const combinacoesVistas = new Set();
+    const combinacoesUnicas = (historico ?? []).filter((cardapio) => {
+        if (!cardapioCompleto(cardapio)) return false;
+        const chave = chaveCombinacaoSemanal(cardapio);
+        if (combinacoesVistas.has(chave)) return false;
+        combinacoesVistas.add(chave);
+        return true;
+    });
+
+    if (combinacoesUnicas.length < 5) return null;
+
+    const embaralhadas = [...combinacoesUnicas];
+    for (let indice = embaralhadas.length - 1; indice > 0; indice -= 1) {
+        const sorteado = Math.min(
+            Math.max(Math.floor(aleatorio() * (indice + 1)), 0),
+            indice,
+        );
+        [embaralhadas[indice], embaralhadas[sorteado]] = [embaralhadas[sorteado], embaralhadas[indice]];
+    }
+
+    return embaralhadas.slice(0, 5).map((cardapio) => ({ ...cardapio }));
 }
 
 export function selecionarSugestaoCardapio(

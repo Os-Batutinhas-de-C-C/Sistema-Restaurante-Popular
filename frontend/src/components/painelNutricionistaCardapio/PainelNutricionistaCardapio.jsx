@@ -6,6 +6,14 @@ import { Alert, Box, Button, Skeleton, Stack } from "@mui/material";
 import NavbarPainel from "../NavbarPainel/NavbarPainel";
 import useFichasDia from "../../services/useFichasDia";
 import { dataIsoFortaleza } from "../../services/fichasService";
+import { listarHistoricoCardapios, selecionarSugestoesSemana } from "../../services/gerenciamentoCardapioService";
+import {
+    dataDeIsoLocal,
+    dataIsoLocal,
+    mapearSemanaParaDias,
+    obterSegundaIso,
+    salvarCardapioSemanaApi,
+} from "../../services/cardapiosApiService";
 import {
     filtrarCardapiosPorIntervalo,
     listarDadosCardapio,
@@ -40,6 +48,26 @@ export default function PainelNutricionistaCardapio() {
     const [error, setError] = useState("");
     const [refreshKey, setRefreshKey] = useState(0);
     const loadSequence = useRef(0);
+    const generationSequence = useRef(0);
+    const [feedbackGeracao, setFeedbackGeracao] = useState(null);
+    const [gerandoSemana, setGerandoSemana] = useState(false);
+
+    const dataSegundaSelecionada = intervaloSelecionado?.from
+        ? obterSegundaIso(intervaloSelecionado.from)
+        : null;
+    const dataDomingoSelecionada = dataSegundaSelecionada
+        ? (() => {
+            const domingo = dataDeIsoLocal(dataSegundaSelecionada);
+            domingo.setDate(domingo.getDate() + 6);
+            return dataIsoLocal(domingo);
+        })()
+        : null;
+    const semanaValida = Boolean(
+        intervaloSelecionado?.from
+        && intervaloSelecionado?.to
+        && dataIsoLocal(intervaloSelecionado.from) === dataSegundaSelecionada
+        && dataIsoLocal(intervaloSelecionado.to) === dataDomingoSelecionada,
+    );
 
     useEffect(() => {
         const sequence = ++loadSequence.current;
@@ -80,7 +108,17 @@ export default function PainelNutricionistaCardapio() {
         fichasDia.recarregar();
     };
 
+    const selecionarIntervalo = (intervalo) => {
+        generationSequence.current += 1;
+        setGerandoSemana(false);
+        setIntervaloEscolhido(intervalo);
+        setFeedbackGeracao(null);
+    };
+
     const navegarPeriodo = (quantidadeSemanas) => {
+        generationSequence.current += 1;
+        setGerandoSemana(false);
+        setFeedbackGeracao(null);
         setIntervaloEscolhido((atual) => {
             const referencia = atual ?? intervaloSelecionado;
             return {
@@ -88,6 +126,49 @@ export default function PainelNutricionistaCardapio() {
                 to: somarDias(referencia.to, quantidadeSemanas * 7),
             };
         });
+    };
+
+    const gerarSemana = async () => {
+        if (!semanaValida || !dataSegundaSelecionada) return;
+        const sequence = ++generationSequence.current;
+        setGerandoSemana(true);
+        setFeedbackGeracao(null);
+        try {
+            const historico = await listarHistoricoCardapios();
+            const sugestoes = selecionarSugestoesSemana(historico);
+            if (sequence !== generationSequence.current) return;
+            if (!sugestoes) {
+                setFeedbackGeracao({
+                    severity: "info",
+                    message: "O histórico não tem cinco combinações completas e distintas. Os cardápios salvos não foram alterados.",
+                });
+                return;
+            }
+            const semanaSalva = await salvarCardapioSemanaApi(dataSegundaSelecionada, sugestoes);
+            if (sequence !== generationSequence.current) return;
+            const diasSalvos = mapearSemanaParaDias(semanaSalva);
+            const sexta = dataDeIsoLocal(dataSegundaSelecionada);
+            sexta.setDate(sexta.getDate() + 4);
+            const dataSexta = dataIsoLocal(sexta);
+            setTodosCardapios((atuais) => [
+                ...atuais.filter(({ dia }) => dia < dataSegundaSelecionada || dia > dataSexta),
+                ...diasSalvos,
+            ]);
+            setSemanas((atuais) => [
+                ...atuais.filter(({ data }) => data !== semanaSalva.data),
+                semanaSalva,
+            ].sort((a, b) => a.data.localeCompare(b.data)));
+            setFeedbackGeracao({ severity: "success", message: "Cardápio da semana gerado e salvo com sucesso." });
+        } catch (erro) {
+            if (sequence === generationSequence.current) {
+                setFeedbackGeracao({
+                    severity: "error",
+                    message: erro?.message || "Não foi possível gerar e salvar o cardápio da semana.",
+                });
+            }
+        } finally {
+            if (sequence === generationSequence.current) setGerandoSemana(false);
+        }
     };
 
     return (
@@ -109,11 +190,16 @@ export default function PainelNutricionistaCardapio() {
                         <ListaCardapios
                             cardapios={cardapios}
                             intervaloSelecionado={intervaloSelecionado}
-                            onSelectRange={setIntervaloEscolhido}
+                            onSelectRange={selecionarIntervalo}
                             onPreviousRange={() => navegarPeriodo(-1)}
                             onNextRange={() => navegarPeriodo(1)}
                             onEdit={(date) => router.push(`/painel-nutricionista-cardapio/gerenciar/${date}`)}
                             onView={setRefeicaoSelecionada}
+                            semanaValida={semanaValida}
+                            feedbackGeracao={feedbackGeracao}
+                            gerandoSemana={gerandoSemana}
+                            controlesDesabilitados={gerandoSemana}
+                            onGenerateWeek={gerarSemana}
                         />
                     )}
                 </Box>

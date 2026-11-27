@@ -1,0 +1,5 @@
+schema: spec-driven
+created: 2026-11-27
+goal: Garantir pelo menos cinco composições elegíveis no histórico do perfil
+  local sem inserir dados de exemplo em produção
+skip_specs: true

@@ -20,6 +20,35 @@
     font-weight: 600 !important;
 }
 
+.headerControls {
+    align-items: flex-end;
+    gap: 10px;
+    min-width: 0;
+}
+
+.feedback {
+    margin-bottom: 12px;
+}
+
+.previewSection {
+    margin: 0 0 12px;
+    padding: 12px;
+    border: 1px solid #b6d4fe;
+    border-radius: 8px;
+    background: #f5f9ff;
+}
+
+.sectionTitle,
+.savedTitle {
+    margin-bottom: 4px !important;
+    color: #252a31;
+    font-weight: 600 !important;
+}
+
+.savedTitle {
+    margin-top: 16px !important;
+}
+
 .list {
     margin: 0;
     padding: 0;
@@ -91,6 +120,10 @@
     .header {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .headerControls {
+        align-items: stretch;
     }
 
     .row {
