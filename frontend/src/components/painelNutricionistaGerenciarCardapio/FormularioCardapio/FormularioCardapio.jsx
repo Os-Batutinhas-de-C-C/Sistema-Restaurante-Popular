@@ -1,4 +1,4 @@
-import { ContentCopy, AutoAwesome } from "@mui/icons-material";
+import { ContentCopy } from "@mui/icons-material";
 import { Box, Button, Card, CircularProgress, Stack, TextField, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 import { camposCardapio } from "../../../services/gerenciamentoCardapioService";
@@ -8,7 +8,7 @@ export default function FormularioCardapio({ dia, data, valores, onChange, onSav
     const dataFormatada = new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(new Date(`${data}T12:00:00`));
     const diaFormatado = dia.charAt(0).toUpperCase() + dia.slice(1);
     return (
-        <Card component="section" aria-labelledby="formulario-cardapio-titulo" variant="outlined" className={styles.card}>
+        <Card component="section" aria-labelledby="formulario-cardapio-titulo" aria-busy={saving} variant="outlined" className={styles.card}>
             <Stack className={styles.cardHeader} direction={{ xs: "column", md: "row" }}>
                 <Box className={styles.headingCopy}>
                     <Typography id="formulario-cardapio-titulo" component="h2" variant="h6" className={styles.title}>
@@ -17,10 +17,7 @@ export default function FormularioCardapio({ dia, data, valores, onChange, onSav
                     <Typography variant="body2" color="text.secondary">Defina a composição nutricional para o almoço.</Typography>
                 </Box>
                 <Stack direction={{ xs: "column", md: "row" }} className={styles.actions}>
-                    <Button variant="contained" size="small" startIcon={<AutoAwesome />} onClick={() => {}} sx={{ textTransform: "none" }}>
-                        Gerar Cardápio
-                    </Button>
-                    <Button variant="contained" size="small" startIcon={<ContentCopy />} onClick={onOpenHistory} sx={{ textTransform: "none" }}>
+                    <Button variant="contained" size="small" startIcon={<ContentCopy />} onClick={onOpenHistory} disabled={saving} sx={{ textTransform: "none" }}>
                         Copiar Do Histórico
                     </Button>
                 </Stack>
@@ -37,6 +34,7 @@ export default function FormularioCardapio({ dia, data, valores, onChange, onSav
                                 variant="standard"
                                 fullWidth
                                 size="small"
+                                disabled={saving}
                                 type={key === "valorCalorico" ? "number" : "text"}
                                 slotProps={{ inputLabel: { shrink: true }, ...(key === "valorCalorico" ? { htmlInput: { min: 0, step: 1 } } : {}) }}
                             />

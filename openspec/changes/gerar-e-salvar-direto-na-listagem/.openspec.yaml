@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-11-27
+goal: Remover a etapa de prévia separada e atualizar imediatamente a listagem
+  semanal com a semana gerada e salva

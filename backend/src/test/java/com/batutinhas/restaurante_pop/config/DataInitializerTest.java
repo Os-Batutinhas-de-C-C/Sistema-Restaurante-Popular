@@ -1,7 +1,11 @@
 package com.batutinhas.restaurante_pop.config;
 
 import com.batutinhas.restaurante_pop.factory.UsuarioFactory;
+import com.batutinhas.restaurante_pop.model.Refeicao;
+import com.batutinhas.restaurante_pop.model.Semana;
 import com.batutinhas.restaurante_pop.model.Usuario;
+import com.batutinhas.restaurante_pop.repository.RefeicaoRepository;
+import com.batutinhas.restaurante_pop.repository.SemanaRepository;
 import com.batutinhas.restaurante_pop.repository.UsuarioRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +20,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
+import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -38,6 +47,8 @@ class DataInitializerTest {
     private static final String SENHA = "senha-ficticia-de-teste";
     private static final LocalDate DATA_CRIACAO = LocalDate.of(2026, 11, 9);
     @Mock private UsuarioRepository usuarios;
+    @Mock private RefeicaoRepository refeicoes;
+    @Mock private SemanaRepository semanas;
     @Mock private PasswordEncoder encoder;
 
     @ParameterizedTest(name = "sem conta: e-mail={0}, senha={1}")
@@ -111,8 +122,93 @@ class DataInitializerTest {
         verifyNoInteractions(encoder);
     }
 
+    @Test
+    @DisplayName("Inicializa cinco refeições completas e diferentes no histórico local")
+    void inicializaCincoRefeicoesCompletas() {
+        prepararPersistenciaDemonstracao();
+        var semanaCapturada = ArgumentCaptor.forClass(Semana.class);
+
+        inicializador('N', "", "").run();
+
+        verify(semanas).save(semanaCapturada.capture());
+        var cardapio = semanaCapturada.getValue().getCardapio();
+        assertThat(cardapio).hasSize(5).doesNotContainNull().doesNotHaveDuplicates();
+        assertThat(cardapio).allSatisfy(refeicao -> {
+            assertThat(refeicao.getProteina()).isNotBlank();
+            assertThat(refeicao.getGuarnicao()).isNotBlank();
+            assertThat(refeicao.getAcompanhamento1()).isNotBlank();
+            assertThat(refeicao.getAcompanhamento2()).isNotBlank();
+            assertThat(refeicao.getSuco()).isNotBlank();
+            assertThat(refeicao.getSobremesa()).isNotBlank();
+            assertThat(refeicao.getOpcaoProteica()).isNotBlank();
+            assertThat(refeicao.getSaladaDoDia()).isNotBlank();
+            assertThat(refeicao.getCalorias()).isPositive();
+        });
+    }
+
+    @Test
+    @DisplayName("Execuções repetidas reutilizam o histórico e não criam outra semana")
+    void inicializacaoDemonstracaoEhIdempotente() {
+        prepararPersistenciaDemonstracao();
+
+        inicializador('N', "", "").run();
+        inicializador('N', "", "").run();
+
+        verify(semanas).save(any(Semana.class));
+        verify(refeicoes, org.mockito.Mockito.times(5)).save(any(Refeicao.class));
+    }
+
+    @Test
+    @DisplayName("Data de demonstração ocupada não substitui a semana existente")
+    void dataOcupadaUsaOutraSemanaSemAlterarHistorico() {
+        prepararPersistenciaDemonstracao();
+        LocalDate dataOcupada = LocalDate.of(2025, 1, 6);
+        Semana semanaExistente = new Semana();
+        semanaExistente.setData(dataOcupada);
+        semanaExistente.setCardapio(new ArrayList<>(java.util.Collections.nCopies(5, null)));
+        when(semanas.findAllByOrderByDataAsc()).thenReturn(List.of(semanaExistente));
+        var semanaCapturada = ArgumentCaptor.forClass(Semana.class);
+
+        inicializador('N', "", "").run();
+
+        verify(semanas).save(semanaCapturada.capture());
+        assertThat(semanaCapturada.getValue().getData()).isEqualTo(dataOcupada.minusWeeks(1));
+        assertThat(semanaCapturada.getValue().getData().getDayOfWeek()).isEqualTo(DayOfWeek.MONDAY);
+        assertThat(semanaExistente.getData()).isEqualTo(dataOcupada);
+        assertThat(semanaExistente.getCardapio()).containsOnlyNulls();
+    }
+
+    private void prepararPersistenciaDemonstracao() {
+        Map<String, Refeicao> salvas = new HashMap<>();
+        List<Semana> semanasSalvas = new ArrayList<>();
+        when(refeicoes.findByComposicao(anyString(), anyString(), anyString(), anyString(),
+                anyString(), anyString(), anyString(), anyString()))
+                .thenAnswer(chamada -> Optional.ofNullable(salvas.get(chave(chamada.getArguments()))));
+        when(refeicoes.save(any(Refeicao.class))).thenAnswer(chamada -> {
+            Refeicao refeicao = chamada.getArgument(0);
+            salvas.put(chave(refeicao), refeicao);
+            return refeicao;
+        });
+        when(semanas.findAllByOrderByDataAsc()).thenAnswer(chamada -> List.copyOf(semanasSalvas));
+        when(semanas.save(any(Semana.class))).thenAnswer(chamada -> {
+            Semana semana = chamada.getArgument(0);
+            semanasSalvas.add(semana);
+            return semana;
+        });
+    }
+
+    private static String chave(Object[] argumentos) {
+        return java.util.Arrays.stream(argumentos).map(String::valueOf).collect(java.util.stream.Collectors.joining("|"));
+    }
+
+    private static String chave(Refeicao refeicao) {
+        return String.join("|", refeicao.getProteina(), refeicao.getGuarnicao(), refeicao.getAcompanhamento1(),
+                refeicao.getAcompanhamento2(), refeicao.getSuco(), refeicao.getSobremesa(),
+                refeicao.getOpcaoProteica(), refeicao.getSaladaDoDia());
+    }
+
     private DataInitializer inicializador(char tipo, String email, String senha) {
-        return new DataInitializer(usuarios, encoder,
+        return new DataInitializer(usuarios, refeicoes, semanas, encoder,
                 tipo == 'N' ? email : "", tipo == 'N' ? senha : "",
                 tipo == 'C' ? email : "", tipo == 'C' ? senha : "",
                 tipo == 'G' ? email : "", tipo == 'G' ? senha : "");

@@ -59,16 +59,6 @@ export function resumirCardapio(cardapio) {
         cardapio.sobremesa, cardapio.sucoNatural].filter(Boolean).join(", ");
 }
 
-export async function listarHistoricoCardapios(options = {}) {
-    const semanas = await listarSemanasApi(options);
-    return semanas.flatMap(transformarHistorico)
-        .filter((cardapio) => camposCardapio.some(({ key }) => String(cardapio[key] ?? "").trim()));
-}
-
-export async function salvarCardapioDia(data, valores, options = {}) {
-    return salvarRefeicaoDiaApi(data, valores, options);
-}
-
 export const camposCardapio = [
     { key: "pratoProteico", label: "Prato Proteico" },
     { key: "opcaoProteica", label: "Opção Proteica" },
@@ -80,5 +70,100 @@ export const camposCardapio = [
     { key: "sucoNatural", label: "Suco Natural" },
     { key: "valorCalorico", label: "Valor Calórico Estimado (kcal)" },
 ];
+
+const camposObrigatoriosParaSugestao = camposCardapio.map(({ key }) => key);
+const camposComposicao = camposCardapio
+    .filter(({ key }) => key !== "valorCalorico")
+    .map(({ key }) => key);
+
+function cardapioCompleto(cardapio) {
+    return cardapio && camposObrigatoriosParaSugestao.every((campo) =>
+        String(cardapio[campo] ?? "").trim() !== "",
+    );
+}
+
+function chaveComposicao(cardapio) {
+    if (cardapio.idRefeicao != null) return `id:${cardapio.idRefeicao}`;
+    return `composicao:${camposObrigatoriosParaSugestao
+        .map((campo) => String(cardapio[campo] ?? "").trim().toLocaleLowerCase("pt-BR"))
+        .join("|")}`;
+}
+
+function chaveCombinacaoSemanal(cardapio) {
+    return camposComposicao
+        .map((campo) => String(cardapio[campo] ?? "").trim().toLocaleLowerCase("pt-BR"))
+        .join("\u001f");
+}
+
+export function selecionarSugestoesSemana(historico, aleatorio = Math.random) {
+    const combinacoesVistas = new Set();
+    const combinacoesUnicas = (historico ?? []).filter((cardapio) => {
+        if (!cardapioCompleto(cardapio)) return false;
+        const chave = chaveCombinacaoSemanal(cardapio);
+        if (combinacoesVistas.has(chave)) return false;
+        combinacoesVistas.add(chave);
+        return true;
+    });
+
+    if (combinacoesUnicas.length < 5) return null;
+
+    const embaralhadas = [...combinacoesUnicas];
+    for (let indice = embaralhadas.length - 1; indice > 0; indice -= 1) {
+        const sorteado = Math.min(
+            Math.max(Math.floor(aleatorio() * (indice + 1)), 0),
+            indice,
+        );
+        [embaralhadas[indice], embaralhadas[sorteado]] = [embaralhadas[sorteado], embaralhadas[indice]];
+    }
+
+    return embaralhadas.slice(0, 5).map((cardapio) => ({ ...cardapio }));
+}
+
+export function selecionarSugestaoCardapio(
+    historico,
+    cardapiosSemana,
+    dataSelecionada,
+    ultimaSugestao,
+    aleatorio = Math.random,
+) {
+    const usadosNaSemana = new Set(
+        Object.entries(cardapiosSemana ?? {})
+            .filter(([data, cardapio]) => data !== dataSelecionada && cardapioCompleto(cardapio))
+            .map(([, cardapio]) => chaveComposicao(cardapio)),
+    );
+    const vistos = new Set();
+    const opcoes = (historico ?? []).filter((cardapio) => {
+        if (!cardapioCompleto(cardapio)) return false;
+        const chave = chaveComposicao(cardapio);
+        if (usadosNaSemana.has(chave) || vistos.has(chave)) return false;
+        vistos.add(chave);
+        return true;
+    });
+
+    const chaveAnterior = ultimaSugestao == null
+        ? null
+        : chaveComposicao(typeof ultimaSugestao === "object" ? ultimaSugestao : { idRefeicao: ultimaSugestao });
+    const opcoesNovas = chaveAnterior == null
+        ? opcoes
+        : opcoes.filter((cardapio) => chaveComposicao(cardapio) !== chaveAnterior);
+    const elegiveis = opcoesNovas.length ? opcoesNovas : opcoes;
+    if (!elegiveis.length) return null;
+
+    const indice = Math.min(
+        Math.max(Math.floor(aleatorio() * elegiveis.length), 0),
+        elegiveis.length - 1,
+    );
+    return { ...elegiveis[indice] };
+}
+
+export async function listarHistoricoCardapios(options = {}) {
+    const semanas = await listarSemanasApi(options);
+    return semanas.flatMap(transformarHistorico)
+        .filter((cardapio) => camposCardapio.some(({ key }) => String(cardapio[key] ?? "").trim()));
+}
+
+export async function salvarCardapioDia(data, valores, options = {}) {
+    return salvarRefeicaoDiaApi(data, valores, options);
+}
 
 export const cardapioVazio = Object.fromEntries(camposCardapio.map(({ key }) => [key, ""]));

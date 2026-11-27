@@ -30,6 +30,7 @@ export default function SeletorIntervaloDatas({
     onChange,
     label = "Selecione o período",
     ariaLabel = "Abrir seletor de período",
+    disabled = false,
     exibirIconeCalendario = true,
 }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -44,6 +45,7 @@ export default function SeletorIntervaloDatas({
             <TextField
                 label={label}
                 size="small"
+                disabled={disabled}
                 value={formatarIntervalo(value)}
                 onClick={abrirCalendario}
                 onKeyDown={(event) => {
@@ -80,6 +82,7 @@ export default function SeletorIntervaloDatas({
                                     aria-haspopup="dialog"
                                     aria-expanded={aberto}
                                     onClick={abrirCalendario}
+                                    disabled={disabled}
                                     edge="end"
                                 >
                                     <CalendarMonthOutlinedIcon sx={{ fontSize: 23 }} />

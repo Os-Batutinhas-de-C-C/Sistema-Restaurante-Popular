@@ -131,6 +131,42 @@ export async function salvarRefeicaoDiaApi(dataDia, valores, options = {}) {
     return validarSemana(result.data);
 }
 
+export async function salvarCardapioSemanaApi(dataSegunda, refeicoes, options = {}) {
+    if (obterSegundaIso(dataDeIsoLocal(dataSegunda)) !== dataSegunda || !Array.isArray(refeicoes) || refeicoes.length !== 5) {
+        throw new ApiError("A prévia deve conter os cinco dias úteis de uma semana iniciada na segunda-feira.", {
+            code: "INVALID_WEEKLY_MENU",
+        });
+    }
+
+    const semana = await obterSemanaApi(dataSegunda, options);
+    const cardapio = refeicoes.map((refeicao) => {
+        if (refeicao?.idRefeicao != null) return { idRefeicao: refeicao.idRefeicao };
+        if (!refeicao) return null;
+        return {
+            proteina: refeicao.pratoProteico?.trim() || null,
+            opcaoProteica: refeicao.opcaoProteica?.trim() || null,
+            acompanhamento1: refeicao.acompanhamento1?.trim() || null,
+            acompanhamento2: refeicao.acompanhamento2?.trim() || null,
+            guarnicao: refeicao.guarnicao?.trim() || null,
+            saladaDoDia: refeicao.saladaDoDia?.trim() || null,
+            sobremesa: refeicao.sobremesa?.trim() || null,
+            suco: refeicao.sucoNatural?.trim() || null,
+            calorias: Number(refeicao.valorCalorico) || 0,
+        };
+    });
+
+    const body = {
+        desperdicio: semana?.desperdicio ?? [],
+        fichasVendidas: semana?.fichasVendidas ?? [],
+        cardapio,
+    };
+    const result = semana
+        ? await apiRequest(`/semanas/${dataSegunda}`, { ...options, method: "PUT", body })
+        : await apiRequest("/semanas", { ...options, method: "POST", body: { data: dataSegunda, ...body } });
+    return validarSemana(result.data);
+}
+
+export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}) {
 export async function salvarMetricasDiaApi(dataDia, metricas, options = {}) {
     const monday = obterSegundaIso(dataDeIsoLocal(dataDia));
     const dateIndex = Math.round((dataDeIsoLocal(dataDia) - dataDeIsoLocal(monday)) / 86400000);
@@ -176,6 +212,7 @@ export async function salvarDesperdicioDiaApi(dataDia, desperdicio, options = {}
 
 export function transformarHistorico(semana) {
     return mapearSemanaParaDias(semana).map(({ nome, dia, refeicao }) => ({
+        idRefeicao: refeicao?.idRefeicao ?? null,
         dia: nome,
         data: dia,
         pratoProteico: refeicao?.pratoProteico ?? "",

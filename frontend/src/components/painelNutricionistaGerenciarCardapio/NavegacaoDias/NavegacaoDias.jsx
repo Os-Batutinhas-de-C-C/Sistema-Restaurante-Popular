@@ -10,12 +10,12 @@ const nomesCurtos = {
     "Sexta-feira": "Sex",
 };
 
-export default function NavegacaoDias({ dias, dataSelecionada, intervalo, onSelectDay, onNavigateWeek, onBack }) {
+export default function NavegacaoDias({ dias, dataSelecionada, intervalo, onSelectDay, onNavigateWeek, onBack, disabled = false }) {
     return (
         <Stack spacing={1.5}>
             <Stack className={styles.heading} direction={{ xs: "column", md: "row" }}>
                 <Stack direction="row" spacing={1} sx={{ alignItems: "center", minWidth: 0 }}>
-                    <ButtonBase aria-label="Voltar ao painel" onClick={onBack} className={styles.backButton}>
+                    <ButtonBase aria-label="Voltar ao painel" onClick={onBack} disabled={disabled} className={styles.backButton}>
                         <ArrowBack fontSize="small" />
                     </ButtonBase>
                     <Box sx={{ minWidth: 0 }}>
@@ -24,10 +24,10 @@ export default function NavegacaoDias({ dias, dataSelecionada, intervalo, onSele
                     </Box>
                 </Stack>
                 <Stack direction="row" spacing={1} className={styles.weekActions}>
-                    <Button size="small" variant="contained" startIcon={<ChevronLeft />} onClick={() => onNavigateWeek(-1)} sx={{ textTransform: "none" }}>
+                    <Button size="small" variant="contained" startIcon={<ChevronLeft />} onClick={() => onNavigateWeek(-1)} disabled={disabled} sx={{ textTransform: "none" }}>
                         Semana Anterior
                     </Button>
-                    <Button size="small" variant="contained" endIcon={<ChevronRight />} onClick={() => onNavigateWeek(1)} sx={{ textTransform: "none" }}>
+                    <Button size="small" variant="contained" endIcon={<ChevronRight />} onClick={() => onNavigateWeek(1)} disabled={disabled} sx={{ textTransform: "none" }}>
                         Próxima Semana
                     </Button>
                 </Stack>
@@ -40,6 +40,7 @@ export default function NavegacaoDias({ dias, dataSelecionada, intervalo, onSele
                             aria-label={`${nome}, ${new Intl.DateTimeFormat("pt-BR").format(new Date(`${data}T12:00:00`))}`}
                             aria-pressed={data === dataSelecionada}
                             onClick={() => onSelectDay(data)}
+                            disabled={disabled}
                             className={`${styles.dayButton} ${data === dataSelecionada ? styles.selected : ""}`}
                         >
                             <Typography component="span" variant="body2" className={styles.dayName}>
