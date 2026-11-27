@@ -62,7 +62,7 @@ export default function GerenciarOficinas() {
                 <Stack component="form" onSubmit={(event) => {
                     event.preventDefault();
                     setAplicados(filtros);
-                }} direction={{ xs: "column", md: "row" }} gap={2} alignItems={{ md: "center" }}>
+                }} direction={{ xs: "column", md: "row" }} sx={{ gap: 2, alignItems: { md: "center" } }}>
                     {Object.entries({ data: "Data", horaInicio: "Horário de início", horaFim: "Horário de fim" }).map(([campo, label]) => (
                         <TextField key={campo} label={label} type={campo === "data" ? "date" : "time"} value={filtros[campo]}
                             slotProps={{ inputLabel: { shrink: true }, htmlInput: campo === "data" ? undefined : { step: "any" } }}
@@ -81,10 +81,10 @@ export default function GerenciarOficinas() {
                     const estado = estadoEvento(evento, agora);
                     return (
                         <Paper component="li" key={evento.id} variant="outlined" sx={{ p: 2 }}>
-                            <Stack direction={{ xs: "column", md: "row" }} gap={2}
-                                justifyContent="space-between" alignItems={{ md: "center" }}>
+                            <Stack direction={{ xs: "column", md: "row" }}
+                                sx={{ gap: 2, justifyContent: "space-between", alignItems: { md: "center" } }}>
                                 <Box sx={{ overflowWrap: "anywhere", minWidth: 0 }}>
-                                    <Stack direction="row" gap={1} useFlexGap sx={{ flexWrap: "wrap" }}>
+                                    <Stack direction="row" useFlexGap sx={{ gap: 1, flexWrap: "wrap" }}>
                                         <Chip size="small" label={TIPOS_OFICINA[evento.tipo]} />
                                         <Chip size="small" variant="outlined" label={CUSTOS_OFICINA[evento.custo]} />
                                         <Chip size="small" variant="outlined" label={ESTADOS_OFICINA[estado]} />
@@ -96,7 +96,8 @@ export default function GerenciarOficinas() {
                                         {formatarVagas(evento.vagasRestantes)} disponíveis de {formatarVagas(evento.vagas)}
                                     </Typography>
                                 </Box>
-                                <Stack direction="row" gap={1} useFlexGap sx={{ flexWrap: "wrap", flexShrink: 0 }}>
+                                <Stack direction="row" useFlexGap sx={{ gap: 1, flexWrap: "wrap", flexShrink: 0 }}>
+                                    <Button component={Link} href={`${ROTA_OFICINAS}/${evento.id}/frequencia`}>Lista de frequência</Button>
                                     <Button onClick={({ currentTarget }) => abrirDialogo("inscritos", evento, currentTarget)}>Ver inscritos</Button>
                                     {estado !== "ENCERRADO" && (
                                         <Button component={Link} href={`${ROTA_OFICINAS}/${evento.id}/editar`}>Editar</Button>

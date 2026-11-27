@@ -7,18 +7,27 @@ import {
     mapearSemanaParaDias,
     obterSegundaIso,
     salvarCardapioSemanaApi,
+    salvarMetricasDiaApi,
     transformarHistorico,
 } from "../../src/services/cardapiosApiService";
 
 jest.mock("../../src/services/apiClient", () => ({
     ...jest.requireActual("../../src/services/apiClient"),
     apiRequest: jest.fn(),
+    apiRequest: jest.fn(),
+    ApiError: class ApiError extends Error {
+        constructor(message, options = {}) {
+            super(message);
+            this.code = options.code;
+        }
+    },
 }));
 
 const semana = {
     data: "2026-11-09",
     desperdicio: [1, 2, 3, 4, 5],
     fichasVendidas: [11, 12, 13, 14, 15],
+    fichasVendidas: [20, 21, 22, 23, 24],
     cardapio: [
         { idRefeicao: 1, proteina: "Frango", calorias: 500 },
         null,
@@ -27,6 +36,10 @@ const semana = {
         null,
     ],
 };
+
+beforeEach(() => {
+    apiRequest.mockReset();
+});
 
 describe("cardapiosApiService", () => {
     beforeEach(() => jest.clearAllMocks());
@@ -96,5 +109,33 @@ describe("cardapiosApiService", () => {
                 fichasVendidas: semana.fichasVendidas,
             }),
         }));
+    it("salva as métricas do dia sem alterar as métricas dos outros dias", async () => {
+        apiRequest
+            .mockResolvedValueOnce({ data: [semana] })
+            .mockResolvedValueOnce({ data: semana });
+
+        await salvarMetricasDiaApi("2026-11-11", {
+            desperdicioKg: 3.5,
+            fichasVendidas: 99,
+        });
+
+        expect(apiRequest).toHaveBeenNthCalledWith(2, "/semanas/2026-11-09", expect.objectContaining({
+            method: "PUT",
+            body: {
+                desperdicio: [1, 2, 3.5, 4, 5],
+                fichasVendidas: [20, 21, 99, 23, 24],
+                cardapio: [{ idRefeicao: 1 }, null, null, null, null],
+            },
+        }));
+    });
+
+    it("não envia fichas quando apenas o desperdício foi editado", async () => {
+        apiRequest
+            .mockResolvedValueOnce({ data: [semana] })
+            .mockResolvedValueOnce({ data: semana });
+
+        await salvarMetricasDiaApi("2026-11-11", { desperdicioKg: 3.5 });
+
+        expect(apiRequest.mock.calls[1][1].body).not.toHaveProperty("fichasVendidas");
     });
 });

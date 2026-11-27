@@ -1,5 +1,5 @@
 html {
-  font-size: 18px;
+  font-size: calc(18px * var(--accessibility-font-scale, 1));
 }
 
 :root {
@@ -38,4 +38,31 @@ body {
 a {
   color: inherit;
   text-decoration: none;
+}
+
+html[data-high-contrast="true"] {
+  color-scheme: dark;
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+html[data-high-contrast="true"] body,
+html[data-high-contrast="true"] body :where(*):not([data-accessibility-tools]):not([data-accessibility-tools] *) {
+  color: #ffffff !important;
+  background-color: #000000 !important;
+  border-color: #ffffff !important;
+}
+
+html[data-high-contrast="true"] a {
+  color: #ffff00 !important;
+  text-decoration: underline;
+}
+
+html[data-high-contrast="true"] button:focus-visible,
+html[data-high-contrast="true"] a:focus-visible,
+html[data-high-contrast="true"] input:focus-visible,
+html[data-high-contrast="true"] select:focus-visible,
+html[data-high-contrast="true"] textarea:focus-visible {
+  outline: 3px solid #ffff00 !important;
+  outline-offset: 2px;
 }

@@ -124,7 +124,7 @@ function Editor({ evento, versao, encerrado }) {
                         })}</Grid>
                     </Grid>
                     <Typography variant="body2" color="text.secondary">Horários de Fortaleza.</Typography>
-                    <Stack direction={{ xs: "column", sm: "row" }} gap={1}>
+                    <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
                         {!encerrado && <Button variant="contained" type="submit" disabled={ocupado}>Salvar e publicar</Button>}
                         {evento && <Button variant="outlined" onClick={({ currentTarget }) => {
                             acionadorDialogo.current = currentTarget;

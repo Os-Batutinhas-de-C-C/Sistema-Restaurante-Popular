@@ -28,6 +28,9 @@ public class InscricaoOficina {
     @Column(nullable = false, columnDefinition = "text")
     private String email;
 
+    @Column(nullable = false)
+    private boolean presente;
+
     protected InscricaoOficina() {}
 
     public InscricaoOficina(EventoOficina evento, String cpf, LocalDate dataNascimento, String email) {
@@ -42,4 +45,6 @@ public class InscricaoOficina {
     public String getCpf() { return cpf; }
     public LocalDate getDataNascimento() { return dataNascimento; }
     public String getEmail() { return email; }
+    public boolean isPresente() { return presente; }
+    public void setPresente(boolean presente) { this.presente = presente; }
 }

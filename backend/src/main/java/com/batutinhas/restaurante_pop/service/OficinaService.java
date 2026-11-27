@@ -30,12 +30,14 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -192,6 +194,50 @@ public class OficinaService {
                 .map(i -> new OficinaDTO.Inscrito(i.getId(), i.getCpf(), i.getDataNascimento(), i.getEmail()))
                 .toList();
         return new OficinaDTO.Inscritos(clock.instant(), inicio(evento), lista);
+    }
+
+    @Transactional(readOnly = true)
+    public OficinaDTO.Frequencia consultarFrequencia(long id) {
+        EventoOficina evento = eventos.findById(id).orElseThrow(OficinaService::eventoNaoEncontrado);
+        return frequencia(evento, clock.instant());
+    }
+
+    public OficinaDTO.Frequencia salvarFrequencia(long id, OficinaDTO.FrequenciaRequest entrada) {
+        return gravar(() -> {
+            EventoOficina evento = bloquearEvento(id);
+            Instant agora = clock.instant();
+            if (agora.isBefore(inicio(evento))) {
+                throw conflito("FREQUENCIA_BLOQUEADA", "A frequência só pode ser registrada a partir do início do evento.");
+            }
+            if (entrada == null || entrada.inscricoes() == null) {
+                throw invalido("Informe a frequência dos inscritos.");
+            }
+
+            Map<Long, Boolean> presencas = new HashMap<>();
+            for (OficinaDTO.PresencaRequest presenca : entrada.inscricoes()) {
+                if (presenca == null || presenca.inscricaoId() == null || presenca.presente() == null
+                        || presencas.putIfAbsent(presenca.inscricaoId(), presenca.presente()) != null) {
+                    throw invalido("Informe uma única frequência válida para cada inscrição.");
+                }
+            }
+
+            List<InscricaoOficina> atuais = inscricoes.findAllByEventoIdOrderByIdAsc(id);
+            Set<Long> idsAtuais = atuais.stream().map(InscricaoOficina::getId).collect(Collectors.toSet());
+            if (!idsAtuais.equals(presencas.keySet())) {
+                throw conflito("INSCRICOES_ALTERADAS", "A lista de inscritos foi alterada. Recarregue a frequência antes de salvar.");
+            }
+            atuais.forEach(inscrito -> inscrito.setPresente(presencas.get(inscrito.getId())));
+            inscricoes.saveAllAndFlush(atuais);
+            return frequencia(evento, agora);
+        });
+    }
+
+    private OficinaDTO.Frequencia frequencia(EventoOficina evento, Instant agora) {
+        List<OficinaDTO.InscritoFrequencia> lista = inscricoes.findAllByEventoIdOrderByIdAsc(evento.getId()).stream()
+                .map(i -> new OficinaDTO.InscritoFrequencia(i.getId(), i.getCpf(), i.getDataNascimento(),
+                        i.getEmail(), i.isPresente()))
+                .toList();
+        return new OficinaDTO.Frequencia(agora, resposta(evento, lista.size(), agora), lista);
     }
 
     public void cancelarComoGestor(long id, long inscricaoId) {

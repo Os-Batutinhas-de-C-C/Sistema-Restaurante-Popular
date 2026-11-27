@@ -66,6 +66,15 @@ public class SemanaService {
     public Optional<SemanaResponseDTO> update(LocalDate data, SemanaUpdateRequestDTO request) {
         requireMonday(data);
         return semanaRepository.findByDataForUpdate(data).map(semana -> {
+            if (request.fichasVendidas() != null) {
+                if (request.fichasVendidas().size() != Semana.QUANTIDADE_DIAS_UTEIS) {
+                    throw new IllegalArgumentException("As fichas semanais devem ter exatamente cinco posições.");
+                }
+                if (request.fichasVendidas().stream().anyMatch(valor -> valor != null && valor < 0)) {
+                    throw new IllegalArgumentException("A quantidade de fichas não pode ser negativa.");
+                }
+                semana.setFichasVendidas(copyList(request.fichasVendidas()));
+            }
             semana.setDesperdicio(copyList(request.desperdicio()));
             replaceCardapio(semana, request.cardapio());
             return toResponseDTO(semanaRepository.save(semana));
